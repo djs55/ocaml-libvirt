@@ -563,7 +563,7 @@ struct
   external get_info : [`R] t -> vol_info = "ocaml_libvirt_storage_vol_get_info"
   external get_xml_desc : [`R] t -> xml = "ocaml_libvirt_storage_vol_get_xml_desc"
   external create_xml : [>`W] Pool.t -> xml -> unit = "ocaml_libvirt_storage_vol_create_xml"
-  external delete : [>`W] t -> unit = "ocaml_libvirt_storage_vol_delete"
+  external delete : [>`W] t -> vol_delete_flags -> unit = "ocaml_libvirt_storage_vol_delete"
   external free : [>`R] t -> unit = "ocaml_libvirt_storage_vol_free"
   external const : [>`R] t -> ro t = "%identity"
 end

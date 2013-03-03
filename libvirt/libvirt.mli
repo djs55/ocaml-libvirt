@@ -812,7 +812,7 @@ sig
 
   val create_xml : [>`W] Pool.t -> xml -> unit
     (** Create a storage volume. *)
-  val delete : [>`W] t -> unit
+  val delete : [>`W] t -> vol_delete_flags -> unit
     (** Delete a storage volume. *)
   val free : [>`R] t -> unit
     (** Free a storage volume object in memory.
