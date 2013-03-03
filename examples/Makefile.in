@@ -1,0 +1,69 @@
+# ocaml-libvirt
+# Copyright (C) 2007 Red Hat Inc., Richard W.M. Jones
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+
+OCAMLFIND	= @OCAMLFIND@
+
+OCAMLCPACKAGES	:= -package unix -I ../libvirt
+OCAMLCFLAGS	:= -g
+OCAMLCLIBS	:= -linkpkg
+OCAMLOPTPACKAGES := $(OCAMLCPACKAGES)
+OCAMLOPTFLAGS	:=
+OCAMLOPTLIBS	:= $(OCAMLCLIBS)
+
+export LIBRARY_PATH=../libvirt
+export LD_LIBRARY_PATH=../libvirt
+
+BYTE_TARGETS	:= list_domains node_info get_cpu_stats
+OPT_TARGETS	:= $(BYTE_TARGETS:%=%.opt)
+
+all: $(BYTE_TARGETS)
+
+opt: $(OPT_TARGETS)
+
+list_domains: list_domains.cmo
+	$(OCAMLFIND) ocamlc \
+	  $(OCAMLCPACKAGES) $(OCAMLCFLAGS) $(OCAMLCLIBS) \
+	  ../libvirt/mllibvirt.cma -o $@ $<
+
+list_domains.opt: list_domains.cmx
+	$(OCAMLFIND) ocamlopt \
+	  $(OCAMLOPTPACKAGES) $(OCAMLOPTFLAGS) $(OCAMLOPTLIBS) \
+	  ../libvirt/mllibvirt.cmxa -o $@ $<
+
+node_info: node_info.cmo
+	$(OCAMLFIND) ocamlc \
+	  $(OCAMLCPACKAGES) $(OCAMLCFLAGS) $(OCAMLCLIBS) \
+	  ../libvirt/mllibvirt.cma -o $@ $<
+
+node_info.opt: node_info.cmx
+	$(OCAMLFIND) ocamlopt \
+	  $(OCAMLOPTPACKAGES) $(OCAMLOPTFLAGS) $(OCAMLOPTLIBS) \
+	  ../libvirt/mllibvirt.cmxa -o $@ $<
+
+get_cpu_stats: get_cpu_stats.cmo
+	$(OCAMLFIND) ocamlc \
+	  $(OCAMLCPACKAGES) $(OCAMLCFLAGS) $(OCAMLCLIBS) \
+	  ../libvirt/mllibvirt.cma -o $@ $<
+
+get_cpu_stats.opt: get_cpu_stats.cmx
+	$(OCAMLFIND) ocamlopt \
+	  $(OCAMLOPTPACKAGES) $(OCAMLOPTFLAGS) $(OCAMLOPTLIBS) \
+	  ../libvirt/mllibvirt.cmxa -o $@ $<
+
+install-opt install-byte:
+
+include ../Make.rules

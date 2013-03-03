@@ -1,0 +1,5 @@
+Turn VIR_ERR_NO_DOMAIN and NO_NETWORK errors into Not_found exceptions.
+
+We should add a way to use the authentication mechanisms, like
+virConnectOpenAuth:
+http://www.redhat.com/archives/libvir-list/2008-April/msg00235.html

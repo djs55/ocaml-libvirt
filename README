@@ -1,0 +1,47 @@
+ocaml-libvirt
+----------------------------------------------------------------------
+
+Copyright (C) 2007-2009 Richard W.M. Jones, Red Hat Inc.
+http://libvirt.org/ocaml/
+http://libvirt.org/
+
+This is a complete set of OCaml bindings around libvirt, exposing all
+known functionality to OCaml programs.
+
+Building
+----------------------------------------------------------------------
+
+  ./configure           # Checks that you have all the required bits.
+
+  make all		# Builds the bytecode version of libs/programs.
+  make opt		# Builds the native code version of libs/programs.
+
+  make install          # Install in OCaml directory, and the binaries
+       			# in $prefix/bin.
+
+  make doc              # Build HTML documentation in html/ subdirectory.
+
+
+Programming
+----------------------------------------------------------------------
+
+For documentation on these bindings, read libvirt.mli and/or 'make
+doc' and browse the HTML documentation in the html/ subdirectory.
+
+For documentation on libvirt itself, see http://libvirt.org/html/
+
+
+License
+----------------------------------------------------------------------
+
+The library is distributed under the GNU LGPL, version 2 or above,
+with the OCaml linking exception.  Please see COPYING.LIB for details.
+
+Examples are public domain.
+
+
+Subdirectories
+----------------------------------------------------------------------
+
+libvirt/		The OCaml bindings.
+examples/		Some example programs using the bindings.

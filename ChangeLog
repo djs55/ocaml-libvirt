@@ -1,0 +1,79 @@
+2008-06-10  "Richard W.M. Jones  <rjones@redhat.com>
+
+	* ChangeLog, ChangeLog.old:
+	Deprecate ChangeLog file.
+	[1b28ddeedf31] [tip]
+
+	* configure.ac:
+	Version 0.4.2.4 for release.
+	[52ce4c1286bc]
+
+	* libvirt/Makefile.in:
+	Missing dependencies.
+	[47b061310a1c]
+
+	* libvirt/generator.pl, libvirt/libvirt_c.c:
+	List* functions throw exceptions if maxids = 0, so bypass this case.
+	[8a1fc1ebe172]
+
+2008-06-09  "Richard W.M. Jones  <rjones@redhat.com>
+
+	* configure.ac:
+	Version 0.4.2.3.
+	[288616e6690f]
+
+2008-06-05  "Richard W.M. Jones  <rjones@redhat.com>
+
+	* libvirt/libvirt.ml, libvirt/libvirt.mli,
+	libvirt/libvirt_c_oneoffs.c, mlvirsh/mlvirsh.ml:
+	Fix some bugs in the implementation of virDomainMemoryPeek
+	[28e4c935a267]
+
+	* MANIFEST:
+	Updated MANIFEST
+	[4e345322c906]
+
+	* mlvirsh/mlvirsh.ml:
+	Add domblkpeek, dommempeek commands and add per-argument help.
+	[9a461f6240eb]
+
+	* config.h.in, configure.ac, libvirt/libvirt.ml, libvirt/libvirt.mli,
+	libvirt/libvirt_c_epilogue.c, libvirt/libvirt_c_oneoffs.c,
+	libvirt/libvirt_c_prologue.c:
+	Add support for virDomainBlockPeek, virDomainMemoryPeek and remove
+	the deprecated conn/dom/net fields in virterror.
+	[8dbf08c03452]
+
+	* examples/Makefile.in:
+	Remove Windows cruft from when it was lacking ocamlfind.
+	[c46c531f93d3]
+
+2008-05-27  "Richard W.M. Jones  <rjones@redhat.com>
+
+	* po/LINGUAS, po/pt_BR.po:
+	Brazilian Portuguese translation by Herli Joaquim de Menezes and
+	revised by Igor Pires Soares.
+	[59fc76a40d77]
+
+2008-04-16  "Richard W.M. Jones  <rjones@redhat.com>
+
+	* Makefile.in, README, config.h.in, configure.ac:
+	Just the OCaml bindings (C library).
+	[521c236bb5e9]
+
+	* .hgignore, COPYING, COPYING.LIB, ChangeLog, MANIFEST, META.in,
+	Make.rules.in, Makefile.in, README, TODO.libvirt, aclocal.m4,
+	config.guess, config.h.in, config.sub, configure.ac,
+	examples/.depend, examples/Makefile.in, examples/list_domains.ml,
+	examples/node_info.ml, install-sh, libvirt/.depend,
+	libvirt/Makefile.in, libvirt/README, libvirt/generator.pl,
+	libvirt/libvirt.ml, libvirt/libvirt.mli, libvirt/libvirt_c.c,
+	libvirt/libvirt_c_epilogue.c, libvirt/libvirt_c_oneoffs.c,
+	libvirt/libvirt_c_prologue.c, libvirt/libvirt_version.ml.in,
+	libvirt/libvirt_version.mli, mlvirsh/.depend, mlvirsh/Makefile.in,
+	mlvirsh/mlvirsh.ml, po/LINGUAS, po/Makefile.in, po/POTFILES,
+	po/ja.po, po/pl.po, po/virt-top.pot, wininstaller.nsis.in,
+	winlicense.rtf:
+	Initial import from old virt-top repository.
+	[adeff355ba1f]
+

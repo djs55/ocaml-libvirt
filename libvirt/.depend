@@ -1,0 +1,6 @@
+libvirt.cmi:
+libvirt_version.cmi:
+libvirt.cmo: libvirt.cmi
+libvirt.cmx: libvirt.cmi
+libvirt_version.cmo: libvirt_version.cmi
+libvirt_version.cmx: libvirt_version.cmi
