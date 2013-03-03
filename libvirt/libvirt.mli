@@ -757,7 +757,7 @@ sig
     (** Get the XML description. *)
   val get_autostart : [`R] t -> bool
     (** Get the autostart flag for the storage pool. *)
-  val set_autostart : [`W] t -> bool -> unit
+  val set_autostart : [>`W] t -> bool -> unit
     (** Set the autostart flag for the storage pool. *)
 
   val num_of_volumes : [`R] t -> int
@@ -810,9 +810,9 @@ sig
   val get_xml_desc : [`R] t -> xml
     (** Get the XML description. *)
 
-  val create_xml : [`W] Pool.t -> xml -> unit
+  val create_xml : [>`W] Pool.t -> xml -> unit
     (** Create a storage volume. *)
-  val delete : [`W] t -> unit
+  val delete : [>`W] t -> unit
     (** Delete a storage volume. *)
   val free : [>`R] t -> unit
     (** Free a storage volume object in memory.
