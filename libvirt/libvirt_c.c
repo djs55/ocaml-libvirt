@@ -1932,7 +1932,7 @@ ocaml_libvirt_storage_pool_build (value poolv, value iv)
   int r;
 
   NONBLOCKING (r = virStoragePoolBuild (pool, i));
-  CHECK_ERROR (!r, conn, "virStoragePoolBuild");
+  CHECK_ERROR (r == -1, conn, "virStoragePoolBuild");
 
   CAMLreturn (Val_unit);
 #endif
@@ -2038,7 +2038,7 @@ ocaml_libvirt_storage_pool_delete (value poolv, value iv)
   int r;
 
   NONBLOCKING (r = virStoragePoolDelete (pool, i));
-  CHECK_ERROR (!r, conn, "virStoragePoolDelete");
+  CHECK_ERROR (r == -1, conn, "virStoragePoolDelete");
 
   CAMLreturn (Val_unit);
 #endif
@@ -2309,7 +2309,7 @@ ocaml_libvirt_storage_vol_delete (value volv, value iv)
   int r;
 
   NONBLOCKING (r = virStorageVolDelete (vol, i));
-  CHECK_ERROR (!r, conn, "virStorageVolDelete");
+  CHECK_ERROR (r == -1, conn, "virStorageVolDelete");
 
   CAMLreturn (Val_unit);
 #endif

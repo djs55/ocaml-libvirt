@@ -749,7 +749,7 @@ sub gen_c_code
   int r;
 
   NONBLOCKING (r = $c_name ($1, i));
-  CHECK_ERROR (!r, conn, \"$c_name\");
+  CHECK_ERROR (r == -1, conn, \"$c_name\");
 
   CAMLreturn (Val_unit);
 "
