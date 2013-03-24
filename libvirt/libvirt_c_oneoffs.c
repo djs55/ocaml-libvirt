@@ -1004,6 +1004,39 @@ int_callback(virConnectPtr conn, virDomainPtr dom, int x, void *opaque)
   caml_enter_blocking_section();
 }
 
+#define CALLBACK_BEGIN(NAME)                                 \
+  static value *callback = NULL;                             \
+  caml_leave_blocking_section();                             \
+  if (callback == NULL)                                      \
+    callback = caml_named_value(NAME);                       \
+  if (virDomainRef(dom) == 0) {                              \
+    connv = Val_connect(conn);                               \
+    domv = Val_domain(dom, connv);                           \
+    callback_id = caml_copy_int64(*(long *)opaque);
+
+#define CALLBACK_END                                         \
+  }                                                          \
+  caml_enter_blocking_section();
+
+static void
+string_opt_string_opt_int_callback(virConnectPtr conn,
+				   virDomainPtr dom,
+				   char *x,
+				   char *y,
+				   int z,
+				   void *opaque)
+{
+  CAMLlocal5(connv, domv, callback_id, tuple, tmp);
+  CALLBACK_BEGIN("Libvirt.string_opt_string_opt_int_callback")
+  tuple = caml_alloc_tuple(3);
+  tmp = Val_opt(x, (Val_ptr_t) caml_copy_string);
+  Store_field(tuple, 0, tmp);
+  tmp = Val_opt(y, (Val_ptr_t) caml_copy_string);
+  Store_field(tuple, 1, tmp);
+  Store_field(tuple, 2, Val_int(z));
+  (void) caml_callback3(*callback, callback_id, domv, tuple);
+  CALLBACK_END
+}
 
 
 CAMLprim value
@@ -1036,8 +1069,10 @@ ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value c
   case VIR_DOMAIN_EVENT_ID_WATCHDOG:
     cb = VIR_DOMAIN_EVENT_CALLBACK(int_callback);
     break;
-/*
   case VIR_DOMAIN_EVENT_ID_IO_ERROR:
+    cb = VIR_DOMAIN_EVENT_CALLBACK(string_opt_string_opt_int_callback);
+    break;
+/*
   case VIR_DOMAIN_EVENT_ID_GRAPHICS:
   case VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON:
   case VIR_DOMAIN_EVENT_ID_CONTROL_ERROR:

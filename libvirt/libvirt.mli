@@ -652,7 +652,7 @@ sig
     | Reboot        of ([`R] Domain.t -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> int -> unit)
-    | IOError       of ([`R] Domain.t -> unit)
+    | IOError       of ([`R] Domain.t -> (string option * string option * int) -> unit)
     | Graphics      of ([`R] Domain.t -> unit)
     | IOErrorReason of ([`R] Domain.t -> unit)
     | ControlError  of ([`R] Domain.t -> unit)
