@@ -661,7 +661,7 @@ sig
     | TrayChange    of ([`R] Domain.t -> unit)
     | PMWakeUp      of ([`R] Domain.t -> unit)
     | PMSuspend     of ([`R] Domain.t -> unit)
-    | BalloonChange of ([`R] Domain.t -> unit)
+    | BalloonChange of ([`R] Domain.t -> int64 -> unit)
     | PMSuspendDisk of ([`R] Domain.t -> unit)
 
     (** type of a registered call back function *)

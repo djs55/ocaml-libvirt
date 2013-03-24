@@ -988,6 +988,7 @@ int64_callback(virConnectPtr conn, virDomainPtr dom, long long int64, void *opaq
 }
 
 
+
 CAMLprim value
 ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value callback, value callback_id)
 {
@@ -1015,6 +1016,7 @@ ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value c
   case VIR_DOMAIN_EVENT_ID_RTC_CHANGE:
     cb = VIR_DOMAIN_EVENT_CALLBACK(int64_callback);
     break;
+/*
   case VIR_DOMAIN_EVENT_ID_WATCHDOG:
   case VIR_DOMAIN_EVENT_ID_IO_ERROR:
   case VIR_DOMAIN_EVENT_ID_GRAPHICS:
@@ -1025,15 +1027,16 @@ ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value c
   case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
   case VIR_DOMAIN_EVENT_ID_PMWAKEUP:
   case VIR_DOMAIN_EVENT_ID_PMSUSPEND:
+*/
   case VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE:
+    cb = VIR_DOMAIN_EVENT_CALLBACK(int64_callback);
+    break;
   case VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK:
 fprintf(stderr, "adding generic callback\n");
 fflush(stderr);
     cb = NULL;
     break;
-/*
 
-*/
   default:
 fprintf(stderr, "eventID = %d\n", eventID);
     caml_failwith("vifConnectDomainEventRegisterAny: unimplemented eventID");

@@ -62,7 +62,9 @@ let () =
     DE.register_any conn (DE.TrayChange print_dom);
     DE.register_any conn (DE.PMWakeUp print_dom);
     DE.register_any conn (DE.PMSuspend print_dom);
-    DE.register_any conn (DE.BalloonChange print_dom);
+*)
+    DE.register_any conn (DE.BalloonChange (fun dom x -> printd dom "BalloonChange actual = %Ld" x));
+(*
     DE.register_any conn (DE.PMSuspendDisk print_dom);
 *)
     C.set_keep_alive conn 5 3;
