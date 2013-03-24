@@ -100,6 +100,8 @@ struct
   let cpu_usable cpumaps maplen vcpu cpu =
     Char.code cpumaps.[vcpu*maplen + cpu/8] land (1 lsl (cpu mod 8)) <> 0
 
+  external set_keep_alive : [>`R] t -> int -> int -> unit = "ocaml_libvirt_connect_set_keep_alive"
+
   external const : [>`R] t -> ro t = "%identity"
 end
 
@@ -479,6 +481,49 @@ struct
     let doms = active_doms @ inactive_doms in
 
     map_ignore_errors (fun dom -> (dom, get_info dom)) doms
+end
+
+module DomainEvent =
+struct
+  type callback =
+    | Lifecycle of ([`R] Domain.t -> unit)
+    | Reboot of ([`R] Domain.t -> unit)
+
+  type callback_id = int64
+
+  let fresh_callback_id =
+    let next = ref 0L in
+    fun () ->
+      let result = !next in
+      next := Int64.succ !next;
+      result
+
+  let lifecycle_callback_table = Hashtbl.create 16
+  let lifecycle_callback callback_id generic event =
+    if Hashtbl.mem lifecycle_callback_table callback_id
+    then Hashtbl.find lifecycle_callback_table callback_id generic event
+  let _ = Callback.register "Libvirt.lifecycle_callback" lifecycle_callback
+
+  let generic_callback_table = Hashtbl.create 16
+  let generic_callback callback_id generic =
+    if Hashtbl.mem generic_callback_table callback_id
+    then Hashtbl.find generic_callback_table callback_id generic
+  let _ = Callback.register "Libvirt.generic_callback" generic_callback
+
+  external register_default_impl : unit -> unit = "ocaml_libvirt_connect_domain_event_register_default_impl"
+
+  external run_default_impl : unit -> unit = "ocaml_libvirt_connect_domain_event_run_default_impl"
+
+  external register_any' : 'a Connect.t -> 'a Domain.t option -> callback -> callback_id -> unit = "ocaml_libvirt_connect_domain_event_register_any"
+
+  let register_any conn ?dom callback =
+    let id = fresh_callback_id () in
+    begin match callback with
+    | Lifecycle f
+    | Reboot f -> Hashtbl.add generic_callback_table id f
+    end;
+    register_any' conn dom callback id
+
 end
 
 module Network =

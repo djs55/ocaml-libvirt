@@ -195,6 +195,22 @@ ocaml_libvirt_connect_node_get_cells_free_memory (value connv,
 }
 
 CAMLprim value
+ocaml_libvirt_connect_set_keep_alive(value connv,
+				     value intervalv, value countv)
+{
+  CAMLparam3 (connv, intervalv, countv);
+  virConnectPtr conn = Connect_val(connv);
+  int interval = Int_val(intervalv);
+  unsigned int count = Int_val(countv);
+  int r;
+
+  NONBLOCKING(r = virConnectSetKeepAlive(conn, interval, count));
+  CHECK_ERROR (r == -1, conn, "virConnectSetKeepAlive");
+
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value
 ocaml_libvirt_domain_get_id (value domv)
 {
   CAMLparam1 (domv);
@@ -884,6 +900,131 @@ ocaml_libvirt_domain_memory_peek_bytecode (value *argv, int argn)
 {
   return ocaml_libvirt_domain_memory_peek_native (argv[0], argv[1], argv[2],
                                                   argv[3], argv[4], argv[5]);
+}
+
+static void cb(int timer, void *opaque)
+{
+fprintf(stderr, "timer\n");
+fflush(stderr);
+}
+
+CAMLprim value
+ocaml_libvirt_connect_domain_event_register_default_impl(value unit)
+{
+  CAMLparam1(unit);
+fprintf(stderr, "virEventRegisterDefaultImpl\n");
+fflush(stderr);
+  NONBLOCKING(virEventRegisterDefaultImpl());
+
+
+virEventAddTimeout(1000, cb, NULL, free);
+
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value
+ocaml_libvirt_connect_domain_event_run_default_impl(value unit)
+{
+  CAMLparam1(unit);
+
+fprintf(stderr, "virEventRunDefaultImpl\n");
+fflush(stderr);
+  NONBLOCKING(virEventRunDefaultImpl());
+
+  CAMLreturn(Val_unit);
+}
+
+static void
+generic_callback(virConnectPtr conn, virDomainPtr dom, void * opaque)
+{
+  CAMLlocal2(connv, domv);
+  static value *callback = NULL;
+fprintf(stderr, "generic_callback\n");
+fflush(stderr);
+  caml_leave_blocking_section();
+  if (callback == NULL)
+    callback = caml_named_value("Libvirt.generic_callback");
+fprintf(stderr, "got ocaml value\n");
+fflush(stderr);
+  if (virDomainRef(dom) == 0) {
+fprintf(stderr, "incref\n");
+fflush(stderr);
+    connv = Val_connect(conn);
+    domv = Val_domain(dom, connv);
+    (void) caml_callback2(*callback, Val_long(*(long*)opaque), domv);
+  }
+  caml_enter_blocking_section();
+}
+
+CAMLprim value
+ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value callback, value callback_id)
+{
+  CAMLparam4(connv, domv, callback, callback_id);
+
+  virConnectPtr conn = Connect_val (connv);
+  virDomainPtr dom = NULL;
+  int eventID = Tag_val(callback);
+
+  virConnectDomainEventGenericCallback cb;
+  void *opaque;
+  virFreeCallback freecb = free;
+  int r;
+
+  if (domv != Val_int(0))
+    dom = Domain_val (Field(domv, 0));
+
+  switch (eventID){
+  case VIR_DOMAIN_EVENT_ID_LIFECYCLE:
+  case VIR_DOMAIN_EVENT_ID_REBOOT:
+fprintf(stderr, "adding generic callback\n");
+fflush(stderr);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(generic_callback);
+    break;
+/*
+  case VIR_DOMAIN_EVENT_ID_RTC_CHANGE:
+
+  case VIR_DOMAIN_EVENT_ID_WATCHDOG:
+
+  case VIR_DOMAIN_EVENT_ID_IO_ERROR:
+
+  case VIR_DOMAIN_EVENT_ID_GRAPHICS:
+
+  case VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON:
+
+  case VIR_DOMAIN_EVENT_ID_CONTROL_ERROR:
+
+  case VIR_DOMAIN_EVENT_ID_BLOCK_JOB:
+
+  case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
+
+  case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
+
+  case VIR_DOMAIN_EVENT_ID_PMWAKEUP:
+
+  case VIR_DOMAIN_EVENT_ID_PMSUSPEND:
+
+  case VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE:
+
+  case VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK:
+*/
+  default:
+fprintf(stderr, "eventID = %d\n", eventID);
+    caml_failwith("vifConnectDomainEventRegisterAny: unimplemented eventID");
+  }
+
+  /* Store the int64 callback_id as the opaque data so the OCaml
+     callback can demultiplex to the correct OCaml handler. */
+  if ((opaque = malloc(sizeof(long))) == NULL)
+    caml_failwith ("virConnectDomainEventRegisterAny: malloc");
+  *((long*)opaque) = Int64_val(callback_id);
+
+  NONBLOCKING(r = virConnectDomainEventRegisterAny(conn, dom, eventID, cb, opaque, freecb));
+  CHECK_ERROR(r == -1, conn, "virConnectDomainEventRegisterAny");
+
+fprintf(stderr, "dom == NULL = %d; eventID = %d; callback_id = %lx; r = %d\n", dom == NULL, eventID, Int64_val(callback_id), r);
+fflush(stderr);
+
+  CAMLreturn(Val_unit);
 }
 
 #ifdef HAVE_WEAK_SYMBOLS
