@@ -902,12 +902,6 @@ ocaml_libvirt_domain_memory_peek_bytecode (value *argv, int argn)
                                                   argv[3], argv[4], argv[5]);
 }
 
-static void cb(int timer, void *opaque)
-{
-fprintf(stderr, "timer\n");
-fflush(stderr);
-}
-
 CAMLprim value
 ocaml_libvirt_connect_domain_event_register_default_impl(value unit)
 {
@@ -916,42 +910,61 @@ fprintf(stderr, "virEventRegisterDefaultImpl\n");
 fflush(stderr);
   NONBLOCKING(virEventRegisterDefaultImpl());
 
-
-virEventAddTimeout(1000, cb, NULL, free);
-
   CAMLreturn(Val_unit);
 }
 
 CAMLprim value
-ocaml_libvirt_connect_domain_event_run_default_impl(value unit)
+ocaml_libvirt_connect_domain_event_run_default_impl(value connv)
 {
-  CAMLparam1(unit);
+  CAMLparam1(connv);
+  int r;
 
 fprintf(stderr, "virEventRunDefaultImpl\n");
 fflush(stderr);
-  NONBLOCKING(virEventRunDefaultImpl());
+  NONBLOCKING(r = virEventRunDefaultImpl());
+  CHECK_ERROR(r == -1, Connect_val(connv), "virEventRunDefaultImpl");
 
   CAMLreturn(Val_unit);
 }
 
 static void
-generic_callback(virConnectPtr conn, virDomainPtr dom, void * opaque)
+int_int_callback(virConnectPtr conn,
+		 virDomainPtr dom,
+		 int x,
+		 int y,
+		 void * opaque)
 {
-  CAMLlocal2(connv, domv);
+  CAMLlocal4(connv, domv, callback_id, pair);
   static value *callback = NULL;
-fprintf(stderr, "generic_callback\n");
-fflush(stderr);
+  
   caml_leave_blocking_section();
   if (callback == NULL)
-    callback = caml_named_value("Libvirt.generic_callback");
-fprintf(stderr, "got ocaml value\n");
-fflush(stderr);
+    callback = caml_named_value("Libvirt.int_int_callback");
   if (virDomainRef(dom) == 0) {
-fprintf(stderr, "incref\n");
-fflush(stderr);
     connv = Val_connect(conn);
     domv = Val_domain(dom, connv);
-    (void) caml_callback2(*callback, Val_long(*(long*)opaque), domv);
+    callback_id = caml_copy_int64(*(long *)opaque);
+    pair = caml_alloc_tuple(2);
+    Store_field(pair, 0, Val_int(x));
+    Store_field(pair, 1, Val_int(y));
+    (void) caml_callback3(*callback, callback_id, domv, pair);
+  }
+  caml_enter_blocking_section();
+}
+
+static void
+unit_callback(virConnectPtr conn, virDomainPtr dom, void *opaque)
+{
+  CAMLlocal3(connv, domv, callback_id);
+  static value *callback = NULL;
+  caml_leave_blocking_section();
+  if (callback == NULL)
+    callback = caml_named_value("Libvirt.unit_callback");
+  if (virDomainRef(dom) == 0) {
+    connv = Val_connect(conn);
+    domv = Val_domain(dom, connv);
+    callback_id = caml_copy_int64(*(long *)opaque);
+    (void) caml_callback2(*callback, callback_id, domv);
   }
   caml_enter_blocking_section();
 }
@@ -975,37 +988,30 @@ ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value c
 
   switch (eventID){
   case VIR_DOMAIN_EVENT_ID_LIFECYCLE:
+    cb = VIR_DOMAIN_EVENT_CALLBACK(int_int_callback);
+    break;
   case VIR_DOMAIN_EVENT_ID_REBOOT:
+    cb = VIR_DOMAIN_EVENT_CALLBACK(unit_callback);
+    break;
+  case VIR_DOMAIN_EVENT_ID_RTC_CHANGE:
+  case VIR_DOMAIN_EVENT_ID_WATCHDOG:
+  case VIR_DOMAIN_EVENT_ID_IO_ERROR:
+  case VIR_DOMAIN_EVENT_ID_GRAPHICS:
+  case VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON:
+  case VIR_DOMAIN_EVENT_ID_CONTROL_ERROR:
+  case VIR_DOMAIN_EVENT_ID_BLOCK_JOB:
+  case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
+  case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
+  case VIR_DOMAIN_EVENT_ID_PMWAKEUP:
+  case VIR_DOMAIN_EVENT_ID_PMSUSPEND:
+  case VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE:
+  case VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK:
 fprintf(stderr, "adding generic callback\n");
 fflush(stderr);
-    cb = VIR_DOMAIN_EVENT_CALLBACK(generic_callback);
+    cb = NULL;
     break;
 /*
-  case VIR_DOMAIN_EVENT_ID_RTC_CHANGE:
 
-  case VIR_DOMAIN_EVENT_ID_WATCHDOG:
-
-  case VIR_DOMAIN_EVENT_ID_IO_ERROR:
-
-  case VIR_DOMAIN_EVENT_ID_GRAPHICS:
-
-  case VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON:
-
-  case VIR_DOMAIN_EVENT_ID_CONTROL_ERROR:
-
-  case VIR_DOMAIN_EVENT_ID_BLOCK_JOB:
-
-  case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
-
-  case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
-
-  case VIR_DOMAIN_EVENT_ID_PMWAKEUP:
-
-  case VIR_DOMAIN_EVENT_ID_PMSUSPEND:
-
-  case VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE:
-
-  case VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK:
 */
   default:
 fprintf(stderr, "eventID = %d\n", eventID);
@@ -1017,7 +1023,8 @@ fprintf(stderr, "eventID = %d\n", eventID);
   if ((opaque = malloc(sizeof(long))) == NULL)
     caml_failwith ("virConnectDomainEventRegisterAny: malloc");
   *((long*)opaque) = Int64_val(callback_id);
-
+fprintf(stderr, "opaque = %lx\n", (unsigned long)opaque);
+fflush(stderr);
   NONBLOCKING(r = virConnectDomainEventRegisterAny(conn, dom, eventID, cb, opaque, freecb));
   CHECK_ERROR(r == -1, conn, "virConnectDomainEventRegisterAny");
 

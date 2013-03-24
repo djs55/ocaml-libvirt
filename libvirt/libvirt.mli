@@ -648,12 +648,28 @@ end
 module DomainEvent :
 sig
   type callback =
-    | Lifecycle of ([`R] Domain.t -> unit)
-    | Reboot of ([`R] Domain.t -> unit)
+    | Lifecycle     of ([`R] Domain.t -> (int * int) -> unit)
+    | Reboot        of ([`R] Domain.t -> unit)
+    | RtcChange     of ([`R] Domain.t -> unit)
+    | Watchdog      of ([`R] Domain.t -> unit)
+    | IOError       of ([`R] Domain.t -> unit)
+    | Graphics      of ([`R] Domain.t -> unit)
+    | IOErrorReason of ([`R] Domain.t -> unit)
+    | ControlError  of ([`R] Domain.t -> unit)
+    | BlockJob      of ([`R] Domain.t -> unit)
+    | DiskChange    of ([`R] Domain.t -> unit)
+    | TrayChange    of ([`R] Domain.t -> unit)
+    | PMWakeUp      of ([`R] Domain.t -> unit)
+    | PMSuspend     of ([`R] Domain.t -> unit)
+    | BalloonChange of ([`R] Domain.t -> unit)
+    | PMSuspendDisk of ([`R] Domain.t -> unit)
+
     (** type of a registered call back function *)
 
   val register_default_impl : unit -> unit
-    (** Registers the default event loop based on poll().
+    (** Registers the default event loop based on poll(). This
+        must be done before connections are opened.
+
         Once registered call run_default_impl in a loop. *)
 
   val run_default_impl : unit -> unit

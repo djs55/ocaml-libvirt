@@ -486,8 +486,21 @@ end
 module DomainEvent =
 struct
   type callback =
-    | Lifecycle of ([`R] Domain.t -> unit)
-    | Reboot of ([`R] Domain.t -> unit)
+    | Lifecycle     of ([`R] Domain.t -> (int * int) -> unit)
+    | Reboot        of ([`R] Domain.t -> unit)
+    | RtcChange     of ([`R] Domain.t -> unit)
+    | Watchdog      of ([`R] Domain.t -> unit)
+    | IOError       of ([`R] Domain.t -> unit)
+    | Graphics      of ([`R] Domain.t -> unit)
+    | IOErrorReason of ([`R] Domain.t -> unit)
+    | ControlError  of ([`R] Domain.t -> unit)
+    | BlockJob      of ([`R] Domain.t -> unit)
+    | DiskChange    of ([`R] Domain.t -> unit)
+    | TrayChange    of ([`R] Domain.t -> unit)
+    | PMWakeUp      of ([`R] Domain.t -> unit)
+    | PMSuspend     of ([`R] Domain.t -> unit)
+    | BalloonChange of ([`R] Domain.t -> unit)
+    | PMSuspendDisk of ([`R] Domain.t -> unit)
 
   type callback_id = int64
 
@@ -498,17 +511,17 @@ struct
       next := Int64.succ !next;
       result
 
-  let lifecycle_callback_table = Hashtbl.create 16
-  let lifecycle_callback callback_id generic event =
-    if Hashtbl.mem lifecycle_callback_table callback_id
-    then Hashtbl.find lifecycle_callback_table callback_id generic event
-  let _ = Callback.register "Libvirt.lifecycle_callback" lifecycle_callback
+  let int_int_callback_table = Hashtbl.create 16
+  let int_int_callback callback_id generic x =
+    if Hashtbl.mem int_int_callback_table callback_id
+    then Hashtbl.find int_int_callback_table callback_id generic x
+  let _ = Callback.register "Libvirt.int_int_callback" int_int_callback
 
-  let generic_callback_table = Hashtbl.create 16
-  let generic_callback callback_id generic =
-    if Hashtbl.mem generic_callback_table callback_id
-    then Hashtbl.find generic_callback_table callback_id generic
-  let _ = Callback.register "Libvirt.generic_callback" generic_callback
+  let unit_callback_table = Hashtbl.create 16
+  let unit_callback callback_id generic =
+    if Hashtbl.mem unit_callback_table callback_id
+    then Hashtbl.find unit_callback_table callback_id generic
+  let _ = Callback.register "Libvirt.unit_callback" unit_callback
 
   external register_default_impl : unit -> unit = "ocaml_libvirt_connect_domain_event_register_default_impl"
 
@@ -519,8 +532,24 @@ struct
   let register_any conn ?dom callback =
     let id = fresh_callback_id () in
     begin match callback with
-    | Lifecycle f
-    | Reboot f -> Hashtbl.add generic_callback_table id f
+    | Lifecycle f ->
+        Hashtbl.add int_int_callback_table id f
+    | Reboot f ->
+        Hashtbl.add unit_callback_table id f
+    | RtcChange f
+    | Watchdog f
+    | IOError f
+    | Graphics f
+    | IOErrorReason f
+    | ControlError f
+    | BlockJob f
+    | DiskChange f
+    | TrayChange f
+    | PMWakeUp f
+    | PMSuspend f
+    | BalloonChange f
+    | PMSuspendDisk f ->
+        failwith "unsupported"
     end;
     register_any' conn dom callback id
 
