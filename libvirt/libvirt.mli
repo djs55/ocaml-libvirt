@@ -650,7 +650,7 @@ sig
   type callback =
     | Lifecycle     of ([`R] Domain.t -> (int * int) -> unit)
     | Reboot        of ([`R] Domain.t -> unit)
-    | RtcChange     of ([`R] Domain.t -> unit)
+    | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> unit)
     | IOError       of ([`R] Domain.t -> unit)
     | Graphics      of ([`R] Domain.t -> unit)

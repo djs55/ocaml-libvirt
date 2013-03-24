@@ -21,16 +21,22 @@ let string_of_state = function
   | D.InfoShutoff -> "shutoff"
   | D.InfoCrashed -> "crashed"
 
-let print_dom dom =
-  fprintf stderr "callback\n%!";
-  let id = D.get_id dom in
-  try
-    let name = D.get_name dom in
-    let info = D.get_info dom in
-    let state = string_of_state info.D.state in
-    printf "%8d %-20s %s\n%!" id name state
+let printd dom fmt =
+  let prefix dom =
+    let id = D.get_id dom in
+    try
+      let name = D.get_name dom in
+      let info = D.get_info dom in
+      let state = string_of_state info.D.state in
+      sprintf "%8d %-20s %s " id name state
   with _ ->
-    printf "%8d\n%!" id
+      sprintf "%8d " id in
+  let write x =
+    output_string stdout (prefix dom);
+    output_string stdout x;
+    output_string stdout "\n";
+    flush stdout in
+  Printf.ksprintf write fmt
 
 let () =
   try
@@ -42,10 +48,10 @@ let () =
 	None in
     let conn = C.connect_readonly ?name () in
 
-    DE.register_any conn (DE.Lifecycle (fun dom (event, detail) -> print_dom dom));
+    DE.register_any conn (DE.Lifecycle (fun dom (event, detail) -> printd dom "Lifecycle event = %d; detail = %d" event detail));
+    DE.register_any conn (DE.Reboot (fun dom -> printd dom "Reboot"));
+    DE.register_any conn (DE.RtcChange (fun dom x -> printd dom "RtcChange = %Lx" x));
 (*
-    DE.register_any conn (DE.Reboot print_dom);
-    DE.register_any conn (DE.RtcChange print_dom);
     DE.register_any conn (DE.Watchdog print_dom);
     DE.register_any conn (DE.IOError print_dom);
     DE.register_any conn (DE.Graphics print_dom);

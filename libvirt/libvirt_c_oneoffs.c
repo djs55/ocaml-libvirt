@@ -969,6 +969,25 @@ unit_callback(virConnectPtr conn, virDomainPtr dom, void *opaque)
   caml_enter_blocking_section();
 }
 
+static void
+int64_callback(virConnectPtr conn, virDomainPtr dom, long long int64, void *opaque)
+{
+  CAMLlocal4(connv, domv, callback_id, int64v);
+  static value *callback = NULL;
+  caml_leave_blocking_section();
+  if (callback == NULL)
+    callback = caml_named_value("Libvirt.int64_callback");
+  if (virDomainRef(dom) == 0) {
+    connv = Val_connect(conn);
+    domv = Val_domain(dom, connv);
+    callback_id = caml_copy_int64(*(long *)opaque);
+    int64v = caml_copy_int64(int64);
+    (void) caml_callback3(*callback, callback_id, domv, int64v);
+  }
+  caml_enter_blocking_section();
+}
+
+
 CAMLprim value
 ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value callback, value callback_id)
 {
@@ -994,6 +1013,8 @@ ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value c
     cb = VIR_DOMAIN_EVENT_CALLBACK(unit_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_RTC_CHANGE:
+    cb = VIR_DOMAIN_EVENT_CALLBACK(int64_callback);
+    break;
   case VIR_DOMAIN_EVENT_ID_WATCHDOG:
   case VIR_DOMAIN_EVENT_ID_IO_ERROR:
   case VIR_DOMAIN_EVENT_ID_GRAPHICS:

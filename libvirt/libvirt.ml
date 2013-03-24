@@ -488,7 +488,7 @@ struct
   type callback =
     | Lifecycle     of ([`R] Domain.t -> (int * int) -> unit)
     | Reboot        of ([`R] Domain.t -> unit)
-    | RtcChange     of ([`R] Domain.t -> unit)
+    | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> unit)
     | IOError       of ([`R] Domain.t -> unit)
     | Graphics      of ([`R] Domain.t -> unit)
@@ -523,6 +523,13 @@ struct
     then Hashtbl.find unit_callback_table callback_id generic
   let _ = Callback.register "Libvirt.unit_callback" unit_callback
 
+  let int64_callback_table = Hashtbl.create 16
+  let int64_callback callback_id generic x =
+    if Hashtbl.mem int64_callback_table callback_id
+    then Hashtbl.find int64_callback_table callback_id generic x
+  let _ = Callback.register "Libvirt.int64_callback" int64_callback
+
+
   external register_default_impl : unit -> unit = "ocaml_libvirt_connect_domain_event_register_default_impl"
 
   external run_default_impl : unit -> unit = "ocaml_libvirt_connect_domain_event_run_default_impl"
@@ -536,7 +543,8 @@ struct
         Hashtbl.add int_int_callback_table id f
     | Reboot f ->
         Hashtbl.add unit_callback_table id f
-    | RtcChange f
+    | RtcChange f ->
+        Hashtbl.add int64_callback_table id f
     | Watchdog f
     | IOError f
     | Graphics f
