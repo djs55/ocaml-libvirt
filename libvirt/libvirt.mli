@@ -651,7 +651,7 @@ sig
     | Lifecycle     of ([`R] Domain.t -> (int * int) -> unit)
     | Reboot        of ([`R] Domain.t -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
-    | Watchdog      of ([`R] Domain.t -> unit)
+    | Watchdog      of ([`R] Domain.t -> int -> unit)
     | IOError       of ([`R] Domain.t -> unit)
     | Graphics      of ([`R] Domain.t -> unit)
     | IOErrorReason of ([`R] Domain.t -> unit)

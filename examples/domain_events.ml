@@ -51,8 +51,8 @@ let () =
     DE.register_any conn (DE.Lifecycle (fun dom (event, detail) -> printd dom "Lifecycle event = %d; detail = %d" event detail));
     DE.register_any conn (DE.Reboot (fun dom -> printd dom "Reboot"));
     DE.register_any conn (DE.RtcChange (fun dom x -> printd dom "RtcChange = %Lx" x));
+    DE.register_any conn (DE.Watchdog (fun dom x -> printd dom "Watchdog = %d" x));
 (*
-    DE.register_any conn (DE.Watchdog print_dom);
     DE.register_any conn (DE.IOError print_dom);
     DE.register_any conn (DE.Graphics print_dom);
     DE.register_any conn (DE.IOErrorReason print_dom);
