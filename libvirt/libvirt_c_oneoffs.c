@@ -906,25 +906,65 @@ ocaml_libvirt_domain_memory_peek_bytecode (value *argv, int argn)
 
 /* Domain events */
 
-CAMLprim value
-ocaml_libvirt_connect_domain_event_register_default_impl(value unit)
-{
-  CAMLparam1(unit);
-  NONBLOCKING(virEventRegisterDefaultImpl());
-
-  CAMLreturn(Val_unit);
-}
+#ifdef HAVE_WEAK_SYMBOLS
+#ifdef HAVE_VIREVENTREGISTERDEFAULTIMPL
+extern int virEventRegisterDefaultImpl () __attribute__((weak));
+#endif
+#endif
 
 CAMLprim value
-ocaml_libvirt_connect_domain_event_run_default_impl(value connv)
+ocaml_libvirt_event_register_default_impl (value unitv)
 {
-  CAMLparam1(connv);
+  CAMLparam1 (unitv);
+#ifndef HAVE_VIREVENTREGISTERDEFAULTIMPL
+  /* Symbol virEventRegisterDefaultImpl not found at compile time. */
+  not_supported ("virEventRegisterDefaultImpl");
+  CAMLnoreturn;
+#else
+  /* Check that the symbol virEventRegisterDefaultImpl
+   * is in runtime version of libvirt.
+   */
+  WEAK_SYMBOL_CHECK (virEventRegisterDefaultImpl);
+
+  /* arg is of type unit = void */
   int r;
 
-  NONBLOCKING(r = virEventRunDefaultImpl());
-  CHECK_ERROR(r == -1, Connect_val(connv), "virEventRunDefaultImpl");
+  NONBLOCKING (r = virEventRegisterDefaultImpl ());
+  /* must be called before connection, therefore we can't use CHECK_ERROR */
+  if (r == -1) caml_failwith("virEventRegisterDefaultImpl");
 
-  CAMLreturn(Val_unit);
+  CAMLreturn (Val_unit);
+#endif
+}
+
+#ifdef HAVE_WEAK_SYMBOLS
+#ifdef HAVE_VIREVENTRUNDEFAULTIMPL
+extern int virEventRunDefaultImpl () __attribute__((weak));
+#endif
+#endif
+
+CAMLprim value
+ocaml_libvirt_event_run_default_impl (value unitv)
+{
+  CAMLparam1 (unitv);
+#ifndef HAVE_VIREVENTRUNDEFAULTIMPL
+  /* Symbol virEventRunDefaultImpl not found at compile time. */
+  not_supported ("virEventRunDefaultImpl");
+  CAMLnoreturn;
+#else
+  /* Check that the symbol virEventRunDefaultImpl
+   * is in runtime version of libvirt.
+   */
+  WEAK_SYMBOL_CHECK (virEventRunDefaultImpl);
+
+  /* arg is of type unit = void */
+  int r;
+
+  NONBLOCKING (r = virEventRunDefaultImpl ());
+  if (r == -1) caml_failwith("virEventRunDefaultImpl");
+
+  CAMLreturn (Val_unit);
+#endif
 }
 
 /* We register a single C callback function for every distinct
@@ -1171,7 +1211,7 @@ i_ga_ga_s_gs_callback(virConnectPtr conn,
 }
 
 CAMLprim value
-ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value callback, value callback_id)
+ocaml_libvirt_event_register_any(value connv, value domv, value callback, value callback_id)
 {
   CAMLparam4(connv, domv, callback, callback_id);
 

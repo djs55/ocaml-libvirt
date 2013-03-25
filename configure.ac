@@ -126,6 +126,9 @@ AC_CHECK_FUNCS([virConnectGetHostname \
 		virDomainBlockPeek \
 		virDomainMemoryPeek \
                 virDomainGetCPUStats \
+                virEventRegisterDefaultImpl \
+                virEventRunDefaultImpl \
+                virConnectDomainEventRegisterAny \
 ])
 
 dnl Check for optional types added since 0.2.1.

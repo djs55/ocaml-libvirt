@@ -530,11 +530,11 @@ struct
   let s_s_s_i_table = make_table "Libvirt.s_s_s_i_callback"
   let i_ga_ga_s_gs_table = make_table "Libvirt.i_ga_ga_s_gs_callback"
 
-  external register_default_impl : unit -> unit = "ocaml_libvirt_connect_domain_event_register_default_impl"
+  external register_default_impl : unit -> unit = "ocaml_libvirt_event_register_default_impl"
 
-  external run_default_impl : unit -> unit = "ocaml_libvirt_connect_domain_event_run_default_impl"
+  external run_default_impl : unit -> unit = "ocaml_libvirt_event_run_default_impl"
 
-  external register_any' : 'a Connect.t -> 'a Domain.t option -> callback -> callback_id -> unit = "ocaml_libvirt_connect_domain_event_register_any"
+  external register_any' : 'a Connect.t -> 'a Domain.t option -> callback -> callback_id -> unit = "ocaml_libvirt_event_register_any"
 
   let register_any conn ?dom callback =
     let id = fresh_callback_id () in
