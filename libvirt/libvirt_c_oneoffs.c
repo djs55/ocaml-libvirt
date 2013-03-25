@@ -949,12 +949,12 @@ int_int_callback(virConnectPtr conn,
 		 int y,
 		 void * opaque)
 {
-  CAMLlocal4(connv, domv, callback_id, pair);
+  CAMLlocal4(connv, domv, callback_id, result);
   CALLBACK_BEGIN("Libvirt.int_int_callback")
-  pair = caml_alloc_tuple(2);
-  Store_field(pair, 0, Val_int(x));
-  Store_field(pair, 1, Val_int(y));
-  (void) caml_callback3(*callback, callback_id, domv, pair);
+  result = caml_alloc_tuple(2);
+  Store_field(result, 0, Val_int(x));
+  Store_field(result, 1, Val_int(y));
+  (void) caml_callback3(*callback, callback_id, domv, result);
   CALLBACK_END
 }
 
@@ -976,10 +976,10 @@ int64_callback(virConnectPtr conn,
 	       long long int64,
 	       void *opaque)
 {
-  CAMLlocal4(connv, domv, callback_id, int64v);
+  CAMLlocal4(connv, domv, callback_id, result);
   CALLBACK_BEGIN("Libvirt.int64_callback")
-  int64v = caml_copy_int64(int64);
-  (void) caml_callback3(*callback, callback_id, domv, int64v);
+  result = caml_copy_int64(int64);
+  (void) caml_callback3(*callback, callback_id, domv, result);
   CALLBACK_END
 }
 
@@ -989,9 +989,10 @@ int_callback(virConnectPtr conn,
 	     int x,
 	     void *opaque)
 {
-  CAMLlocal3(connv, domv, callback_id);
+  CAMLlocal4(connv, domv, callback_id, result);
   CALLBACK_BEGIN("Libvirt.int_callback")
-  (void) caml_callback3(*callback, callback_id, domv, Val_int(x));
+  result = Val_int(x);
+  (void) caml_callback3(*callback, callback_id, domv, result);
   CALLBACK_END
 }
 
@@ -1004,15 +1005,15 @@ string_opt_string_opt_int_callback(virConnectPtr conn,
 				   int z,
 				   void *opaque)
 {
-  CAMLlocal5(connv, domv, callback_id, tuple, tmp);
+  CAMLlocal4(connv, domv, callback_id, result);
   CALLBACK_BEGIN("Libvirt.string_opt_string_opt_int_callback")
-  tuple = caml_alloc_tuple(3);
-  tmp = Val_opt(x, (Val_ptr_t) caml_copy_string);
-  Store_field(tuple, 0, tmp);
-  tmp = Val_opt(y, (Val_ptr_t) caml_copy_string);
-  Store_field(tuple, 1, tmp);
-  Store_field(tuple, 2, Val_int(z));
-  (void) caml_callback3(*callback, callback_id, domv, tuple);
+  result = caml_alloc_tuple(3);
+  Store_field(result, 0, 
+	      Val_opt(x, (Val_ptr_t) caml_copy_string));
+  Store_field(result, 1,
+	      Val_opt(y, (Val_ptr_t) caml_copy_string));
+  Store_field(result, 2, Val_int(z));
+  (void) caml_callback3(*callback, callback_id, domv, result);
   CALLBACK_END
 }
 
