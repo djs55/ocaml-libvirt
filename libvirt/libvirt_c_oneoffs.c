@@ -934,6 +934,8 @@ fflush(stderr);
   caml_leave_blocking_section();                                 \
   if (callback == NULL)                                          \
     callback = caml_named_value(NAME);                           \
+  if (callback == NULL)                                          \
+    abort(); /* C code out of sync with OCaml code */            \
   if (virDomainRef(dom) == 0) {                                  \
     connv = Val_connect(conn);                                   \
     domv = Val_domain(dom, connv);                               \
@@ -953,7 +955,7 @@ int_int_callback(virConnectPtr conn,
 		 int y,
 		 void * opaque)
 {
-  CALLBACK_BEGIN("Libvirt.int_int_callback")
+  CALLBACK_BEGIN("Libvirt.i_i_callback")
   result = caml_alloc_tuple(2);
   Store_field(result, 0, Val_int(x));
   Store_field(result, 1, Val_int(y));
@@ -965,7 +967,7 @@ unit_callback(virConnectPtr conn,
 	      virDomainPtr dom,
 	      void *opaque)
 {
-  CALLBACK_BEGIN("Libvirt.unit_callback")
+  CALLBACK_BEGIN("Libvirt.u_callback")
   result = Val_int(0); /* () */
   CALLBACK_END
 }
@@ -976,7 +978,7 @@ int64_callback(virConnectPtr conn,
 	       long long int64,
 	       void *opaque)
 {
-  CALLBACK_BEGIN("Libvirt.int64_callback")
+  CALLBACK_BEGIN("Libvirt.i64_callback")
   result = caml_copy_int64(int64);
   CALLBACK_END
 }
@@ -987,7 +989,7 @@ int_callback(virConnectPtr conn,
 	     int x,
 	     void *opaque)
 {
-  CALLBACK_BEGIN("Libvirt.int_callback")
+  CALLBACK_BEGIN("Libvirt.i_callback")
   result = Val_int(x);
   CALLBACK_END
 }
@@ -999,7 +1001,7 @@ string_opt_int_callback(virConnectPtr conn,
 			int y,
 			void * opaque)
 {
-  CALLBACK_BEGIN("Libvirt.string_opt_int_callback")
+  CALLBACK_BEGIN("Libvirt.s_i_callback")
   result = caml_alloc_tuple(2);
   Store_field(result, 0, 
 	      Val_opt(x, (Val_ptr_t) caml_copy_string));
@@ -1015,7 +1017,7 @@ string_opt_int_int_callback(virConnectPtr conn,
 			    int z,
 			    void * opaque)
 {
-  CALLBACK_BEGIN("Libvirt.string_opt_int_int_callback")
+  CALLBACK_BEGIN("Libvirt.s_i_i_callback")
   result = caml_alloc_tuple(3);
   Store_field(result, 0, 
 	      Val_opt(x, (Val_ptr_t) caml_copy_string));
@@ -1032,7 +1034,7 @@ string_opt_string_opt_int_callback(virConnectPtr conn,
 				   int z,
 				   void *opaque)
 {
-  CALLBACK_BEGIN("Libvirt.string_opt_string_opt_int_callback")
+  CALLBACK_BEGIN("Libvirt.s_s_i_callback")
   result = caml_alloc_tuple(3);
   Store_field(result, 0, 
 	      Val_opt(x, (Val_ptr_t) caml_copy_string));
@@ -1051,7 +1053,7 @@ string_opt_string_opt_int_string_opt_callback(virConnectPtr conn,
 					      char *a,
 					      void *opaque)
 {
-  CALLBACK_BEGIN("Libvirt.string_opt_string_opt_int_string_opt_callback")
+  CALLBACK_BEGIN("Libvirt.s_s_i_s_callback")
   result = caml_alloc_tuple(4);
   Store_field(result, 0, 
 	      Val_opt(x, (Val_ptr_t) caml_copy_string));
@@ -1072,7 +1074,7 @@ string_opt_string_opt_string_opt_int_callback(virConnectPtr conn,
 					      int a,
 					      void * opaque)
 {
-  CALLBACK_BEGIN("Libvirt.string_opt_string_opt_string_opt_int_callback")
+  CALLBACK_BEGIN("Libvirt.s_s_s_i_callback")
   result = caml_alloc_tuple(4);
   Store_field(result, 0,
 	      Val_opt(x, (Val_ptr_t) caml_copy_string));

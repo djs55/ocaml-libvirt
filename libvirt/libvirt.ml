@@ -511,7 +511,7 @@ struct
       next := Int64.succ !next;
       result
 
-  let make_callback_table value_name =
+  let make_table value_name =
     let table = Hashtbl.create 16 in
     let callback callback_id generic x =
       if Hashtbl.mem table callback_id
@@ -519,16 +519,16 @@ struct
     let _ = Callback.register value_name callback in
     table
 
-  let unit_callback_table = make_callback_table "Libvirt.unit_callback"
-  let int_callback_table = make_callback_table "Libvirt.int_callback"
-  let int64_callback_table = make_callback_table "Libvirt.int64_callback"
-  let int_int_callback_table = make_callback_table "Libvirt.int_int_callback"
-  let string_opt_int_callback_table = make_callback_table "Libvirt.string_opt_int_callback"
-  let string_opt_int_int_callback_table = make_callback_table "Libvirt.string_opt_int_int_callback"
-  let string_opt_string_opt_int_callback_table = make_callback_table "Libvirt.string_opt_string_opt_int_callback"
-  let string_opt_string_opt_int_string_opt_callback_table = make_callback_table "Libvirt.string_opt_string_opt_int_string_opt_callback"
-  let string_opt_string_opt_string_opt_int_callback_table = make_callback_table "Libvirt.string_opt_string_opt_string_opt_int_callback"
-  let i_ga_ga_s_gs_callback_table = make_callback_table "Libvirt.i_ga_ga_s_gs_callback"
+  let u_table = make_table "Libvirt.u_callback"
+  let i_table = make_table "Libvirt.i_callback"
+  let i64_table = make_table "Libvirt.i64_callback"
+  let i_i_table = make_table "Libvirt.i_i_callback"
+  let s_i_table = make_table "Libvirt.s_i_callback"
+  let s_i_i_table = make_table "Libvirt.s_i_i_callback"
+  let s_s_i_table = make_table "Libvirt.s_s_i_callback"
+  let s_s_i_s_table = make_table "Libvirt.s_s_i_s_callback"
+  let s_s_s_i_table = make_table "Libvirt.s_s_s_i_callback"
+  let i_ga_ga_s_gs_table = make_table "Libvirt.i_ga_ga_s_gs_callback"
 
   external register_default_impl : unit -> unit = "ocaml_libvirt_connect_domain_event_register_default_impl"
 
@@ -540,35 +540,35 @@ struct
     let id = fresh_callback_id () in
     begin match callback with
     | Lifecycle f ->
-        Hashtbl.add int_int_callback_table id f
+        Hashtbl.add i_i_table id f
     | Reboot f ->
-        Hashtbl.add unit_callback_table id f
+        Hashtbl.add u_table id f
     | RtcChange f ->
-        Hashtbl.add int64_callback_table id f
+        Hashtbl.add i64_table id f
     | Watchdog f ->
-        Hashtbl.add int_callback_table id f
+        Hashtbl.add i_table id f
     | IOError f ->
-        Hashtbl.add string_opt_string_opt_int_callback_table id f
+        Hashtbl.add s_s_i_table id f
     | Graphics f ->
-        Hashtbl.add i_ga_ga_s_gs_callback_table id f
+        Hashtbl.add i_ga_ga_s_gs_table id f
     | IOErrorReason f ->
-        Hashtbl.add string_opt_string_opt_int_string_opt_callback_table id f
+        Hashtbl.add s_s_i_s_table id f
     | ControlError f ->
-        Hashtbl.add unit_callback_table id f
+        Hashtbl.add u_table id f
     | BlockJob f ->
-        Hashtbl.add string_opt_int_int_callback_table id f
+        Hashtbl.add s_i_i_table id f
     | DiskChange f ->
-        Hashtbl.add string_opt_string_opt_string_opt_int_callback_table id f 
+        Hashtbl.add s_s_s_i_table id f 
     | TrayChange f ->
-        Hashtbl.add string_opt_int_callback_table id f
+        Hashtbl.add s_i_table id f
     | PMWakeUp f ->
-        Hashtbl.add int_callback_table id f
+        Hashtbl.add i_table id f
     | PMSuspend f ->
-        Hashtbl.add int_callback_table id f
+        Hashtbl.add i_table id f
     | BalloonChange f ->
-        Hashtbl.add int64_callback_table id f
+        Hashtbl.add i64_table id f
     | PMSuspendDisk f ->
-        Hashtbl.add int_callback_table id f
+        Hashtbl.add i_table id f
     end;
     register_any' conn dom callback id
 
