@@ -963,9 +963,10 @@ unit_callback(virConnectPtr conn,
 	      virDomainPtr dom,
 	      void *opaque)
 {
-  CAMLlocal3(connv, domv, callback_id);
+  CAMLlocal4(connv, domv, callback_id, result);
   CALLBACK_BEGIN("Libvirt.unit_callback")
-  (void) caml_callback2(*callback, callback_id, domv);
+  result = Val_int(0); /* () */
+  (void) caml_callback3(*callback, callback_id, domv, result);
   CALLBACK_END
 }
 

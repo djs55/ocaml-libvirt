@@ -487,7 +487,7 @@ module DomainEvent =
 struct
   type callback =
     | Lifecycle     of ([`R] Domain.t -> (int * int) -> unit)
-    | Reboot        of ([`R] Domain.t -> unit)
+    | Reboot        of ([`R] Domain.t -> unit -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> int -> unit)
     | IOError       of ([`R] Domain.t -> (string option * string option * int) -> unit)
@@ -518,9 +518,9 @@ struct
   let _ = Callback.register "Libvirt.int_int_callback" int_int_callback
 
   let unit_callback_table = Hashtbl.create 16
-  let unit_callback callback_id generic =
+  let unit_callback callback_id generic x =
     if Hashtbl.mem unit_callback_table callback_id
-    then Hashtbl.find unit_callback_table callback_id generic
+    then Hashtbl.find unit_callback_table callback_id generic x
   let _ = Callback.register "Libvirt.unit_callback" unit_callback
 
   let int64_callback_table = Hashtbl.create 16
