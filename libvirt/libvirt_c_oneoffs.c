@@ -927,19 +927,23 @@ fflush(stderr);
   CAMLreturn(Val_unit);
 }
 
-#define CALLBACK_BEGIN(NAME)                                 \
-  static value *callback = NULL;                             \
-  caml_leave_blocking_section();                             \
-  if (callback == NULL)                                      \
-    callback = caml_named_value(NAME);                       \
-  if (virDomainRef(dom) == 0) {                              \
-    connv = Val_connect(conn);                               \
-    domv = Val_domain(dom, connv);                           \
+#define CALLBACK_BEGIN(NAME)                                     \
+  CAMLparam0();                                                    \
+  CAMLlocal4(connv, domv, callback_id, result);                  \
+  static value *callback = NULL;                                 \
+  caml_leave_blocking_section();                                 \
+  if (callback == NULL)                                          \
+    callback = caml_named_value(NAME);                           \
+  if (virDomainRef(dom) == 0) {                                  \
+    connv = Val_connect(conn);                                   \
+    domv = Val_domain(dom, connv);                               \
     callback_id = caml_copy_int64(*(long *)opaque);
 
-#define CALLBACK_END                                         \
-  }                                                          \
-  caml_enter_blocking_section();
+#define CALLBACK_END                                             \
+    (void) caml_callback3(*callback, callback_id, domv, result); \
+  }                                                              \
+  caml_enter_blocking_section();                                 \
+  CAMLreturn0;
 
 
 static void
@@ -949,12 +953,10 @@ int_int_callback(virConnectPtr conn,
 		 int y,
 		 void * opaque)
 {
-  CAMLlocal4(connv, domv, callback_id, result);
   CALLBACK_BEGIN("Libvirt.int_int_callback")
   result = caml_alloc_tuple(2);
   Store_field(result, 0, Val_int(x));
   Store_field(result, 1, Val_int(y));
-  (void) caml_callback3(*callback, callback_id, domv, result);
   CALLBACK_END
 }
 
@@ -963,10 +965,8 @@ unit_callback(virConnectPtr conn,
 	      virDomainPtr dom,
 	      void *opaque)
 {
-  CAMLlocal4(connv, domv, callback_id, result);
   CALLBACK_BEGIN("Libvirt.unit_callback")
   result = Val_int(0); /* () */
-  (void) caml_callback3(*callback, callback_id, domv, result);
   CALLBACK_END
 }
 
@@ -976,10 +976,8 @@ int64_callback(virConnectPtr conn,
 	       long long int64,
 	       void *opaque)
 {
-  CAMLlocal4(connv, domv, callback_id, result);
   CALLBACK_BEGIN("Libvirt.int64_callback")
   result = caml_copy_int64(int64);
-  (void) caml_callback3(*callback, callback_id, domv, result);
   CALLBACK_END
 }
 
@@ -989,10 +987,8 @@ int_callback(virConnectPtr conn,
 	     int x,
 	     void *opaque)
 {
-  CAMLlocal4(connv, domv, callback_id, result);
   CALLBACK_BEGIN("Libvirt.int_callback")
   result = Val_int(x);
-  (void) caml_callback3(*callback, callback_id, domv, result);
   CALLBACK_END
 }
 
@@ -1005,7 +1001,6 @@ string_opt_string_opt_int_callback(virConnectPtr conn,
 				   int z,
 				   void *opaque)
 {
-  CAMLlocal4(connv, domv, callback_id, result);
   CALLBACK_BEGIN("Libvirt.string_opt_string_opt_int_callback")
   result = caml_alloc_tuple(3);
   Store_field(result, 0, 
@@ -1013,7 +1008,6 @@ string_opt_string_opt_int_callback(virConnectPtr conn,
   Store_field(result, 1,
 	      Val_opt(y, (Val_ptr_t) caml_copy_string));
   Store_field(result, 2, Val_int(z));
-  (void) caml_callback3(*callback, callback_id, domv, result);
   CALLBACK_END
 }
 
