@@ -902,6 +902,10 @@ ocaml_libvirt_domain_memory_peek_bytecode (value *argv, int argn)
                                                   argv[3], argv[4], argv[5]);
 }
 
+/*----------------------------------------------------------------------*/
+
+/* Domain events */
+
 CAMLprim value
 ocaml_libvirt_connect_domain_event_register_default_impl(value unit)
 {
@@ -923,8 +927,29 @@ ocaml_libvirt_connect_domain_event_run_default_impl(value connv)
   CAMLreturn(Val_unit);
 }
 
+/* We register a single C callback function for every distinct
+   callback signature. We encode the signature itself in the function
+   name and also in the name of the assocated OCaml callback
+   e.g.:
+      a C function called
+         i_i64_s_callback(virConnectPtr conn,
+			  virDomainPtr dom,
+			  int x,
+			  long y,
+			  char *z,
+			  void *opaque)
+      would correspond to an OCaml callback
+         Libvirt.i_i64_s_callback :
+	   int64 -> [`R] Domain.t -> int -> int64 -> string option -> unit
+      where the initial int64 is a unique ID used by the OCaml to
+      dispatch to the specific OCaml closure and stored by libvirt
+      as the "opaque" data. */
+
+/* Every one of the callbacks starts with a CALLBACK_BEGIN(NAME)
+   where NAME is the string name of the OCaml callback registered
+   in libvirt.ml. */
 #define CALLBACK_BEGIN(NAME)                                     \
-  CAMLparam0();                                                    \
+  CAMLparam0();                                                  \
   CAMLlocal4(connv, domv, callback_id, result);                  \
   static value *callback = NULL;                                 \
   caml_leave_blocking_section();                                 \
@@ -937,6 +962,7 @@ ocaml_libvirt_connect_domain_event_run_default_impl(value connv)
     domv = Val_domain(dom, connv);                               \
     callback_id = caml_copy_int64(*(long *)opaque);
 
+/* Every one of the callbacks ends with a CALLBACK_END */
 #define CALLBACK_END                                             \
     (void) caml_callback3(*callback, callback_id, domv, result); \
   }                                                              \
