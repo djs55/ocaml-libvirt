@@ -945,11 +945,11 @@ ocaml_libvirt_connect_domain_event_run_default_impl(value connv)
 
 
 static void
-int_int_callback(virConnectPtr conn,
-		 virDomainPtr dom,
-		 int x,
-		 int y,
-		 void * opaque)
+i_i_callback(virConnectPtr conn,
+	     virDomainPtr dom,
+	     int x,
+	     int y,
+	     void * opaque)
 {
   CALLBACK_BEGIN("Libvirt.i_i_callback")
   result = caml_alloc_tuple(2);
@@ -959,9 +959,9 @@ int_int_callback(virConnectPtr conn,
 }
 
 static void
-unit_callback(virConnectPtr conn,
-	      virDomainPtr dom,
-	      void *opaque)
+u_callback(virConnectPtr conn,
+	   virDomainPtr dom,
+	   void *opaque)
 {
   CALLBACK_BEGIN("Libvirt.u_callback")
   result = Val_int(0); /* () */
@@ -969,10 +969,10 @@ unit_callback(virConnectPtr conn,
 }
 
 static void
-int64_callback(virConnectPtr conn,
-	       virDomainPtr dom,
-	       long long int64,
-	       void *opaque)
+i64_callback(virConnectPtr conn,
+	     virDomainPtr dom,
+	     long long int64,
+	     void *opaque)
 {
   CALLBACK_BEGIN("Libvirt.i64_callback")
   result = caml_copy_int64(int64);
@@ -980,10 +980,10 @@ int64_callback(virConnectPtr conn,
 }
 
 static void
-int_callback(virConnectPtr conn,
-	     virDomainPtr dom,
-	     int x,
-	     void *opaque)
+i_callback(virConnectPtr conn,
+	   virDomainPtr dom,
+	   int x,
+	   void *opaque)
 {
   CALLBACK_BEGIN("Libvirt.i_callback")
   result = Val_int(x);
@@ -991,11 +991,11 @@ int_callback(virConnectPtr conn,
 }
 
 static void
-string_opt_int_callback(virConnectPtr conn,
-			virDomainPtr dom,
-			char *x,
-			int y,
-			void * opaque)
+s_i_callback(virConnectPtr conn,
+	     virDomainPtr dom,
+	     char *x,
+	     int y,
+	     void * opaque)
 {
   CALLBACK_BEGIN("Libvirt.s_i_callback")
   result = caml_alloc_tuple(2);
@@ -1006,12 +1006,12 @@ string_opt_int_callback(virConnectPtr conn,
 }
 
 static void
-string_opt_int_int_callback(virConnectPtr conn,
-			    virDomainPtr dom,
-			    char *x,
-			    int y,
-			    int z,
-			    void * opaque)
+s_i_i_callback(virConnectPtr conn,
+	       virDomainPtr dom,
+	       char *x,
+	       int y,
+	       int z,
+	       void * opaque)
 {
   CALLBACK_BEGIN("Libvirt.s_i_i_callback")
   result = caml_alloc_tuple(3);
@@ -1023,12 +1023,12 @@ string_opt_int_int_callback(virConnectPtr conn,
 }
 
 static void
-string_opt_string_opt_int_callback(virConnectPtr conn,
-				   virDomainPtr dom,
-				   char *x,
-				   char *y,
-				   int z,
-				   void *opaque)
+s_s_i_callback(virConnectPtr conn,
+	       virDomainPtr dom,
+	       char *x,
+	       char *y,
+	       int z,
+	       void *opaque)
 {
   CALLBACK_BEGIN("Libvirt.s_s_i_callback")
   result = caml_alloc_tuple(3);
@@ -1041,13 +1041,13 @@ string_opt_string_opt_int_callback(virConnectPtr conn,
 }
 
 static void
-string_opt_string_opt_int_string_opt_callback(virConnectPtr conn,
-					      virDomainPtr dom,
-					      char *x,
-					      char *y,
-					      int z,
-					      char *a,
-					      void *opaque)
+s_s_i_s_callback(virConnectPtr conn,
+		 virDomainPtr dom,
+		 char *x,
+		 char *y,
+		 int z,
+		 char *a,
+		 void *opaque)
 {
   CALLBACK_BEGIN("Libvirt.s_s_i_s_callback")
   result = caml_alloc_tuple(4);
@@ -1062,13 +1062,13 @@ string_opt_string_opt_int_string_opt_callback(virConnectPtr conn,
 }
 
 static void
-string_opt_string_opt_string_opt_int_callback(virConnectPtr conn,
-					      virDomainPtr dom,
-					      char * x,
-					      char * y,
-					      char * z,
-					      int a,
-					      void * opaque)
+s_s_s_i_callback(virConnectPtr conn,
+		 virDomainPtr dom,
+		 char * x,
+		 char * y,
+		 char * z,
+		 int a,
+		 void * opaque)
 {
   CALLBACK_BEGIN("Libvirt.s_s_s_i_callback")
   result = caml_alloc_tuple(4);
@@ -1163,49 +1163,49 @@ ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value c
 
   switch (eventID){
   case VIR_DOMAIN_EVENT_ID_LIFECYCLE:
-    cb = VIR_DOMAIN_EVENT_CALLBACK(int_int_callback);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(i_i_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_REBOOT:
-    cb = VIR_DOMAIN_EVENT_CALLBACK(unit_callback);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(u_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_RTC_CHANGE:
-    cb = VIR_DOMAIN_EVENT_CALLBACK(int64_callback);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(i64_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_WATCHDOG:
-    cb = VIR_DOMAIN_EVENT_CALLBACK(int_callback);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(i_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_IO_ERROR:
-    cb = VIR_DOMAIN_EVENT_CALLBACK(string_opt_string_opt_int_callback);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(s_s_i_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_GRAPHICS:
     cb = VIR_DOMAIN_EVENT_CALLBACK(i_ga_ga_s_gs_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON:
-    cb = VIR_DOMAIN_EVENT_CALLBACK(string_opt_string_opt_int_string_opt_callback);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(s_s_i_s_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_CONTROL_ERROR:
-    cb = VIR_DOMAIN_EVENT_CALLBACK(unit_callback);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(u_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_BLOCK_JOB:
-    cb = VIR_DOMAIN_EVENT_CALLBACK(string_opt_int_int_callback);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(s_i_i_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
-    cb = VIR_DOMAIN_EVENT_CALLBACK(string_opt_string_opt_string_opt_int_callback);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(s_s_s_i_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
-    cb = VIR_DOMAIN_EVENT_CALLBACK(string_opt_int_callback);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(s_i_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_PMWAKEUP:
-    cb = VIR_DOMAIN_EVENT_CALLBACK(int_callback);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(i_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_PMSUSPEND:
-    cb = VIR_DOMAIN_EVENT_CALLBACK(int_callback);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(i_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE:
-    cb = VIR_DOMAIN_EVENT_CALLBACK(int64_callback);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(i64_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK:
-    cb = VIR_DOMAIN_EVENT_CALLBACK(int_callback);
+    cb = VIR_DOMAIN_EVENT_CALLBACK(i_callback);
     break;
   default:
     caml_failwith("vifConnectDomainEventRegisterAny: unimplemented eventID");
