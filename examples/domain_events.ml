@@ -77,7 +77,6 @@ let () =
     DE.register_any conn (DE.PMSuspendDisk (fun dom reason -> printd dom "PMSuspendDisk reason=%d" reason));
     C.set_keep_alive conn 5 3;
     while true do
-        fprintf stderr "run_default_impl\n%!";
 	DE.run_default_impl ()
     done
   with

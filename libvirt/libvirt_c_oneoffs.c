@@ -906,8 +906,6 @@ CAMLprim value
 ocaml_libvirt_connect_domain_event_register_default_impl(value unit)
 {
   CAMLparam1(unit);
-fprintf(stderr, "virEventRegisterDefaultImpl\n");
-fflush(stderr);
   NONBLOCKING(virEventRegisterDefaultImpl());
 
   CAMLreturn(Val_unit);
@@ -919,8 +917,6 @@ ocaml_libvirt_connect_domain_event_run_default_impl(value connv)
   CAMLparam1(connv);
   int r;
 
-fprintf(stderr, "virEventRunDefaultImpl\n");
-fflush(stderr);
   NONBLOCKING(r = virEventRunDefaultImpl());
   CHECK_ERROR(r == -1, Connect_val(connv), "virEventRunDefaultImpl");
 
@@ -1212,7 +1208,6 @@ ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value c
     cb = VIR_DOMAIN_EVENT_CALLBACK(int_callback);
     break;
   default:
-fprintf(stderr, "eventID = %d\n", eventID);
     caml_failwith("vifConnectDomainEventRegisterAny: unimplemented eventID");
   }
 
@@ -1221,13 +1216,8 @@ fprintf(stderr, "eventID = %d\n", eventID);
   if ((opaque = malloc(sizeof(long))) == NULL)
     caml_failwith ("virConnectDomainEventRegisterAny: malloc");
   *((long*)opaque) = Int64_val(callback_id);
-fprintf(stderr, "opaque = %lx\n", (unsigned long)opaque);
-fflush(stderr);
   NONBLOCKING(r = virConnectDomainEventRegisterAny(conn, dom, eventID, cb, opaque, freecb));
   CHECK_ERROR(r == -1, conn, "virConnectDomainEventRegisterAny");
-
-fprintf(stderr, "dom == NULL = %d; eventID = %d; callback_id = %lx; r = %d\n", dom == NULL, eventID, Int64_val(callback_id), r);
-fflush(stderr);
 
   CAMLreturn(Val_unit);
 }
