@@ -656,7 +656,7 @@ sig
     | Graphics      of ([`R] Domain.t -> unit)
     | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)
     | ControlError  of ([`R] Domain.t -> unit -> unit)
-    | BlockJob      of ([`R] Domain.t -> unit)
+    | BlockJob      of ([`R] Domain.t -> (string option * int * int) -> unit)
     | DiskChange    of ([`R] Domain.t -> (string option * string option * string option * int) -> unit)
     | TrayChange    of ([`R] Domain.t -> (string option * int) -> unit)
     | PMWakeUp      of ([`R] Domain.t -> int -> unit)

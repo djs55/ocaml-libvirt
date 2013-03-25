@@ -62,9 +62,7 @@ let () =
     DE.register_any conn (DE.Graphics print_dom);
 *)
     DE.register_any conn (DE.ControlError (fun dom () -> printd dom "ControlError"));
-(*
-    DE.register_any conn (DE.BlockJob print_dom);
-*)
+    DE.register_any conn (DE.BlockJob (fun dom (disk, ty, status) -> printd dom "BlockJob disk=%s ty=%d status=%d" (string_option disk) ty status));
     DE.register_any conn (DE.DiskChange (fun dom (oldpath, newpath, alias, reason) -> printd dom "DiskChange oldpath=%s newpath=%s alias=%s reason=%d" (string_option oldpath) (string_option newpath) (string_option alias) reason));
     DE.register_any conn (DE.TrayChange (fun dom (alias, reason) -> printd dom "TrayChange alias=%s reason=%d" (string_option alias) reason));
     DE.register_any conn (DE.PMWakeUp (fun dom reason -> printd dom "PMWakeup reason=%d" reason));
