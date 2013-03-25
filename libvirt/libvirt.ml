@@ -496,7 +496,7 @@ struct
     | ControlError  of ([`R] Domain.t -> unit)
     | BlockJob      of ([`R] Domain.t -> unit)
     | DiskChange    of ([`R] Domain.t -> (string option * string option * string option * int) -> unit)
-    | TrayChange    of ([`R] Domain.t -> unit)
+    | TrayChange    of ([`R] Domain.t -> (string option * int) -> unit)
     | PMWakeUp      of ([`R] Domain.t -> unit)
     | PMSuspend     of ([`R] Domain.t -> unit)
     | BalloonChange of ([`R] Domain.t -> int64 -> unit)
@@ -523,6 +523,7 @@ struct
   let int_callback_table = make_callback_table "Libvirt.int_callback"
   let int64_callback_table = make_callback_table "Libvirt.int64_callback"
   let int_int_callback_table = make_callback_table "Libvirt.int_int_callback"
+  let string_opt_int_callback_table = make_callback_table "Libvirt.string_opt_int_callback"
   let string_opt_string_opt_int_callback_table = make_callback_table "Libvirt.string_opt_string_opt_int_callback"
   let string_opt_string_opt_int_string_opt_callback_table = make_callback_table "Libvirt.string_opt_string_opt_int_string_opt_callback"
   let string_opt_string_opt_string_opt_int_callback_table = make_callback_table "Libvirt.string_opt_string_opt_string_opt_int_callback"
@@ -555,7 +556,8 @@ struct
         failwith "unsupported"
     | DiskChange f ->
         Hashtbl.add string_opt_string_opt_string_opt_int_callback_table id f 
-    | TrayChange f
+    | TrayChange f ->
+        Hashtbl.add string_opt_int_callback_table id f
     | PMWakeUp f
     | PMSuspend f ->
         failwith "unsupported"

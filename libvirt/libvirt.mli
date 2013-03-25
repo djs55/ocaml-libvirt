@@ -658,7 +658,7 @@ sig
     | ControlError  of ([`R] Domain.t -> unit)
     | BlockJob      of ([`R] Domain.t -> unit)
     | DiskChange    of ([`R] Domain.t -> (string option * string option * string option * int) -> unit)
-    | TrayChange    of ([`R] Domain.t -> unit)
+    | TrayChange    of ([`R] Domain.t -> (string option * int) -> unit)
     | PMWakeUp      of ([`R] Domain.t -> unit)
     | PMSuspend     of ([`R] Domain.t -> unit)
     | BalloonChange of ([`R] Domain.t -> int64 -> unit)

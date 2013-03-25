@@ -992,6 +992,20 @@ int_callback(virConnectPtr conn,
   CALLBACK_END
 }
 
+static void
+string_opt_int_callback(virConnectPtr conn,
+			virDomainPtr dom,
+			char *x,
+			int y,
+			void * opaque)
+{
+  CALLBACK_BEGIN("Libvirt.string_opt_int_callback")
+  result = caml_alloc_tuple(2);
+  Store_field(result, 0, 
+	      Val_opt(x, (Val_ptr_t) caml_copy_string));
+  Store_field(result, 1, Val_int(y));
+  CALLBACK_END
+}
 
 static void
 string_opt_string_opt_int_callback(virConnectPtr conn,
@@ -1100,8 +1114,10 @@ ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value c
   case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
     cb = VIR_DOMAIN_EVENT_CALLBACK(string_opt_string_opt_string_opt_int_callback);
     break;
-/*
   case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
+    cb = VIR_DOMAIN_EVENT_CALLBACK(string_opt_int_callback);
+    break;
+/*
   case VIR_DOMAIN_EVENT_ID_PMWAKEUP:
   case VIR_DOMAIN_EVENT_ID_PMSUSPEND:
 */
