@@ -493,7 +493,7 @@ struct
     | IOError       of ([`R] Domain.t -> (string option * string option * int) -> unit)
     | Graphics      of ([`R] Domain.t -> unit)
     | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)
-    | ControlError  of ([`R] Domain.t -> unit)
+    | ControlError  of ([`R] Domain.t -> unit -> unit)
     | BlockJob      of ([`R] Domain.t -> unit)
     | DiskChange    of ([`R] Domain.t -> (string option * string option * string option * int) -> unit)
     | TrayChange    of ([`R] Domain.t -> (string option * int) -> unit)
@@ -551,7 +551,8 @@ struct
         failwith "unsupported"
     | IOErrorReason f ->
         Hashtbl.add string_opt_string_opt_int_string_opt_callback_table id f
-    | ControlError f
+    | ControlError f ->
+        Hashtbl.add unit_callback_table id f
     | BlockJob f ->
         failwith "unsupported"
     | DiskChange f ->

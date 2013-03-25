@@ -60,7 +60,9 @@ let () =
     DE.register_any conn (DE.IOErrorReason (fun dom (src, dst, action, reason) -> printd dom "IOErrorReason src=%s dst=%s action=%d reason=%s" (string_option src) (string_option dst) action (string_option reason)));
 (*
     DE.register_any conn (DE.Graphics print_dom);
-    DE.register_any conn (DE.ControlError print_dom);
+*)
+    DE.register_any conn (DE.ControlError (fun dom () -> printd dom "ControlError"));
+(*
     DE.register_any conn (DE.BlockJob print_dom);
 *)
     DE.register_any conn (DE.DiskChange (fun dom (oldpath, newpath, alias, reason) -> printd dom "DiskChange oldpath=%s newpath=%s alias=%s reason=%d" (string_option oldpath) (string_option newpath) (string_option alias) reason));
