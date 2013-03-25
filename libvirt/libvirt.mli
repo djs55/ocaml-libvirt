@@ -654,7 +654,7 @@ sig
     | Watchdog      of ([`R] Domain.t -> int -> unit)
     | IOError       of ([`R] Domain.t -> (string option * string option * int) -> unit)
     | Graphics      of ([`R] Domain.t -> unit)
-    | IOErrorReason of ([`R] Domain.t -> unit)
+    | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)
     | ControlError  of ([`R] Domain.t -> unit)
     | BlockJob      of ([`R] Domain.t -> unit)
     | DiskChange    of ([`R] Domain.t -> unit)

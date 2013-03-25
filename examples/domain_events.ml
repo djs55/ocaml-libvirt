@@ -57,9 +57,9 @@ let () =
     DE.register_any conn (DE.RtcChange (fun dom x -> printd dom "RtcChange = %Lx" x));
     DE.register_any conn (DE.Watchdog (fun dom x -> printd dom "Watchdog = %d" x));
     DE.register_any conn (DE.IOError (fun dom (src, dst, action) -> printd dom "IOError src=%s dst=%s action=%d" (string_option src) (string_option dst) action));
+    DE.register_any conn (DE.IOErrorReason (fun dom (src, dst, action, reason) -> printd dom "IOErrorReason src=%s dst=%s action=%d reason=%s" (string_option src) (string_option dst) action (string_option reason)));
 (*
     DE.register_any conn (DE.Graphics print_dom);
-    DE.register_any conn (DE.IOErrorReason print_dom);
     DE.register_any conn (DE.ControlError print_dom);
     DE.register_any conn (DE.BlockJob print_dom);
     DE.register_any conn (DE.DiskChange print_dom);

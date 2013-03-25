@@ -492,7 +492,7 @@ struct
     | Watchdog      of ([`R] Domain.t -> int -> unit)
     | IOError       of ([`R] Domain.t -> (string option * string option * int) -> unit)
     | Graphics      of ([`R] Domain.t -> unit)
-    | IOErrorReason of ([`R] Domain.t -> unit)
+    | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)
     | ControlError  of ([`R] Domain.t -> unit)
     | BlockJob      of ([`R] Domain.t -> unit)
     | DiskChange    of ([`R] Domain.t -> unit)
@@ -541,6 +541,12 @@ struct
     then Hashtbl.find string_opt_string_opt_int_callback_table callback_id generic x
   let _ = Callback.register "Libvirt.string_opt_string_opt_int_callback" string_opt_string_opt_int_callback
 
+  let string_opt_string_opt_int_string_opt_callback_table = Hashtbl.create 16
+  let string_opt_string_opt_int_string_opt_callback callback_id generic x =
+    if Hashtbl.mem string_opt_string_opt_int_string_opt_callback_table callback_id
+    then Hashtbl.find string_opt_string_opt_int_string_opt_callback_table callback_id generic x
+  let _ = Callback.register "Libvirt.string_opt_string_opt_int_string_opt_callback" string_opt_string_opt_int_string_opt_callback
+
 
   external register_default_impl : unit -> unit = "ocaml_libvirt_connect_domain_event_register_default_impl"
 
@@ -561,8 +567,10 @@ struct
         Hashtbl.add int_callback_table id f
     | IOError f ->
         Hashtbl.add string_opt_string_opt_int_callback_table id f
-    | Graphics f
-    | IOErrorReason f
+    | Graphics f ->
+        failwith "unsupported"
+    | IOErrorReason f ->
+        Hashtbl.add string_opt_string_opt_int_string_opt_callback_table id f
     | ControlError f
     | BlockJob f
     | DiskChange f
