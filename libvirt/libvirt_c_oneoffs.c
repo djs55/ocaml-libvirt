@@ -1084,6 +1084,67 @@ string_opt_string_opt_string_opt_int_callback(virConnectPtr conn,
   CALLBACK_END
 }
 
+static value
+Val_event_graphics_address(virDomainEventGraphicsAddressPtr x)
+{
+  CAMLparam0 ();
+  CAMLlocal1(result);
+  result = caml_alloc_tuple(3);
+  Store_field(result, 0, Val_int(x->family));
+  Store_field(result, 1,
+	      Val_opt((void *) x->node, (Val_ptr_t) caml_copy_string));
+  Store_field(result, 2,
+	      Val_opt((void *) x->service, (Val_ptr_t) caml_copy_string));
+  CAMLreturn(result);
+}
+
+static value
+Val_event_graphics_subject_identity(virDomainEventGraphicsSubjectIdentityPtr x)
+{
+  CAMLparam0 ();
+  CAMLlocal1(result);
+  result = caml_alloc_tuple(2);
+  Store_field(result, 0,
+	      Val_opt((void *) x->type, (Val_ptr_t) caml_copy_string));
+  Store_field(result, 1,
+	      Val_opt((void *) x->name, (Val_ptr_t) caml_copy_string));
+  CAMLreturn(result);
+
+}
+
+static value
+Val_event_graphics_subject(virDomainEventGraphicsSubjectPtr x)
+{
+  CAMLparam0 ();
+  CAMLlocal1(result);
+  int i;
+  result = caml_alloc_tuple(x->nidentity);
+  for (i = 0; i < x->nidentity; i++ )
+    Store_field(result, i,
+		Val_event_graphics_subject_identity(x->identities + i));
+  CAMLreturn(result);
+}
+
+static void
+i_ga_ga_s_gs_callback(virConnectPtr conn,
+		      virDomainPtr dom,
+		      int i1,
+		      virDomainEventGraphicsAddressPtr ga1,
+		      virDomainEventGraphicsAddressPtr ga2,
+		      char *s1,
+		      virDomainEventGraphicsSubjectPtr gs1,
+		      void * opaque)
+{
+  CALLBACK_BEGIN("Libvirt.i_ga_ga_s_gs_callback")
+  result = caml_alloc_tuple(5);
+  Store_field(result, 0, Val_int(i1));
+  Store_field(result, 1, Val_event_graphics_address(ga1));
+  Store_field(result, 2, Val_event_graphics_address(ga2)); 
+  Store_field(result, 3,
+	      Val_opt(s1, (Val_ptr_t) caml_copy_string));
+  Store_field(result, 4, Val_event_graphics_subject(gs1));
+  CALLBACK_END
+}
 
 CAMLprim value
 ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value callback, value callback_id)
@@ -1118,9 +1179,9 @@ ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value c
   case VIR_DOMAIN_EVENT_ID_IO_ERROR:
     cb = VIR_DOMAIN_EVENT_CALLBACK(string_opt_string_opt_int_callback);
     break;
-/*
   case VIR_DOMAIN_EVENT_ID_GRAPHICS:
-*/
+    cb = VIR_DOMAIN_EVENT_CALLBACK(i_ga_ga_s_gs_callback);
+    break;
   case VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON:
     cb = VIR_DOMAIN_EVENT_CALLBACK(string_opt_string_opt_int_string_opt_callback);
     break;

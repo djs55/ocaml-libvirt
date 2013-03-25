@@ -491,7 +491,7 @@ struct
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> int -> unit)
     | IOError       of ([`R] Domain.t -> (string option * string option * int) -> unit)
-    | Graphics      of ([`R] Domain.t -> unit)
+    | Graphics      of ([`R] Domain.t -> (int * (int * string option * string option) * (int * string option * string option) * string * ((string option * string option) array)) -> unit)
     | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)
     | ControlError  of ([`R] Domain.t -> unit -> unit)
     | BlockJob      of ([`R] Domain.t -> (string option * int * int) -> unit)
@@ -528,6 +528,7 @@ struct
   let string_opt_string_opt_int_callback_table = make_callback_table "Libvirt.string_opt_string_opt_int_callback"
   let string_opt_string_opt_int_string_opt_callback_table = make_callback_table "Libvirt.string_opt_string_opt_int_string_opt_callback"
   let string_opt_string_opt_string_opt_int_callback_table = make_callback_table "Libvirt.string_opt_string_opt_string_opt_int_callback"
+  let i_ga_ga_s_gs_callback_table = make_callback_table "Libvirt.i_ga_ga_s_gs_callback"
 
   external register_default_impl : unit -> unit = "ocaml_libvirt_connect_domain_event_register_default_impl"
 
@@ -549,7 +550,7 @@ struct
     | IOError f ->
         Hashtbl.add string_opt_string_opt_int_callback_table id f
     | Graphics f ->
-        failwith "unsupported"
+        Hashtbl.add i_ga_ga_s_gs_callback_table id f
     | IOErrorReason f ->
         Hashtbl.add string_opt_string_opt_int_string_opt_callback_table id f
     | ControlError f ->

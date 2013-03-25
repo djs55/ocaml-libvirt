@@ -42,6 +42,14 @@ let string_option = function
   | None -> "None"
   | Some x -> "Some " ^ x
 
+let string_of_graphics_address (family, node, service) =
+  Printf.sprintf "{ family=%d; node=%s; service=%s }" family (string_option node) (string_option service)
+
+let string_of_graphics_subject_identity (ty, name) =
+  Printf.sprintf "{ type=%s; name=%s }" (string_option ty) (string_option name)
+
+let string_of_graphics_subject xs = String.concat "; " (List.map string_of_graphics_subject_identity (Array.to_list xs))
+
 let () =
   try
     DE.register_default_impl ();
@@ -58,9 +66,7 @@ let () =
     DE.register_any conn (DE.Watchdog (fun dom x -> printd dom "Watchdog = %d" x));
     DE.register_any conn (DE.IOError (fun dom (src, dst, action) -> printd dom "IOError src=%s dst=%s action=%d" (string_option src) (string_option dst) action));
     DE.register_any conn (DE.IOErrorReason (fun dom (src, dst, action, reason) -> printd dom "IOErrorReason src=%s dst=%s action=%d reason=%s" (string_option src) (string_option dst) action (string_option reason)));
-(*
-    DE.register_any conn (DE.Graphics print_dom);
-*)
+    DE.register_any conn (DE.Graphics (fun dom (phase, local, remote, auth, subject) -> printd dom "Graphics phase=%d local=%s remote=%s auth=%s subject=[%s]" phase (string_of_graphics_address local) (string_of_graphics_address remote) auth (string_of_graphics_subject subject)));
     DE.register_any conn (DE.ControlError (fun dom () -> printd dom "ControlError"));
     DE.register_any conn (DE.BlockJob (fun dom (disk, ty, status) -> printd dom "BlockJob disk=%s ty=%d status=%d" (string_option disk) ty status));
     DE.register_any conn (DE.DiskChange (fun dom (oldpath, newpath, alias, reason) -> printd dom "DiskChange oldpath=%s newpath=%s alias=%s reason=%d" (string_option oldpath) (string_option newpath) (string_option alias) reason));
