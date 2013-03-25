@@ -511,42 +511,20 @@ struct
       next := Int64.succ !next;
       result
 
-  let int_int_callback_table = Hashtbl.create 16
-  let int_int_callback callback_id generic x =
-    if Hashtbl.mem int_int_callback_table callback_id
-    then Hashtbl.find int_int_callback_table callback_id generic x
-  let _ = Callback.register "Libvirt.int_int_callback" int_int_callback
+  let make_callback_table value_name =
+    let table = Hashtbl.create 16 in
+    let callback callback_id generic x =
+      if Hashtbl.mem table callback_id
+      then Hashtbl.find table callback_id generic x in
+    let _ = Callback.register "Libvirt.int_int_callback" callback in
+    table
 
-  let unit_callback_table = Hashtbl.create 16
-  let unit_callback callback_id generic x =
-    if Hashtbl.mem unit_callback_table callback_id
-    then Hashtbl.find unit_callback_table callback_id generic x
-  let _ = Callback.register "Libvirt.unit_callback" unit_callback
-
-  let int64_callback_table = Hashtbl.create 16
-  let int64_callback callback_id generic x =
-    if Hashtbl.mem int64_callback_table callback_id
-    then Hashtbl.find int64_callback_table callback_id generic x
-  let _ = Callback.register "Libvirt.int64_callback" int64_callback
-
-  let int_callback_table = Hashtbl.create 16
-  let int_callback callback_id generic x =
-    if Hashtbl.mem int_callback_table callback_id
-    then Hashtbl.find int64_callback_table callback_id generic x
-  let _ = Callback.register "Libvirt.int_callback" int_callback
-
-  let string_opt_string_opt_int_callback_table = Hashtbl.create 16
-  let string_opt_string_opt_int_callback callback_id generic x =
-    if Hashtbl.mem string_opt_string_opt_int_callback_table callback_id
-    then Hashtbl.find string_opt_string_opt_int_callback_table callback_id generic x
-  let _ = Callback.register "Libvirt.string_opt_string_opt_int_callback" string_opt_string_opt_int_callback
-
-  let string_opt_string_opt_int_string_opt_callback_table = Hashtbl.create 16
-  let string_opt_string_opt_int_string_opt_callback callback_id generic x =
-    if Hashtbl.mem string_opt_string_opt_int_string_opt_callback_table callback_id
-    then Hashtbl.find string_opt_string_opt_int_string_opt_callback_table callback_id generic x
-  let _ = Callback.register "Libvirt.string_opt_string_opt_int_string_opt_callback" string_opt_string_opt_int_string_opt_callback
-
+  let unit_callback_table = make_callback_table "Libvirt.unit_callback"
+  let int_callback_table = make_callback_table "Libvirt.int_callback"
+  let int64_callback_table = make_callback_table "Libvirt.int64_callback"
+  let int_int_callback_table = make_callback_table "Libvirt.int_int_callback"
+  let string_opt_string_opt_int_callback_table = make_callback_table "Libvirt.string_opt_string_opt_int_callback"
+  let string_opt_string_opt_int_string_opt_callback_table = make_callback_table "Libvirt.string_opt_string_opt_int_string_opt_callback"
 
   external register_default_impl : unit -> unit = "ocaml_libvirt_connect_domain_event_register_default_impl"
 
