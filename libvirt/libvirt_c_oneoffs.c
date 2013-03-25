@@ -1032,6 +1032,26 @@ string_opt_string_opt_int_string_opt_callback(virConnectPtr conn,
   CALLBACK_END
 }
 
+static void
+string_opt_string_opt_string_opt_int_callback(virConnectPtr conn,
+					      virDomainPtr dom,
+					      char * x,
+					      char * y,
+					      char * z,
+					      int a,
+					      void * opaque)
+{
+  CALLBACK_BEGIN("Libvirt.string_opt_string_opt_string_opt_int_callback")
+  result = caml_alloc_tuple(4);
+  Store_field(result, 0,
+	      Val_opt(x, (Val_ptr_t) caml_copy_string));
+  Store_field(result, 1,
+              Val_opt(y, (Val_ptr_t) caml_copy_string));
+  Store_field(result, 2,
+              Val_opt(z, (Val_ptr_t) caml_copy_string));
+  Store_field(result, 3, Val_int(a));
+  CALLBACK_END
+}
 
 
 CAMLprim value
@@ -1076,7 +1096,11 @@ ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value c
 /*
   case VIR_DOMAIN_EVENT_ID_CONTROL_ERROR:
   case VIR_DOMAIN_EVENT_ID_BLOCK_JOB:
+*/
   case VIR_DOMAIN_EVENT_ID_DISK_CHANGE:
+    cb = VIR_DOMAIN_EVENT_CALLBACK(string_opt_string_opt_string_opt_int_callback);
+    break;
+/*
   case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
   case VIR_DOMAIN_EVENT_ID_PMWAKEUP:
   case VIR_DOMAIN_EVENT_ID_PMSUSPEND:

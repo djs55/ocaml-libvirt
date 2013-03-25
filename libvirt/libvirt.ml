@@ -495,7 +495,7 @@ struct
     | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)
     | ControlError  of ([`R] Domain.t -> unit)
     | BlockJob      of ([`R] Domain.t -> unit)
-    | DiskChange    of ([`R] Domain.t -> unit)
+    | DiskChange    of ([`R] Domain.t -> (string option * string option * string option * int) -> unit)
     | TrayChange    of ([`R] Domain.t -> unit)
     | PMWakeUp      of ([`R] Domain.t -> unit)
     | PMSuspend     of ([`R] Domain.t -> unit)
@@ -525,6 +525,7 @@ struct
   let int_int_callback_table = make_callback_table "Libvirt.int_int_callback"
   let string_opt_string_opt_int_callback_table = make_callback_table "Libvirt.string_opt_string_opt_int_callback"
   let string_opt_string_opt_int_string_opt_callback_table = make_callback_table "Libvirt.string_opt_string_opt_int_string_opt_callback"
+  let string_opt_string_opt_string_opt_int_callback_table = make_callback_table "Libvirt.string_opt_string_opt_string_opt_int_callback"
 
   external register_default_impl : unit -> unit = "ocaml_libvirt_connect_domain_event_register_default_impl"
 
@@ -550,8 +551,10 @@ struct
     | IOErrorReason f ->
         Hashtbl.add string_opt_string_opt_int_string_opt_callback_table id f
     | ControlError f
-    | BlockJob f
-    | DiskChange f
+    | BlockJob f ->
+        failwith "unsupported"
+    | DiskChange f ->
+        Hashtbl.add string_opt_string_opt_string_opt_int_callback_table id f 
     | TrayChange f
     | PMWakeUp f
     | PMSuspend f ->
