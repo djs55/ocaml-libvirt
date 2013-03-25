@@ -516,7 +516,7 @@ struct
     let callback callback_id generic x =
       if Hashtbl.mem table callback_id
       then Hashtbl.find table callback_id generic x in
-    let _ = Callback.register "Libvirt.int_int_callback" callback in
+    let _ = Callback.register value_name callback in
     table
 
   let unit_callback_table = make_callback_table "Libvirt.unit_callback"
