@@ -927,83 +927,6 @@ fflush(stderr);
   CAMLreturn(Val_unit);
 }
 
-static void
-int_int_callback(virConnectPtr conn,
-		 virDomainPtr dom,
-		 int x,
-		 int y,
-		 void * opaque)
-{
-  CAMLlocal4(connv, domv, callback_id, pair);
-  static value *callback = NULL;
-  
-  caml_leave_blocking_section();
-  if (callback == NULL)
-    callback = caml_named_value("Libvirt.int_int_callback");
-  if (virDomainRef(dom) == 0) {
-    connv = Val_connect(conn);
-    domv = Val_domain(dom, connv);
-    callback_id = caml_copy_int64(*(long *)opaque);
-    pair = caml_alloc_tuple(2);
-    Store_field(pair, 0, Val_int(x));
-    Store_field(pair, 1, Val_int(y));
-    (void) caml_callback3(*callback, callback_id, domv, pair);
-  }
-  caml_enter_blocking_section();
-}
-
-static void
-unit_callback(virConnectPtr conn, virDomainPtr dom, void *opaque)
-{
-  CAMLlocal3(connv, domv, callback_id);
-  static value *callback = NULL;
-  caml_leave_blocking_section();
-  if (callback == NULL)
-    callback = caml_named_value("Libvirt.unit_callback");
-  if (virDomainRef(dom) == 0) {
-    connv = Val_connect(conn);
-    domv = Val_domain(dom, connv);
-    callback_id = caml_copy_int64(*(long *)opaque);
-    (void) caml_callback2(*callback, callback_id, domv);
-  }
-  caml_enter_blocking_section();
-}
-
-static void
-int64_callback(virConnectPtr conn, virDomainPtr dom, long long int64, void *opaque)
-{
-  CAMLlocal4(connv, domv, callback_id, int64v);
-  static value *callback = NULL;
-  caml_leave_blocking_section();
-  if (callback == NULL)
-    callback = caml_named_value("Libvirt.int64_callback");
-  if (virDomainRef(dom) == 0) {
-    connv = Val_connect(conn);
-    domv = Val_domain(dom, connv);
-    callback_id = caml_copy_int64(*(long *)opaque);
-    int64v = caml_copy_int64(int64);
-    (void) caml_callback3(*callback, callback_id, domv, int64v);
-  }
-  caml_enter_blocking_section();
-}
-
-static void
-int_callback(virConnectPtr conn, virDomainPtr dom, int x, void *opaque)
-{
-  CAMLlocal3(connv, domv, callback_id);
-  static value *callback = NULL;
-  caml_leave_blocking_section();
-  if (callback == NULL)
-    callback = caml_named_value("Libvirt.int_callback");
-  if (virDomainRef(dom) == 0) {
-    connv = Val_connect(conn);
-    domv = Val_domain(dom, connv);
-    callback_id = caml_copy_int64(*(long *)opaque);
-    (void) caml_callback3(*callback, callback_id, domv, Val_int(x));
-  }
-  caml_enter_blocking_section();
-}
-
 #define CALLBACK_BEGIN(NAME)                                 \
   static value *callback = NULL;                             \
   caml_leave_blocking_section();                             \
@@ -1017,6 +940,60 @@ int_callback(virConnectPtr conn, virDomainPtr dom, int x, void *opaque)
 #define CALLBACK_END                                         \
   }                                                          \
   caml_enter_blocking_section();
+
+
+static void
+int_int_callback(virConnectPtr conn,
+		 virDomainPtr dom,
+		 int x,
+		 int y,
+		 void * opaque)
+{
+  CAMLlocal4(connv, domv, callback_id, pair);
+  CALLBACK_BEGIN("Libvirt.int_int_callback")
+  pair = caml_alloc_tuple(2);
+  Store_field(pair, 0, Val_int(x));
+  Store_field(pair, 1, Val_int(y));
+  (void) caml_callback3(*callback, callback_id, domv, pair);
+  CALLBACK_END
+}
+
+static void
+unit_callback(virConnectPtr conn,
+	      virDomainPtr dom,
+	      void *opaque)
+{
+  CAMLlocal3(connv, domv, callback_id);
+  CALLBACK_BEGIN("Libvirt.unit_callback")
+  (void) caml_callback2(*callback, callback_id, domv);
+  CALLBACK_END
+}
+
+static void
+int64_callback(virConnectPtr conn,
+	       virDomainPtr dom,
+	       long long int64,
+	       void *opaque)
+{
+  CAMLlocal4(connv, domv, callback_id, int64v);
+  CALLBACK_BEGIN("Libvirt.int64_callback")
+  int64v = caml_copy_int64(int64);
+  (void) caml_callback3(*callback, callback_id, domv, int64v);
+  CALLBACK_END
+}
+
+static void
+int_callback(virConnectPtr conn,
+	     virDomainPtr dom,
+	     int x,
+	     void *opaque)
+{
+  CAMLlocal3(connv, domv, callback_id);
+  CALLBACK_BEGIN("Libvirt.int_callback")
+  (void) caml_callback3(*callback, callback_id, domv, Val_int(x));
+  CALLBACK_END
+}
+
 
 static void
 string_opt_string_opt_int_callback(virConnectPtr conn,
