@@ -67,14 +67,10 @@ let () =
 *)
     DE.register_any conn (DE.DiskChange (fun dom (oldpath, newpath, alias, reason) -> printd dom "DiskChange oldpath=%s newpath=%s alias=%s reason=%d" (string_option oldpath) (string_option newpath) (string_option alias) reason));
     DE.register_any conn (DE.TrayChange (fun dom (alias, reason) -> printd dom "TrayChange alias=%s reason=%d" (string_option alias) reason));
-(*
-    DE.register_any conn (DE.PMWakeUp print_dom);
-    DE.register_any conn (DE.PMSuspend print_dom);
-*)
+    DE.register_any conn (DE.PMWakeUp (fun dom reason -> printd dom "PMWakeup reason=%d" reason));
+    DE.register_any conn (DE.PMSuspend (fun dom reason -> printd dom "PMSuspend reason=%d" reason));
     DE.register_any conn (DE.BalloonChange (fun dom x -> printd dom "BalloonChange actual = %Ld" x));
-(*
-    DE.register_any conn (DE.PMSuspendDisk print_dom);
-*)
+    DE.register_any conn (DE.PMSuspendDisk (fun dom reason -> printd dom "PMSuspendDisk reason=%d" reason));
     C.set_keep_alive conn 5 3;
     while true do
         fprintf stderr "run_default_impl\n%!";

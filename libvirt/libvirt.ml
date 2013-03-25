@@ -497,10 +497,10 @@ struct
     | BlockJob      of ([`R] Domain.t -> unit)
     | DiskChange    of ([`R] Domain.t -> (string option * string option * string option * int) -> unit)
     | TrayChange    of ([`R] Domain.t -> (string option * int) -> unit)
-    | PMWakeUp      of ([`R] Domain.t -> unit)
-    | PMSuspend     of ([`R] Domain.t -> unit)
+    | PMWakeUp      of ([`R] Domain.t -> int -> unit)
+    | PMSuspend     of ([`R] Domain.t -> int -> unit)
     | BalloonChange of ([`R] Domain.t -> int64 -> unit)
-    | PMSuspendDisk of ([`R] Domain.t -> unit)
+    | PMSuspendDisk of ([`R] Domain.t -> int -> unit)
 
   type callback_id = int64
 
@@ -559,13 +559,14 @@ struct
         Hashtbl.add string_opt_string_opt_string_opt_int_callback_table id f 
     | TrayChange f ->
         Hashtbl.add string_opt_int_callback_table id f
-    | PMWakeUp f
+    | PMWakeUp f ->
+        Hashtbl.add int_callback_table id f
     | PMSuspend f ->
-        failwith "unsupported"
+        Hashtbl.add int_callback_table id f
     | BalloonChange f ->
         Hashtbl.add int64_callback_table id f
     | PMSuspendDisk f ->
-        failwith "unsupported"
+        Hashtbl.add int_callback_table id f
     end;
     register_any' conn dom callback id
 

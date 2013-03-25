@@ -659,10 +659,10 @@ sig
     | BlockJob      of ([`R] Domain.t -> unit)
     | DiskChange    of ([`R] Domain.t -> (string option * string option * string option * int) -> unit)
     | TrayChange    of ([`R] Domain.t -> (string option * int) -> unit)
-    | PMWakeUp      of ([`R] Domain.t -> unit)
-    | PMSuspend     of ([`R] Domain.t -> unit)
+    | PMWakeUp      of ([`R] Domain.t -> int -> unit)
+    | PMSuspend     of ([`R] Domain.t -> int -> unit)
     | BalloonChange of ([`R] Domain.t -> int64 -> unit)
-    | PMSuspendDisk of ([`R] Domain.t -> unit)
+    | PMSuspendDisk of ([`R] Domain.t -> int -> unit)
 
     (** type of a registered call back function *)
 

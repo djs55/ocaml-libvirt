@@ -1119,19 +1119,18 @@ ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value c
   case VIR_DOMAIN_EVENT_ID_TRAY_CHANGE:
     cb = VIR_DOMAIN_EVENT_CALLBACK(string_opt_int_callback);
     break;
-/*
   case VIR_DOMAIN_EVENT_ID_PMWAKEUP:
+    cb = VIR_DOMAIN_EVENT_CALLBACK(int_callback);
+    break;
   case VIR_DOMAIN_EVENT_ID_PMSUSPEND:
-*/
+    cb = VIR_DOMAIN_EVENT_CALLBACK(int_callback);
+    break;
   case VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE:
     cb = VIR_DOMAIN_EVENT_CALLBACK(int64_callback);
     break;
   case VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK:
-fprintf(stderr, "adding generic callback\n");
-fflush(stderr);
-    cb = NULL;
+    cb = VIR_DOMAIN_EVENT_CALLBACK(int_callback);
     break;
-
   default:
 fprintf(stderr, "eventID = %d\n", eventID);
     caml_failwith("vifConnectDomainEventRegisterAny: unimplemented eventID");
