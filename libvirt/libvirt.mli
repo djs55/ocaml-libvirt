@@ -645,7 +645,7 @@ end
   (** Module dealing with domains.  [Domain.t] is the
       domain object. *)
 
-module DomainEvent :
+module Event :
 sig
   type callback =
     | Lifecycle     of ([`R] Domain.t -> (int * int) -> unit)

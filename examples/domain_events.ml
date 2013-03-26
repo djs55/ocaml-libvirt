@@ -9,7 +9,7 @@ open Printf
 
 module C = Libvirt.Connect
 module D = Libvirt.Domain
-module DE = Libvirt.DomainEvent
+module E = Libvirt.Event
 module N = Libvirt.Network
 
 let string_of_state = function
@@ -52,7 +52,7 @@ let string_of_graphics_subject xs = String.concat "; " (List.map string_of_graph
 
 let () =
   try
-    DE.register_default_impl ();
+    E.register_default_impl ();
     let name =
       if Array.length Sys.argv >= 2 then
 	Some (Sys.argv.(1))
@@ -60,24 +60,24 @@ let () =
 	None in
     let conn = C.connect_readonly ?name () in
 
-    DE.register_any conn (DE.Lifecycle (fun dom (event, detail) -> printd dom "Lifecycle event = %d; detail = %d" event detail));
-    DE.register_any conn (DE.Reboot (fun dom () -> printd dom "Reboot"));
-    DE.register_any conn (DE.RtcChange (fun dom x -> printd dom "RtcChange = %Lx" x));
-    DE.register_any conn (DE.Watchdog (fun dom x -> printd dom "Watchdog = %d" x));
-    DE.register_any conn (DE.IOError (fun dom (src, dst, action) -> printd dom "IOError src=%s dst=%s action=%d" (string_option src) (string_option dst) action));
-    DE.register_any conn (DE.IOErrorReason (fun dom (src, dst, action, reason) -> printd dom "IOErrorReason src=%s dst=%s action=%d reason=%s" (string_option src) (string_option dst) action (string_option reason)));
-    DE.register_any conn (DE.Graphics (fun dom (phase, local, remote, auth, subject) -> printd dom "Graphics phase=%d local=%s remote=%s auth=%s subject=[%s]" phase (string_of_graphics_address local) (string_of_graphics_address remote) auth (string_of_graphics_subject subject)));
-    DE.register_any conn (DE.ControlError (fun dom () -> printd dom "ControlError"));
-    DE.register_any conn (DE.BlockJob (fun dom (disk, ty, status) -> printd dom "BlockJob disk=%s ty=%d status=%d" (string_option disk) ty status));
-    DE.register_any conn (DE.DiskChange (fun dom (oldpath, newpath, alias, reason) -> printd dom "DiskChange oldpath=%s newpath=%s alias=%s reason=%d" (string_option oldpath) (string_option newpath) (string_option alias) reason));
-    DE.register_any conn (DE.TrayChange (fun dom (alias, reason) -> printd dom "TrayChange alias=%s reason=%d" (string_option alias) reason));
-    DE.register_any conn (DE.PMWakeUp (fun dom reason -> printd dom "PMWakeup reason=%d" reason));
-    DE.register_any conn (DE.PMSuspend (fun dom reason -> printd dom "PMSuspend reason=%d" reason));
-    DE.register_any conn (DE.BalloonChange (fun dom x -> printd dom "BalloonChange actual = %Ld" x));
-    DE.register_any conn (DE.PMSuspendDisk (fun dom reason -> printd dom "PMSuspendDisk reason=%d" reason));
+    E.register_any conn (E.Lifecycle (fun dom (event, detail) -> printd dom "Lifecycle event = %d; detail = %d" event detail));
+    E.register_any conn (E.Reboot (fun dom () -> printd dom "Reboot"));
+    E.register_any conn (E.RtcChange (fun dom x -> printd dom "RtcChange = %Lx" x));
+    E.register_any conn (E.Watchdog (fun dom x -> printd dom "Watchdog = %d" x));
+    E.register_any conn (E.IOError (fun dom (src, dst, action) -> printd dom "IOError src=%s dst=%s action=%d" (string_option src) (string_option dst) action));
+    E.register_any conn (E.IOErrorReason (fun dom (src, dst, action, reason) -> printd dom "IOErrorReason src=%s dst=%s action=%d reason=%s" (string_option src) (string_option dst) action (string_option reason)));
+    E.register_any conn (E.Graphics (fun dom (phase, local, remote, auth, subject) -> printd dom "Graphics phase=%d local=%s remote=%s auth=%s subject=[%s]" phase (string_of_graphics_address local) (string_of_graphics_address remote) auth (string_of_graphics_subject subject)));
+    E.register_any conn (E.ControlError (fun dom () -> printd dom "ControlError"));
+    E.register_any conn (E.BlockJob (fun dom (disk, ty, status) -> printd dom "BlockJob disk=%s ty=%d status=%d" (string_option disk) ty status));
+    E.register_any conn (E.DiskChange (fun dom (oldpath, newpath, alias, reason) -> printd dom "DiskChange oldpath=%s newpath=%s alias=%s reason=%d" (string_option oldpath) (string_option newpath) (string_option alias) reason));
+    E.register_any conn (E.TrayChange (fun dom (alias, reason) -> printd dom "TrayChange alias=%s reason=%d" (string_option alias) reason));
+    E.register_any conn (E.PMWakeUp (fun dom reason -> printd dom "PMWakeup reason=%d" reason));
+    E.register_any conn (E.PMSuspend (fun dom reason -> printd dom "PMSuspend reason=%d" reason));
+    E.register_any conn (E.BalloonChange (fun dom x -> printd dom "BalloonChange actual = %Ld" x));
+    E.register_any conn (E.PMSuspendDisk (fun dom reason -> printd dom "PMSuspendDisk reason=%d" reason));
     C.set_keep_alive conn 5 3;
     while true do
-	DE.run_default_impl ()
+	E.run_default_impl ()
     done
   with
     Libvirt.Virterror err ->

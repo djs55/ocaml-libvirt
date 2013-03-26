@@ -483,7 +483,7 @@ struct
     map_ignore_errors (fun dom -> (dom, get_info dom)) doms
 end
 
-module DomainEvent =
+module Event =
 struct
   type callback =
     | Lifecycle     of ([`R] Domain.t -> (int * int) -> unit)
