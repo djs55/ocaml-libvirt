@@ -689,6 +689,14 @@ struct
       | 7 -> `PMSuspended (PM_suspended.make detail)
   end
 
+  module Reboot = struct
+    type t = unit
+
+    let to_string _ = "()"
+
+    let make () = ()
+  end
+
   type watchdog_action = [
     | `None
     | `Pause
@@ -1053,7 +1061,7 @@ struct
 
   type callback =
     | Lifecycle     of ([`R] Domain.t -> Lifecycle.t -> unit)
-    | Reboot        of ([`R] Domain.t -> unit -> unit)
+    | Reboot        of ([`R] Domain.t -> Reboot.t -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
     | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
@@ -1110,7 +1118,9 @@ struct
             f dom (Lifecycle.make x)
         )
     | Reboot f ->
-        Hashtbl.add u_table id f
+        Hashtbl.add u_table id (fun dom x ->
+            f dom (Reboot.make x)
+        )
     | RtcChange f ->
         Hashtbl.add i64_table id f
     | Watchdog f ->

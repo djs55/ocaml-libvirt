@@ -747,6 +747,12 @@ sig
     val to_string: t -> string
   end
 
+  module Reboot : sig
+    type t = unit
+
+    val to_string: t -> string
+  end
+
   type watchdog_action = [
     | `None           (** No action, watchdog ignored *)
     | `Pause          (** Guest CPUs are paused *)
@@ -922,7 +928,7 @@ sig
 
   type callback =
     | Lifecycle     of ([`R] Domain.t -> Lifecycle.t -> unit)
-    | Reboot        of ([`R] Domain.t -> unit -> unit)
+    | Reboot        of ([`R] Domain.t -> Reboot.t -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
     | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
