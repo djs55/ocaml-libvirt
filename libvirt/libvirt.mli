@@ -836,6 +836,22 @@ sig
     val to_string: t -> string
   end
 
+  module Tray_change : sig
+    type reason = [
+      | `Open
+      | `Close
+      | `Unknown of int
+    ]
+
+    type t = {
+      dev_alias: string option; (** device alias *)
+      reason: reason;           (** why the tray status was changed *)
+    }
+
+    val to_string: t -> string
+  end
+
+
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
@@ -847,7 +863,7 @@ sig
     | ControlError  of ([`R] Domain.t -> unit -> unit)
     | BlockJob      of ([`R] Domain.t -> Block_job.t -> unit)
     | DiskChange    of ([`R] Domain.t -> Disk_change.t -> unit)
-    | TrayChange    of ([`R] Domain.t -> (string option * int) -> unit)
+    | TrayChange    of ([`R] Domain.t -> Tray_change.t -> unit)
     | PMWakeUp      of ([`R] Domain.t -> int -> unit)
     | PMSuspend     of ([`R] Domain.t -> int -> unit)
     | BalloonChange of ([`R] Domain.t -> int64 -> unit)

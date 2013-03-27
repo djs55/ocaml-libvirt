@@ -932,6 +932,39 @@ struct
     }
   end
 
+  module Tray_change = struct
+    type reason = [
+      | `Open
+      | `Close
+      | `Unknown of int
+    ]
+
+    let string_of_reason = function
+      | `Open -> "Open"
+      | `Close -> "Close"
+      | `Unknown x -> Printf.sprintf "Unknown Tray_change.reason: %d" x
+
+    let reason_of_int = function
+      | 0 -> `Open
+      | 1 -> `Close
+      | x -> `Unknown x
+
+    type t = {
+      dev_alias: string option;
+      reason: reason;
+    }
+
+    let to_string t = Printf.sprintf
+      "{ dev_alias = %s; reason = %s }"
+        (string_option (fun x -> x) t.dev_alias)
+        (string_of_reason t.reason)
+
+    let make (dev_alias, reason) = {
+      dev_alias = dev_alias;
+      reason = reason_of_int reason;
+    }
+  end
+
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
@@ -943,7 +976,7 @@ struct
     | ControlError  of ([`R] Domain.t -> unit -> unit)
     | BlockJob      of ([`R] Domain.t -> Block_job.t -> unit)
     | DiskChange    of ([`R] Domain.t -> Disk_change.t -> unit)
-    | TrayChange    of ([`R] Domain.t -> (string option * int) -> unit)
+    | TrayChange    of ([`R] Domain.t -> Tray_change.t -> unit)
     | PMWakeUp      of ([`R] Domain.t -> int -> unit)
     | PMSuspend     of ([`R] Domain.t -> int -> unit)
     | BalloonChange of ([`R] Domain.t -> int64 -> unit)
@@ -1021,7 +1054,9 @@ struct
             f dom (Disk_change.make x)
         )
     | TrayChange f ->
-        Hashtbl.add s_i_table id f
+        Hashtbl.add s_i_table id (fun dom x ->
+            f dom (Tray_change.make x)
+        )
     | PMWakeUp f ->
         Hashtbl.add i_table id f
     | PMSuspend f ->
