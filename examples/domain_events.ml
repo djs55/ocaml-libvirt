@@ -70,7 +70,9 @@ let () =
     E.register_any conn (E.Reboot (fun dom e ->
         printd dom "Reboot %s" (E.Reboot.to_string e)
     ));
-    E.register_any conn (E.RtcChange (fun dom x -> printd dom "RtcChange = %Lx" x));
+    E.register_any conn (E.RtcChange (fun dom e ->
+        printd dom "RtcChange %s" (E.Rtc_change.to_string e)
+    ));
     E.register_any conn (E.Watchdog (fun dom e ->
         printd dom "Watchdog %s" (E.string_of_watchdog_action e)
     ));

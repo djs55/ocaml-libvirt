@@ -697,6 +697,14 @@ struct
     let make () = ()
   end
 
+  module Rtc_change = struct
+    type t = int64
+
+    let to_string = Int64.to_string
+
+    let make x = x
+  end
+
   type watchdog_action = [
     | `None
     | `Pause
@@ -1062,7 +1070,7 @@ struct
   type callback =
     | Lifecycle     of ([`R] Domain.t -> Lifecycle.t -> unit)
     | Reboot        of ([`R] Domain.t -> Reboot.t -> unit)
-    | RtcChange     of ([`R] Domain.t -> int64 -> unit)
+    | RtcChange     of ([`R] Domain.t -> Rtc_change.t -> unit)
     | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
     | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
     | Graphics      of ([`R] Domain.t -> Graphics.t -> unit)
@@ -1122,7 +1130,9 @@ struct
             f dom (Reboot.make x)
         )
     | RtcChange f ->
-        Hashtbl.add i64_table id f
+        Hashtbl.add i64_table id (fun dom x ->
+            f dom (Rtc_change.make x)
+        )
     | Watchdog f ->
         Hashtbl.add i_table id (fun dom x ->
             f dom (watchdog_action_of_int x)
