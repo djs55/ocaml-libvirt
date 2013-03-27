@@ -70,7 +70,10 @@ let () =
     ));
     E.register_any conn (E.Reboot (fun dom () -> printd dom "Reboot"));
     E.register_any conn (E.RtcChange (fun dom x -> printd dom "RtcChange = %Lx" x));
-    E.register_any conn (E.Watchdog (fun dom x -> printd dom "Watchdog = %d" x));
+    E.register_any conn (E.Watchdog (fun dom e ->
+        printd dom "Watchdog %s"
+            (string_option (map_option E.string_of_watchdog_action e))
+    ));
     E.register_any conn (E.IOError (fun dom (src, dst, action) -> printd dom "IOError src=%s dst=%s action=%d" (string_option src) (string_option dst) action));
     E.register_any conn (E.IOErrorReason (fun dom (src, dst, action, reason) -> printd dom "IOErrorReason src=%s dst=%s action=%d reason=%s" (string_option src) (string_option dst) action (string_option reason)));
     E.register_any conn (E.Graphics (fun dom (phase, local, remote, auth, subject) -> printd dom "Graphics phase=%d local=%s remote=%s auth=%s subject=[%s]" phase (string_of_graphics_address local) (string_of_graphics_address remote) auth (string_of_graphics_subject subject)));

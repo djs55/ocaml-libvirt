@@ -715,11 +715,21 @@ sig
 
   val string_of_event: event -> string
 
+  type watchdog_action =
+    | WatchdogNone     (** No action, watchdog ignored *)
+    | WatchdogPause    (** Guest CPUs are paused *)
+    | WatchdogReset    (** Guest CPUs are reset *)
+    | WatchdogPoweroff (** Guest is forcably powered off *)
+    | WatchdogShutdown (** Guest is requested to gracefully shutdown *)
+    | WatchdogDebug    (** No action, a debug message logged *)
+
+  val string_of_watchdog_action: watchdog_action -> string
+
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
-    | Watchdog      of ([`R] Domain.t -> int -> unit)
+    | Watchdog      of ([`R] Domain.t -> watchdog_action option -> unit)
     | IOError       of ([`R] Domain.t -> (string option * string option * int) -> unit)
     | Graphics      of ([`R] Domain.t -> (int * (int * string option * string option) * (int * string option * string option) * string * ((string option * string option) array)) -> unit)
     | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)
