@@ -729,6 +729,7 @@ sig
 
 
   module Io_error : sig
+    (** Represents both IOError and IOErrorReason *)
     type action = [
       | `None           (** No action, IO error ignored *)
       | `Pause          (** Guest CPUs are paused *)
@@ -740,6 +741,7 @@ sig
       src_path: string option;  (** The host file on which the I/O error occurred *)
       dev_alias: string option; (** The guest device alias associated with the path *)
       action: action;    (** The action that is to be taken due to the IO error *)
+      reason: string option;    (** The cause of the IO error *)
     }
 
     val to_string: t -> string
@@ -799,7 +801,7 @@ sig
     | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
     | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
     | Graphics      of ([`R] Domain.t -> Graphics.t -> unit)
-    | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)
+    | IOErrorReason of ([`R] Domain.t -> Io_error.t -> unit)
     | ControlError  of ([`R] Domain.t -> unit -> unit)
     | BlockJob      of ([`R] Domain.t -> (string option * int * int) -> unit)
     | DiskChange    of ([`R] Domain.t -> (string option * string option * string option * int) -> unit)

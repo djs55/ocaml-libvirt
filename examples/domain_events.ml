@@ -76,7 +76,9 @@ let () =
     E.register_any conn (E.IOError (fun dom e ->
         printd dom "IOError %s" (E.Io_error.to_string e)
     ));
-    E.register_any conn (E.IOErrorReason (fun dom (src, dst, action, reason) -> printd dom "IOErrorReason src=%s dst=%s action=%d reason=%s" (string_option src) (string_option dst) action (string_option reason)));
+    E.register_any conn (E.IOErrorReason (fun dom e ->
+        printd dom "IOErrorReason %s" (E.Io_error.to_string e)
+    ));
     E.register_any conn (E.Graphics (fun dom e ->
         printd dom "Graphics %s" (E.Graphics.to_string e)
     ));

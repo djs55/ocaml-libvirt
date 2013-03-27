@@ -701,19 +701,25 @@ struct
       src_path: string option;
       dev_alias: string option;
       action: action;
+      reason: string option;
     }
 
     let to_string t = Printf.sprintf
-        "{ Io_error.src_path = %s; dev_alias = %s; action = %s }"
+        "{ Io_error.src_path = %s; dev_alias = %s; action = %s; reason = %s }"
         (string_option (fun x -> x) t.src_path)
         (string_option (fun x -> x) t.dev_alias)
         (string_of_action t.action)
+        (string_option (fun x -> x) t.reason)
 
-    let make (src_path, dev_alias, action) = {
+    let make (src_path, dev_alias, action, reason) = {
         src_path = src_path;
         dev_alias = dev_alias;
         action = action_of_int action;
+        reason = reason;
     }
+
+    let make_noreason (src_path, dev_alias, action) =
+      make (src_path, dev_alias, action, None)
   end
 
   module Graphics_address = struct
@@ -835,7 +841,7 @@ struct
     | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
     | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
     | Graphics      of ([`R] Domain.t -> Graphics.t -> unit)
-    | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)
+    | IOErrorReason of ([`R] Domain.t -> Io_error.t -> unit)
     | ControlError  of ([`R] Domain.t -> unit -> unit)
     | BlockJob      of ([`R] Domain.t -> (string option * int * int) -> unit)
     | DiskChange    of ([`R] Domain.t -> (string option * string option * string option * int) -> unit)
@@ -896,14 +902,16 @@ struct
         ) 
     | IOError f ->
         Hashtbl.add s_s_i_table id (fun dom x ->
-            f dom (Io_error.make x)
+            f dom (Io_error.make_noreason x)
         )
     | Graphics f ->
         Hashtbl.add i_ga_ga_s_gs_table id (fun dom x ->
             f dom (Graphics.make x)
         )
     | IOErrorReason f ->
-        Hashtbl.add s_s_i_s_table id f
+        Hashtbl.add s_s_i_s_table id (fun dom x ->
+            f dom (Io_error.make x)
+        )
     | ControlError f ->
         Hashtbl.add u_table id f
     | BlockJob f ->
