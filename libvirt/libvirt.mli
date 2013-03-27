@@ -794,6 +794,32 @@ sig
     val to_string: t -> string
   end
 
+  module Block_job : sig
+    type ty = [
+      | `KnownUnknown (** explicitly named UNKNOWN in the spec *)
+      | `Pull
+      | `Copy
+      | `Commit
+      | `Unknown of int
+    ]
+
+    type status = [
+      | `Completed
+      | `Failed
+      | `Cancelled
+      | `Ready
+      | `Unknown of int
+    ]
+
+    type t = {
+      disk: string option; (** fully-qualified name of the affected disk *)	
+      ty: ty;              (** type of block job *)
+      status: status;      (** final status of the operation *)
+    }
+
+    val to_string: t -> string
+  end
+
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
@@ -803,7 +829,7 @@ sig
     | Graphics      of ([`R] Domain.t -> Graphics.t -> unit)
     | IOErrorReason of ([`R] Domain.t -> Io_error.t -> unit)
     | ControlError  of ([`R] Domain.t -> unit -> unit)
-    | BlockJob      of ([`R] Domain.t -> (string option * int * int) -> unit)
+    | BlockJob      of ([`R] Domain.t -> Block_job.t -> unit)
     | DiskChange    of ([`R] Domain.t -> (string option * string option * string option * int) -> unit)
     | TrayChange    of ([`R] Domain.t -> (string option * int) -> unit)
     | PMWakeUp      of ([`R] Domain.t -> int -> unit)

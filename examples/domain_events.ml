@@ -83,7 +83,9 @@ let () =
         printd dom "Graphics %s" (E.Graphics.to_string e)
     ));
     E.register_any conn (E.ControlError (fun dom () -> printd dom "ControlError"));
-    E.register_any conn (E.BlockJob (fun dom (disk, ty, status) -> printd dom "BlockJob disk=%s ty=%d status=%d" (string_option disk) ty status));
+    E.register_any conn (E.BlockJob (fun dom e ->
+        printd dom "BlockJob %s" (E.Block_job.to_string e)
+    ));
     E.register_any conn (E.DiskChange (fun dom (oldpath, newpath, alias, reason) -> printd dom "DiskChange oldpath=%s newpath=%s alias=%s reason=%d" (string_option oldpath) (string_option newpath) (string_option alias) reason));
     E.register_any conn (E.TrayChange (fun dom (alias, reason) -> printd dom "TrayChange alias=%s reason=%d" (string_option alias) reason));
     E.register_any conn (E.PMWakeUp (fun dom reason -> printd dom "PMWakeup reason=%d" reason));

@@ -833,6 +833,69 @@ struct
     }
   end
 
+  module Block_job = struct
+    type ty = [
+      | `KnownUnknown (* explicitly named UNKNOWN in the spec *)
+      | `Pull
+      | `Copy
+      | `Commit
+      | `Unknown of int (* newer libvirt *)
+    ]
+
+    let string_of_ty = function
+      | `KnownUnknown -> "KnownUnknown"
+      | `Pull -> "Pull"
+      | `Copy -> "Copy"
+      | `Commit -> "Commit"
+      | `Unknown x -> Printf.sprintf "Unknown Block_job.ty: %d" x
+
+    let ty_of_int = function
+      | 0 -> `KnownUnknown
+      | 1 -> `Pull
+      | 2 -> `Copy
+      | 3 -> `Commit
+      | x -> `Unknown x (* newer libvirt *)
+
+    type status = [
+      | `Completed
+      | `Failed
+      | `Cancelled
+      | `Ready
+      | `Unknown of int
+    ]
+
+    let string_of_status = function
+      | `Completed -> "Completed"
+      | `Failed -> "Failed"
+      | `Cancelled -> "Cancelled"
+      | `Ready -> "Ready"
+      | `Unknown x -> Printf.sprintf "Unknown Block_job.status: %d" x
+
+    let status_of_int = function
+      | 0 -> `Completed
+      | 1 -> `Failed
+      | 2 -> `Cancelled
+      | 3 -> `Ready
+      | x -> `Unknown x
+
+    type t = {
+      disk: string option;
+      ty: ty;
+      status: status;
+    }
+
+    let to_string t = Printf.sprintf "{ disk = %s; ty = %s; status = %s }"
+      (string_option (fun x -> x) t.disk)
+      (string_of_ty t.ty)
+      (string_of_status t.status)
+
+    let make (disk, ty, status) = {
+      disk = disk;
+      ty = ty_of_int ty;
+      status = status_of_int ty;
+    }
+  end
+
 
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
@@ -843,7 +906,7 @@ struct
     | Graphics      of ([`R] Domain.t -> Graphics.t -> unit)
     | IOErrorReason of ([`R] Domain.t -> Io_error.t -> unit)
     | ControlError  of ([`R] Domain.t -> unit -> unit)
-    | BlockJob      of ([`R] Domain.t -> (string option * int * int) -> unit)
+    | BlockJob      of ([`R] Domain.t -> Block_job.t -> unit)
     | DiskChange    of ([`R] Domain.t -> (string option * string option * string option * int) -> unit)
     | TrayChange    of ([`R] Domain.t -> (string option * int) -> unit)
     | PMWakeUp      of ([`R] Domain.t -> int -> unit)
@@ -915,7 +978,9 @@ struct
     | ControlError f ->
         Hashtbl.add u_table id f
     | BlockJob f ->
-        Hashtbl.add s_i_i_table id f
+        Hashtbl.add s_i_i_table id (fun dom x ->
+            f dom (Block_job.make x)
+        )
     | DiskChange f ->
         Hashtbl.add s_s_s_i_table id f 
     | TrayChange f ->
