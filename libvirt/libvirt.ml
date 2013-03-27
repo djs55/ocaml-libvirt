@@ -483,6 +483,720 @@ struct
     map_ignore_errors (fun dom -> (dom, get_info dom)) doms
 end
 
+module Event =
+struct
+
+  module Defined = struct
+    type t = [
+      | `Added
+      | `Updated
+      | `Unknown of int
+    ]
+
+    let to_string = function
+      | `Added -> "Added"
+      | `Updated -> "Updated"
+      | `Unknown x -> Printf.sprintf "Unknown Defined.detail: %d" x
+
+    let make = function
+      | 0 -> `Added
+      | 1 -> `Updated
+      | x -> `Unknown x (* newer libvirt *)
+  end
+
+  module Undefined = struct
+    type t = [
+      | `Removed
+      | `Unknown of int
+    ]
+
+    let to_string = function
+      | `Removed -> "UndefinedRemoved"
+      | `Unknown x -> Printf.sprintf "Unknown Undefined.detail: %d" x
+
+    let make = function
+      | 0 -> `Removed
+      | x -> `Unknown x (* newer libvirt *)
+  end
+
+  module Started = struct
+    type t = [
+      | `Booted
+      | `Migrated
+      | `Restored
+      | `FromSnapshot
+      | `Wakeup
+      | `Unknown of int
+    ]
+
+    let to_string = function
+      | `Booted -> "Booted"
+      | `Migrated -> "Migrated"
+      | `Restored -> "Restored"
+      | `FromSnapshot -> "FromSnapshot"
+      | `Wakeup -> "Wakeup"
+      | `Unknown x -> Printf.sprintf "Unknown Started.detail: %d" x
+ 
+    let make = function
+      | 0 -> `Booted
+      | 1 -> `Migrated
+      | 2 -> `Restored
+      | 3 -> `FromSnapshot
+      | 4 -> `Wakeup
+      | x -> `Unknown x (* newer libvirt *)
+  end
+
+  module Suspended = struct
+    type t = [
+      | `Paused
+      | `Migrated
+      | `IOError
+      | `Watchdog
+      | `Restored
+      | `FromSnapshot
+      | `APIError
+      | `Unknown of int (* newer libvirt *)
+    ]
+
+    let to_string = function
+      | `Paused -> "Paused"
+      | `Migrated -> "Migrated"
+      | `IOError -> "IOError"
+      | `Watchdog -> "Watchdog"
+      | `Restored -> "Restored"
+      | `FromSnapshot -> "FromSnapshot"
+      | `APIError -> "APIError"
+      | `Unknown x -> Printf.sprintf "Unknown Suspended.detail: %d" x
+
+     let make = function
+      | 0 -> `Paused
+      | 1 -> `Migrated
+      | 2 -> `IOError
+      | 3 -> `Watchdog
+      | 4 -> `Restored
+      | 5 -> `FromSnapshot
+      | 6 -> `APIError
+      | x -> `Unknown x (* newer libvirt *)
+  end
+
+  module Resumed = struct
+    type t = [
+      | `Unpaused
+      | `Migrated
+      | `FromSnapshot
+      | `Unknown of int (* newer libvirt *)
+    ]
+
+    let to_string = function
+      | `Unpaused -> "Unpaused"
+      | `Migrated -> "Migrated"
+      | `FromSnapshot -> "FromSnapshot"
+      | `Unknown x -> Printf.sprintf "Unknown Resumed.detail: %d" x
+
+    let make = function
+      | 0 -> `Unpaused
+      | 1 -> `Migrated
+      | 2 -> `FromSnapshot
+      | x -> `Unknown x (* newer libvirt *)
+  end
+
+  module Stopped = struct
+    type t = [
+      | `Shutdown
+      | `Destroyed
+      | `Crashed
+      | `Migrated
+      | `Saved
+      | `Failed
+      | `FromSnapshot
+      | `Unknown of int
+    ]
+    let to_string = function
+      | `Shutdown -> "Shutdown"
+      | `Destroyed -> "Destroyed"
+      | `Crashed -> "Crashed"
+      | `Migrated -> "Migrated"
+      | `Saved -> "Saved"
+      | `Failed -> "Failed"
+      | `FromSnapshot -> "FromSnapshot"
+      | `Unknown x -> Printf.sprintf "Unknown Stopped.detail: %d" x
+
+    let make = function
+      | 0 -> `Shutdown
+      | 1 -> `Destroyed
+      | 2 -> `Crashed
+      | 3 -> `Migrated
+      | 4 -> `Saved
+      | 5 -> `Failed
+      | 6 -> `FromSnapshot
+      | x -> `Unknown x (* newer libvirt *)
+  end
+
+  module PM_suspended = struct
+    type t = [
+      | `Memory
+      | `Disk
+      | `Unknown of int (* newer libvirt *)
+    ]
+
+    let to_string = function
+      | `Memory -> "Memory"
+      | `Disk -> "Disk"
+      | `Unknown x -> Printf.sprintf "Unknown PM_suspended.detail: %d" x
+
+    let make = function
+      | 0 -> `Memory
+      | 1 -> `Disk
+      | x -> `Unknown x (* newer libvirt *)
+  end
+
+  let string_option x = match x with
+    | None -> "None"
+    | Some x' -> "Some " ^ x'
+
+  module Lifecycle = struct
+    type t = [
+      | `Defined of Defined.t
+      | `Undefined of Undefined.t
+      | `Started of Started.t
+      | `Suspended of Suspended.t
+      | `Resumed of Resumed.t
+      | `Stopped of Stopped.t
+      | `Shutdown (* no detail defined yet *)
+      | `PMSuspended of PM_suspended.t
+      | `Unknown of int (* newer libvirt *)
+    ]
+
+    let to_string = function
+      | `Defined x -> "Defined " ^ (Defined.to_string x)
+      | `Undefined x -> "Undefined " ^ (Undefined.to_string x)
+      | `Started x -> "Started " ^ (Started.to_string x)
+      | `Suspended x -> "Suspended " ^ (Suspended.to_string x)
+      | `Resumed x -> "Resumed " ^ (Resumed.to_string x)
+      | `Stopped x -> "Stopped " ^ (Stopped.to_string x)
+      | `Shutdown -> "Shutdown"
+      | `PMSuspended x -> "PMSuspended " ^ (PM_suspended.to_string x)
+      | `Unknown x -> Printf.sprintf "Unknown Lifecycle event: %d" x
+
+    let make (ty, detail) = match ty with
+      | 0 -> `Defined (Defined.make detail)
+      | 1 -> `Undefined (Undefined.make detail)
+      | 2 -> `Started (Started.make detail)
+      | 3 -> `Suspended (Suspended.make detail)
+      | 4 -> `Resumed (Resumed.make detail)
+      | 5 -> `Stopped (Stopped.make detail)
+      | 6 -> `Shutdown
+      | 7 -> `PMSuspended (PM_suspended.make detail)
+      | x -> `Unknown x
+  end
+
+  module Reboot = struct
+    type t = unit
+
+    let to_string _ = "()"
+
+    let make () = ()
+  end
+
+  module Rtc_change = struct
+    type t = int64
+
+    let to_string = Int64.to_string
+
+    let make x = x
+  end
+
+  module Watchdog = struct
+    type t = [
+      | `None
+      | `Pause
+      | `Reset
+      | `Poweroff
+      | `Shutdown
+      | `Debug
+      | `Unknown of int
+    ]
+
+    let to_string = function
+      | `None -> "None"
+      | `Pause -> "Pause"
+      | `Reset -> "Reset"
+      | `Poweroff -> "Poweroff"
+      | `Shutdown -> "Shutdown"
+      | `Debug -> "Debug"
+      | `Unknown x -> Printf.sprintf "Unknown watchdog_action: %d" x
+
+    let make = function
+      | 0 -> `None
+      | 1 -> `Pause
+      | 2 -> `Reset
+      | 3 -> `Poweroff
+      | 4 -> `Shutdown
+      | 5 -> `Debug
+      | x -> `Unknown x (* newer libvirt *)
+  end
+
+  module Io_error = struct
+    type action = [
+      | `None
+      | `Pause
+      | `Report
+      | `Unknown of int (* newer libvirt *)
+    ]
+
+    let string_of_action = function
+      | `None -> "None"
+      | `Pause -> "Pause"
+      | `Report -> "Report"
+      | `Unknown x -> Printf.sprintf "Unknown Io_error.action: %d" x
+
+    let action_of_int = function
+      | 0 -> `None
+      | 1 -> `Pause
+      | 2 -> `Report
+      | x -> `Unknown x
+
+    type t = {
+      src_path: string option;
+      dev_alias: string option;
+      action: action;
+      reason: string option;
+    }
+
+    let to_string t = Printf.sprintf
+        "{ Io_error.src_path = %s; dev_alias = %s; action = %s; reason = %s }"
+        (string_option t.src_path)
+        (string_option t.dev_alias)
+        (string_of_action t.action)
+        (string_option t.reason)
+
+    let make (src_path, dev_alias, action, reason) = {
+        src_path = src_path;
+        dev_alias = dev_alias;
+        action = action_of_int action;
+        reason = reason;
+    }
+
+    let make_noreason (src_path, dev_alias, action) =
+      make (src_path, dev_alias, action, None)
+  end
+
+  module Graphics_address = struct
+    type family = [
+      | `Ipv4
+      | `Ipv6
+      | `Unix
+      | `Unknown of int (* newer libvirt *)
+    ]
+
+    let string_of_family = function
+      | `Ipv4 -> "IPv4"
+      | `Ipv6 -> "IPv6"
+      | `Unix -> "UNIX"
+      | `Unknown x -> Printf.sprintf "Unknown Graphics_address.family: %d" x
+
+    let family_of_int = function
+      (* no zero *)
+      | 1 -> `Ipv4
+      | 2 -> `Ipv6
+      | 3 -> `Unix
+      | x -> `Unknown x
+
+    type t = {
+      family: family;         (** Address family *)
+      node: string option;    (** Address of node (eg IP address, or UNIX path *)
+      service: string option; (** Service name/number (eg TCP port, or NULL) *)
+    }
+
+    let to_string t = Printf.sprintf
+      "{ family = %s; node = %s; service = %s }"
+        (string_of_family t.family)
+        (string_option t.node)
+        (string_option t.service)
+
+    let make (family, node, service) = {
+      family = family_of_int family;
+      node = node;
+      service = service;
+    }
+  end
+
+  module Graphics_subject = struct
+    type identity = {
+      ty: string option;
+      name: string option;
+    }
+
+    let string_of_identity t = Printf.sprintf
+      "{ ty = %s; name = %s }"
+      (string_option t.ty)
+      (string_option t.name)
+
+    type t = identity list
+
+    let to_string ts =
+      "[ " ^ (String.concat "; " (List.map string_of_identity ts)) ^ " ]"
+
+    let make xs =
+      List.map (fun (ty, name) -> { ty = ty; name = name })
+        (Array.to_list xs)
+  end
+
+  module Graphics = struct
+    type phase = [
+      | `Connect
+      | `Initialize
+      | `Disconnect
+      | `Unknown of int (** newer libvirt *)
+    ]
+
+    let string_of_phase = function
+      | `Connect -> "Connect"
+      | `Initialize -> "Initialize"
+      | `Disconnect -> "Disconnect"
+      | `Unknown x -> Printf.sprintf "Unknown Graphics.phase: %d" x
+
+    let phase_of_int = function
+      | 0 -> `Connect
+      | 1 -> `Initialize
+      | 2 -> `Disconnect
+      | x -> `Unknown x
+
+    type t = {
+      phase: phase;                (** the phase of the connection *)
+      local: Graphics_address.t;   (** the local server address *)
+      remote: Graphics_address.t;  (** the remote client address *)
+      auth_scheme: string option;  (** the authentication scheme activated *)
+      subject: Graphics_subject.t; (** the authenticated subject (user) *)
+    }
+
+    let to_string t =
+      let phase = Printf.sprintf "phase = %s"
+        (string_of_phase t.phase) in
+      let local = Printf.sprintf "local = %s"
+        (Graphics_address.to_string t.local) in
+      let remote = Printf.sprintf "remote = %s"
+        (Graphics_address.to_string t.remote) in
+      let auth_scheme = Printf.sprintf "auth_scheme = %s"
+        (string_option t.auth_scheme) in
+      let subject = Printf.sprintf "subject = %s"
+        (Graphics_subject.to_string t.subject) in
+      "{ " ^ (String.concat "; " [ phase; local; remote; auth_scheme; subject ]) ^ " }"
+
+    let make (phase, local, remote, auth_scheme, subject) = {
+      phase = phase_of_int phase;
+      local = Graphics_address.make local;
+      remote = Graphics_address.make remote;
+      auth_scheme = auth_scheme;
+      subject = Graphics_subject.make subject;
+    }
+  end
+
+  module Control_error = struct
+    type t = unit
+
+    let to_string () = "()"
+
+    let make () = ()
+  end
+
+  module Block_job = struct
+    type ty = [
+      | `KnownUnknown (* explicitly named UNKNOWN in the spec *)
+      | `Pull
+      | `Copy
+      | `Commit
+      | `Unknown of int (* newer libvirt *)
+    ]
+
+    let string_of_ty = function
+      | `KnownUnknown -> "KnownUnknown"
+      | `Pull -> "Pull"
+      | `Copy -> "Copy"
+      | `Commit -> "Commit"
+      | `Unknown x -> Printf.sprintf "Unknown Block_job.ty: %d" x
+
+    let ty_of_int = function
+      | 0 -> `KnownUnknown
+      | 1 -> `Pull
+      | 2 -> `Copy
+      | 3 -> `Commit
+      | x -> `Unknown x (* newer libvirt *)
+
+    type status = [
+      | `Completed
+      | `Failed
+      | `Cancelled
+      | `Ready
+      | `Unknown of int
+    ]
+
+    let string_of_status = function
+      | `Completed -> "Completed"
+      | `Failed -> "Failed"
+      | `Cancelled -> "Cancelled"
+      | `Ready -> "Ready"
+      | `Unknown x -> Printf.sprintf "Unknown Block_job.status: %d" x
+
+    let status_of_int = function
+      | 0 -> `Completed
+      | 1 -> `Failed
+      | 2 -> `Cancelled
+      | 3 -> `Ready
+      | x -> `Unknown x
+
+    type t = {
+      disk: string option;
+      ty: ty;
+      status: status;
+    }
+
+    let to_string t = Printf.sprintf "{ disk = %s; ty = %s; status = %s }"
+      (string_option t.disk)
+      (string_of_ty t.ty)
+      (string_of_status t.status)
+
+    let make (disk, ty, status) = {
+      disk = disk;
+      ty = ty_of_int ty;
+      status = status_of_int ty;
+    }
+  end
+
+  module Disk_change = struct
+    type reason = [
+      | `MissingOnStart
+      | `Unknown of int
+    ]
+
+    let string_of_reason = function
+      | `MissingOnStart -> "MissingOnStart"
+      | `Unknown x -> Printf.sprintf "Unknown Disk_change.reason: %d" x
+
+    let reason_of_int = function
+      | 0 -> `MissingOnStart
+      | x -> `Unknown x
+
+    type t = {
+      old_src_path: string option;
+      new_src_path: string option;
+      dev_alias: string option;
+      reason: reason;
+    }
+
+    let to_string t =
+      let o = Printf.sprintf "old_src_path = %s" (string_option t.old_src_path) in
+      let n = Printf.sprintf "new_src_path = %s" (string_option t.new_src_path) in
+      let d = Printf.sprintf "dev_alias = %s" (string_option t.dev_alias) in
+      let r = string_of_reason t.reason in
+      "{ " ^ (String.concat "; " [ o; n; d; r ]) ^ " }"
+
+    let make (o, n, d, r) = {
+      old_src_path = o;
+      new_src_path = n;
+      dev_alias = d;
+      reason = reason_of_int r;
+    }
+  end
+
+  module Tray_change = struct
+    type reason = [
+      | `Open
+      | `Close
+      | `Unknown of int
+    ]
+
+    let string_of_reason = function
+      | `Open -> "Open"
+      | `Close -> "Close"
+      | `Unknown x -> Printf.sprintf "Unknown Tray_change.reason: %d" x
+
+    let reason_of_int = function
+      | 0 -> `Open
+      | 1 -> `Close
+      | x -> `Unknown x
+
+    type t = {
+      dev_alias: string option;
+      reason: reason;
+    }
+
+    let to_string t = Printf.sprintf
+      "{ dev_alias = %s; reason = %s }"
+        (string_option t.dev_alias)
+        (string_of_reason t.reason)
+
+    let make (dev_alias, reason) = {
+      dev_alias = dev_alias;
+      reason = reason_of_int reason;
+    }
+  end
+
+  module PM_wakeup = struct
+    type reason = [
+      | `Unknown of int
+    ]
+
+    type t = reason
+
+    let to_string = function
+      | `Unknown x -> Printf.sprintf "Unknown PM_wakeup.reason: %d" x
+
+    let make x = `Unknown x
+  end
+
+  module PM_suspend = struct
+    type reason = [
+      | `Unknown of int
+    ]
+
+    type t = reason
+
+    let to_string = function
+      | `Unknown x -> Printf.sprintf "Unknown PM_suspend.reason: %d" x
+
+    let make x = `Unknown x
+  end
+
+  module Balloon_change = struct
+    type t = int64
+
+    let to_string = Int64.to_string
+    let make x = x
+  end
+
+  module PM_suspend_disk = struct
+    type reason = [
+      | `Unknown of int
+    ]
+
+    type t = reason
+
+    let to_string = function
+      | `Unknown x -> Printf.sprintf "Unknown PM_suspend_disk.reason: %d" x
+
+    let make x = `Unknown x
+  end
+
+  type callback =
+    | Lifecycle     of ([`R] Domain.t -> Lifecycle.t -> unit)
+    | Reboot        of ([`R] Domain.t -> Reboot.t -> unit)
+    | RtcChange     of ([`R] Domain.t -> Rtc_change.t -> unit)
+    | Watchdog      of ([`R] Domain.t -> Watchdog.t -> unit)
+    | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
+    | Graphics      of ([`R] Domain.t -> Graphics.t -> unit)
+    | IOErrorReason of ([`R] Domain.t -> Io_error.t -> unit)
+    | ControlError  of ([`R] Domain.t -> Control_error.t -> unit)
+    | BlockJob      of ([`R] Domain.t -> Block_job.t -> unit)
+    | DiskChange    of ([`R] Domain.t -> Disk_change.t -> unit)
+    | TrayChange    of ([`R] Domain.t -> Tray_change.t -> unit)
+    | PMWakeUp      of ([`R] Domain.t -> PM_wakeup.t -> unit)
+    | PMSuspend     of ([`R] Domain.t -> PM_suspend.t -> unit)
+    | BalloonChange of ([`R] Domain.t -> Balloon_change.t -> unit)
+    | PMSuspendDisk of ([`R] Domain.t -> PM_suspend_disk.t -> unit)
+
+  type callback_id = int64
+
+  let fresh_callback_id =
+    let next = ref 0L in
+    fun () ->
+      let result = !next in
+      next := Int64.succ !next;
+      result
+
+  let make_table value_name =
+    let table = Hashtbl.create 16 in
+    let callback callback_id generic x =
+      if Hashtbl.mem table callback_id
+      then Hashtbl.find table callback_id generic x in
+    let _ = Callback.register value_name callback in
+    table
+
+  let u_table = make_table "Libvirt.u_callback"
+  let i_table = make_table "Libvirt.i_callback"
+  let i64_table = make_table "Libvirt.i64_callback"
+  let i_i_table = make_table "Libvirt.i_i_callback"
+  let s_i_table = make_table "Libvirt.s_i_callback"
+  let s_i_i_table = make_table "Libvirt.s_i_i_callback"
+  let s_s_i_table = make_table "Libvirt.s_s_i_callback"
+  let s_s_i_s_table = make_table "Libvirt.s_s_i_s_callback"
+  let s_s_s_i_table = make_table "Libvirt.s_s_s_i_callback"
+  let i_ga_ga_s_gs_table = make_table "Libvirt.i_ga_ga_s_gs_callback"
+
+  external register_default_impl : unit -> unit = "ocaml_libvirt_event_register_default_impl"
+
+  external run_default_impl : unit -> unit = "ocaml_libvirt_event_run_default_impl"
+
+  external register_any' : 'a Connect.t -> 'a Domain.t option -> callback -> callback_id -> unit = "ocaml_libvirt_event_register_any"
+
+  let register_any conn ?dom callback =
+    let id = fresh_callback_id () in
+    begin match callback with
+    | Lifecycle f ->
+        Hashtbl.add i_i_table id (fun dom x ->
+            f dom (Lifecycle.make x)
+        )
+    | Reboot f ->
+        Hashtbl.add u_table id (fun dom x ->
+            f dom (Reboot.make x)
+        )
+    | RtcChange f ->
+        Hashtbl.add i64_table id (fun dom x ->
+            f dom (Rtc_change.make x)
+        )
+    | Watchdog f ->
+        Hashtbl.add i_table id (fun dom x ->
+            f dom (Watchdog.make x)
+        ) 
+    | IOError f ->
+        Hashtbl.add s_s_i_table id (fun dom x ->
+            f dom (Io_error.make_noreason x)
+        )
+    | Graphics f ->
+        Hashtbl.add i_ga_ga_s_gs_table id (fun dom x ->
+            f dom (Graphics.make x)
+        )
+    | IOErrorReason f ->
+        Hashtbl.add s_s_i_s_table id (fun dom x ->
+            f dom (Io_error.make x)
+        )
+    | ControlError f ->
+        Hashtbl.add u_table id (fun dom x ->
+            f dom (Control_error.make x)
+        )
+    | BlockJob f ->
+        Hashtbl.add s_i_i_table id (fun dom x ->
+            f dom (Block_job.make x)
+        )
+    | DiskChange f ->
+        Hashtbl.add s_s_s_i_table id (fun dom x ->
+            f dom (Disk_change.make x)
+        )
+    | TrayChange f ->
+        Hashtbl.add s_i_table id (fun dom x ->
+            f dom (Tray_change.make x)
+        )
+    | PMWakeUp f ->
+        Hashtbl.add i_table id (fun dom x ->
+            f dom (PM_wakeup.make x)
+        )
+    | PMSuspend f ->
+        Hashtbl.add i_table id (fun dom x ->
+            f dom (PM_suspend.make x)
+        )
+    | BalloonChange f ->
+        Hashtbl.add i64_table id (fun dom x ->
+            f dom (Balloon_change.make x)
+        )
+    | PMSuspendDisk f ->
+        Hashtbl.add i_table id (fun dom x ->
+            f dom (PM_suspend_disk.make x)
+        )
+    end;
+    register_any' conn dom callback id
+
+end
+
 module Network =
 struct
   type 'rw t

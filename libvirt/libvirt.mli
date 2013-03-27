@@ -645,6 +645,343 @@ end
   (** Module dealing with domains.  [Domain.t] is the
       domain object. *)
 
+module Event :
+sig
+
+  module Defined : sig
+    type t = [
+      | `Added          (** Newly created config file *)
+      | `Updated        (** Changed config file *)
+      | `Unknown of int
+    ]
+
+    val to_string: t -> string
+  end
+
+  module Undefined : sig
+    type t = [
+      | `Removed        (** Deleted the config file *)
+      | `Unknown of int
+    ]
+
+    val to_string: t -> string
+  end
+
+  module Started : sig
+    type t = [
+      | `Booted         (** Normal startup from boot *)
+      | `Migrated       (** Incoming migration from another host *)
+      | `Restored       (** Restored from a state file *)
+      | `FromSnapshot   (** Restored from snapshot *)
+      | `Wakeup         (** Started due to wakeup event *)
+      | `Unknown of int
+    ]
+
+    val to_string: t -> string
+  end
+
+  module Suspended : sig
+    type t = [
+      | `Paused        (** Normal suspend due to admin pause *)
+      | `Migrated      (** Suspended for offline migration *)
+      | `IOError       (** Suspended due to a disk I/O error *)
+      | `Watchdog      (** Suspended due to a watchdog firing *)
+      | `Restored      (** Restored from paused state file *)
+      | `FromSnapshot  (** Restored from paused snapshot *)
+      | `APIError      (** suspended after failure during libvirt API call *)
+      | `Unknown of int
+    ]
+
+    val to_string: t -> string
+  end
+
+  module Resumed : sig
+    type t = [
+      | `Unpaused      (** Normal resume due to admin unpause *)
+      | `Migrated      (** Resumed for completion of migration *)
+      | `FromSnapshot  (** Resumed from snapshot *)
+      | `Unknown of int
+    ]
+
+    val to_string: t -> string
+  end
+
+  module Stopped : sig
+    type t = [
+      | `Shutdown     (** Normal shutdown *)
+      | `Destroyed    (** Forced poweroff from host *)
+      | `Crashed      (** Guest crashed *)
+      | `Migrated     (** Migrated off to another host *)
+      | `Saved        (** Saved to a state file *)
+      | `Failed       (** Host emulator/mgmt failed *)
+      | `FromSnapshot (** offline snapshot loaded *)
+      | `Unknown of int
+    ]
+
+    val to_string: t -> string
+  end
+
+  module PM_suspended : sig
+    type t = [
+      | `Memory       (** Guest was PM suspended to memory *)
+      | `Disk         (** Guest was PM suspended to disk *)
+      | `Unknown of int
+    ]
+
+    val to_string: t -> string
+  end
+
+  module Lifecycle : sig
+    type t = [
+      | `Defined of Defined.t
+      | `Undefined of Undefined.t
+      | `Started of Started.t
+      | `Suspended of Suspended.t
+      | `Resumed of Resumed.t
+      | `Stopped of Stopped.t
+      | `Shutdown (* no detail defined yet *)
+      | `PMSuspended of PM_suspended.t
+      | `Unknown of int
+    ]
+
+    val to_string: t -> string
+  end
+
+  module Reboot : sig
+    type t = unit
+
+    val to_string: t -> string
+  end
+
+  module Rtc_change : sig
+    type t = int64
+
+    val to_string: t -> string
+  end
+
+  module Watchdog : sig
+    type t = [
+      | `None           (** No action, watchdog ignored *)
+      | `Pause          (** Guest CPUs are paused *)
+      | `Reset          (** Guest CPUs are reset *)
+      | `Poweroff       (** Guest is forcably powered off *)
+      | `Shutdown       (** Guest is requested to gracefully shutdown *)
+      | `Debug          (** No action, a debug message logged *)
+      | `Unknown of int (** newer libvirt *)
+    ]
+
+    val to_string: t -> string
+  end
+
+  module Io_error : sig
+    (** Represents both IOError and IOErrorReason *)
+    type action = [
+      | `None           (** No action, IO error ignored *)
+      | `Pause          (** Guest CPUs are paused *)
+      | `Report         (** IO error reported to guest OS *)
+      | `Unknown of int (** newer libvirt *)
+    ]
+
+    type t = {
+      src_path: string option;  (** The host file on which the I/O error occurred *)
+      dev_alias: string option; (** The guest device alias associated with the path *)
+      action: action;    (** The action that is to be taken due to the IO error *)
+      reason: string option;    (** The cause of the IO error *)
+    }
+
+    val to_string: t -> string
+  end
+
+  module Graphics_address : sig
+    type family = [
+      | `Ipv4           (** IPv4 address *)
+      | `Ipv6           (** IPv6 address *)
+      | `Unix           (** UNIX socket path *)
+      | `Unknown of int (** newer libvirt *)
+    ]
+
+    type t = {
+      family: family;         (** Address family *)
+      node: string option;    (** Address of node (eg IP address, or UNIX path *)
+      service: string option; (** Service name/number (eg TCP port, or NULL) *)
+    }
+
+    val to_string: t -> string
+  end
+
+  module Graphics_subject : sig
+    type identity = {
+      ty: string option;   (** Type of identity *)
+      name: string option; (** Identity value *)
+    }
+
+    type t = identity list
+
+    val to_string: t -> string
+  end
+
+  module Graphics : sig
+    type phase = [
+      | `Connect        (** Initial socket connection established *)
+      | `Initialize     (** Authentication & setup completed *)
+      | `Disconnect     (** Final socket disconnection *)
+      | `Unknown of int (** newer libvirt *)
+    ]
+
+    type t = {
+      phase: phase;                (** the phase of the connection *)
+      local: Graphics_address.t;   (** the local server address *)
+      remote: Graphics_address.t;  (** the remote client address *)
+      auth_scheme: string option;  (** the authentication scheme activated *)
+      subject: Graphics_subject.t; (** the authenticated subject (user) *)
+    }
+
+    val to_string: t -> string
+  end
+
+  module Control_error : sig
+    type t = unit
+
+    val to_string: t -> string
+  end
+
+  module Block_job : sig
+    type ty = [
+      | `KnownUnknown (** explicitly named UNKNOWN in the spec *)
+      | `Pull
+      | `Copy
+      | `Commit
+      | `Unknown of int
+    ]
+
+    type status = [
+      | `Completed
+      | `Failed
+      | `Cancelled
+      | `Ready
+      | `Unknown of int
+    ]
+
+    type t = {
+      disk: string option; (** fully-qualified name of the affected disk *)	
+      ty: ty;              (** type of block job *)
+      status: status;      (** final status of the operation *)
+    }
+
+    val to_string: t -> string
+  end
+
+  module Disk_change : sig
+    type reason = [
+      | `MissingOnStart
+      | `Unknown of int
+    ]
+
+    type t = {
+      old_src_path: string option; (** old source path *)
+      new_src_path: string option; (** new source path *)
+      dev_alias: string option;    (** device alias name *)
+      reason: reason;              (** reason why this callback was called *)
+    }
+
+    val to_string: t -> string
+  end
+
+  module Tray_change : sig
+    type reason = [
+      | `Open
+      | `Close
+      | `Unknown of int
+    ]
+
+    type t = {
+      dev_alias: string option; (** device alias *)
+      reason: reason;           (** why the tray status was changed *)
+    }
+
+    val to_string: t -> string
+  end
+
+  module PM_wakeup : sig
+    type reason = [
+      | `Unknown of int
+    ]
+
+    type t = reason
+
+    val to_string: t -> string
+  end
+
+  module PM_suspend : sig
+    type reason = [
+      | `Unknown of int
+    ]
+
+    type t = reason
+
+    val to_string: t -> string
+  end
+
+  module Balloon_change : sig
+    type t = int64
+
+    val to_string: t -> string
+  end
+
+  module PM_suspend_disk : sig
+    type reason = [
+      | `Unknown of int
+    ]
+
+    type t = reason
+
+    val to_string: t -> string
+  end
+
+
+  type callback =
+    | Lifecycle     of ([`R] Domain.t -> Lifecycle.t -> unit)
+    | Reboot        of ([`R] Domain.t -> Reboot.t -> unit)
+    | RtcChange     of ([`R] Domain.t -> Rtc_change.t -> unit)
+    | Watchdog      of ([`R] Domain.t -> Watchdog.t -> unit)
+    | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
+    | Graphics      of ([`R] Domain.t -> Graphics.t -> unit)
+    | IOErrorReason of ([`R] Domain.t -> Io_error.t -> unit)
+    | ControlError  of ([`R] Domain.t -> Control_error.t -> unit)
+    | BlockJob      of ([`R] Domain.t -> Block_job.t -> unit)
+    | DiskChange    of ([`R] Domain.t -> Disk_change.t -> unit)
+    | TrayChange    of ([`R] Domain.t -> Tray_change.t -> unit)
+    | PMWakeUp      of ([`R] Domain.t -> PM_wakeup.t -> unit)
+    | PMSuspend     of ([`R] Domain.t -> PM_suspend.t -> unit)
+    | BalloonChange of ([`R] Domain.t -> Balloon_change.t -> unit)
+    | PMSuspendDisk of ([`R] Domain.t -> PM_suspend_disk.t -> unit)
+
+    (** type of a registered call back function *)
+
+  val register_default_impl : unit -> unit
+    (** Registers the default event loop based on poll(). This
+        must be done before connections are opened.
+
+        Once registered call run_default_impl in a loop. *)
+
+  val run_default_impl : unit -> unit
+    (** Runs one iteration of the event loop. Applications will
+        generally want to have a thread which invokes this in an
+        infinite loop. *)
+
+  val register_any : 'a Connect.t -> ?dom:'a Domain.t -> callback -> unit
+    (** [register_any con ?dom callback] registers [callback]
+        to receive notification of arbitrary domain events.
+
+        If [?dom] is None then register for this kind of event on
+        all domains. If [dom] is [Some d] then register for this
+        kind of event only on [d].
+    *)
+
+end
+  (** Module dealing with events generated by domain
+      state changes. *)
+
 (** {3 Networks} *)
 
 module Network : 

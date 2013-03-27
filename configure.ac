@@ -126,6 +126,9 @@ AC_CHECK_FUNCS([virConnectGetHostname \
 		virDomainBlockPeek \
 		virDomainMemoryPeek \
                 virDomainGetCPUStats \
+                virEventRegisterDefaultImpl \
+                virEventRunDefaultImpl \
+                virConnectDomainEventRegisterAny \
                 virConnectSetKeepAlive \
 ])
 
