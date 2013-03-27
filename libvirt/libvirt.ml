@@ -716,13 +716,125 @@ struct
     }
   end
 
+  module Graphics_address = struct
+    type family = [
+      | `Ipv4
+      | `Ipv6
+      | `Unix
+      | `Unknown of int (* newer libvirt *)
+    ]
+
+    let string_of_family = function
+      | `Ipv4 -> "IPv4"
+      | `Ipv6 -> "IPv6"
+      | `Unix -> "UNIX"
+      | `Unknown x -> Printf.sprintf "Unknown Graphics_address.family: %d" x
+
+    let family_of_int = function
+      (* no zero *)
+      | 1 -> `Ipv4
+      | 2 -> `Ipv6
+      | 3 -> `Unix
+      | x -> `Unknown x
+
+    type t = {
+      family: family;         (** Address family *)
+      node: string option;    (** Address of node (eg IP address, or UNIX path *)
+      service: string option; (** Service name/number (eg TCP port, or NULL) *)
+    }
+
+    let to_string t = Printf.sprintf
+      "{ family = %s; node = %s; service = %s }"
+        (string_of_family t.family)
+        (string_option (fun x -> x) t.node)
+        (string_option (fun x -> x) t.service)
+
+    let make (family, node, service) = {
+      family = family_of_int family;
+      node = node;
+      service = service;
+    }
+  end
+
+  module Graphics_subject = struct
+    type identity = {
+      ty: string option;
+      name: string option;
+    }
+
+    let string_of_identity t = Printf.sprintf
+      "{ ty = %s; name = %s }"
+      (string_option (fun x -> x) t.ty)
+      (string_option (fun x -> x) t.name)
+
+    type t = identity list
+
+    let to_string ts =
+      "[ " ^ (String.concat "; " (List.map string_of_identity ts)) ^ " ]"
+
+    let make xs =
+      List.map (fun (ty, name) -> { ty = ty; name = name })
+        (Array.to_list xs)
+  end
+
+  module Graphics = struct
+    type phase = [
+      | `Connect
+      | `Initialize
+      | `Disconnect
+      | `Unknown of int (** newer libvirt *)
+    ]
+
+    let string_of_phase = function
+      | `Connect -> "Connect"
+      | `Initialize -> "Initialize"
+      | `Disconnect -> "Disconnect"
+      | `Unknown x -> Printf.sprintf "Unknown Graphics.phase: %d" x
+
+    let phase_of_int = function
+      | 0 -> `Connect
+      | 1 -> `Initialize
+      | 2 -> `Disconnect
+      | x -> `Unknown x
+
+    type t = {
+      phase: phase;                (** the phase of the connection *)
+      local: Graphics_address.t;   (** the local server address *)
+      remote: Graphics_address.t;  (** the remote client address *)
+      auth_scheme: string option;  (** the authentication scheme activated *)
+      subject: Graphics_subject.t; (** the authenticated subject (user) *)
+    }
+
+    let to_string t =
+      let phase = Printf.sprintf "phase = %s"
+        (string_of_phase t.phase) in
+      let local = Printf.sprintf "local = %s"
+        (Graphics_address.to_string t.local) in
+      let remote = Printf.sprintf "remote = %s"
+        (Graphics_address.to_string t.remote) in
+      let auth_scheme = Printf.sprintf "auth_scheme = %s"
+        (string_option (fun x -> x) t.auth_scheme) in
+      let subject = Printf.sprintf "subject = %s"
+        (Graphics_subject.to_string t.subject) in
+      "{ " ^ (String.concat "; " [ phase; local; remote; auth_scheme; subject ]) ^ " }"
+
+    let make (phase, local, remote, auth_scheme, subject) = {
+      phase = phase_of_int phase;
+      local = Graphics_address.make local;
+      remote = Graphics_address.make remote;
+      auth_scheme = auth_scheme;
+      subject = Graphics_subject.make subject;
+    }
+  end
+
+
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
     | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
-    | Graphics      of ([`R] Domain.t -> (int * (int * string option * string option) * (int * string option * string option) * string * ((string option * string option) array)) -> unit)
+    | Graphics      of ([`R] Domain.t -> Graphics.t -> unit)
     | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)
     | ControlError  of ([`R] Domain.t -> unit -> unit)
     | BlockJob      of ([`R] Domain.t -> (string option * int * int) -> unit)
@@ -787,7 +899,9 @@ struct
             f dom (Io_error.make x)
         )
     | Graphics f ->
-        Hashtbl.add i_ga_ga_s_gs_table id f
+        Hashtbl.add i_ga_ga_s_gs_table id (fun dom x ->
+            f dom (Graphics.make x)
+        )
     | IOErrorReason f ->
         Hashtbl.add s_s_i_s_table id f
     | ControlError f ->

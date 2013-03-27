@@ -77,7 +77,9 @@ let () =
         printd dom "IOError %s" (E.Io_error.to_string e)
     ));
     E.register_any conn (E.IOErrorReason (fun dom (src, dst, action, reason) -> printd dom "IOErrorReason src=%s dst=%s action=%d reason=%s" (string_option src) (string_option dst) action (string_option reason)));
-    E.register_any conn (E.Graphics (fun dom (phase, local, remote, auth, subject) -> printd dom "Graphics phase=%d local=%s remote=%s auth=%s subject=[%s]" phase (string_of_graphics_address local) (string_of_graphics_address remote) auth (string_of_graphics_subject subject)));
+    E.register_any conn (E.Graphics (fun dom e ->
+        printd dom "Graphics %s" (E.Graphics.to_string e)
+    ));
     E.register_any conn (E.ControlError (fun dom () -> printd dom "ControlError"));
     E.register_any conn (E.BlockJob (fun dom (disk, ty, status) -> printd dom "BlockJob disk=%s ty=%d status=%d" (string_option disk) ty status));
     E.register_any conn (E.DiskChange (fun dom (oldpath, newpath, alias, reason) -> printd dom "DiskChange oldpath=%s newpath=%s alias=%s reason=%d" (string_option oldpath) (string_option newpath) (string_option alias) reason));

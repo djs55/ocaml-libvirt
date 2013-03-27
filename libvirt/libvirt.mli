@@ -736,12 +736,57 @@ sig
       | `Unknown of int (** newer libvirt *)
     ]
 
-    val string_of_action: action -> string
-
     type t = {
       src_path: string option;  (** The host file on which the I/O error occurred *)
       dev_alias: string option; (** The guest device alias associated with the path *)
       action: action;    (** The action that is to be taken due to the IO error *)
+    }
+
+    val to_string: t -> string
+  end
+
+  module Graphics_address : sig
+    type family = [
+      | `Ipv4           (** IPv4 address *)
+      | `Ipv6           (** IPv6 address *)
+      | `Unix           (** UNIX socket path *)
+      | `Unknown of int (** newer libvirt *)
+    ]
+
+    type t = {
+      family: family;         (** Address family *)
+      node: string option;    (** Address of node (eg IP address, or UNIX path *)
+      service: string option; (** Service name/number (eg TCP port, or NULL) *)
+    }
+
+    val to_string: t -> string
+  end
+
+  module Graphics_subject : sig
+    type identity = {
+      ty: string option;   (** Type of identity *)
+      name: string option; (** Identity value *)
+    }
+
+    type t = identity list
+
+    val to_string: t -> string
+  end
+
+  module Graphics : sig
+    type phase = [
+      | `Connect        (** Initial socket connection established *)
+      | `Initialize     (** Authentication & setup completed *)
+      | `Disconnect     (** Final socket disconnection *)
+      | `Unknown of int (** newer libvirt *)
+    ]
+
+    type t = {
+      phase: phase;                (** the phase of the connection *)
+      local: Graphics_address.t;   (** the local server address *)
+      remote: Graphics_address.t;  (** the remote client address *)
+      auth_scheme: string option;  (** the authentication scheme activated *)
+      subject: Graphics_subject.t; (** the authenticated subject (user) *)
     }
 
     val to_string: t -> string
@@ -753,7 +798,7 @@ sig
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
     | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
-    | Graphics      of ([`R] Domain.t -> (int * (int * string option * string option) * (int * string option * string option) * string * ((string option * string option) array)) -> unit)
+    | Graphics      of ([`R] Domain.t -> Graphics.t -> unit)
     | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)
     | ControlError  of ([`R] Domain.t -> unit -> unit)
     | BlockJob      of ([`R] Domain.t -> (string option * int * int) -> unit)
