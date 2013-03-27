@@ -100,6 +100,8 @@ struct
   let cpu_usable cpumaps maplen vcpu cpu =
     Char.code cpumaps.[vcpu*maplen + cpu/8] land (1 lsl (cpu mod 8)) <> 0
 
+  external set_keep_alive : [>`R] t -> int -> int -> unit = "ocaml_libvirt_connect_set_keep_alive"
+
   external const : [>`R] t -> ro t = "%identity"
 end
 
