@@ -95,9 +95,13 @@ let () =
     E.register_any conn (E.PMWakeUp (fun dom e ->
         printd dom "PMWakeup %s" (E.PM_wakeup.to_string e)
     ));
-    E.register_any conn (E.PMSuspend (fun dom reason -> printd dom "PMSuspend reason=%d" reason));
+    E.register_any conn (E.PMSuspend (fun dom e ->
+        printd dom "PMSuspend %s" (E.PM_suspend.to_string e)
+    ));
     E.register_any conn (E.BalloonChange (fun dom x -> printd dom "BalloonChange actual = %Ld" x));
-    E.register_any conn (E.PMSuspendDisk (fun dom reason -> printd dom "PMSuspendDisk reason=%d" reason));
+    E.register_any conn (E.PMSuspendDisk (fun dom x ->
+        printd dom "PMSuspendDisk %s" (E.PM_suspend_disk.to_string x)
+    ));
     C.set_keep_alive conn 5 3;
     while true do
 	E.run_default_impl ()

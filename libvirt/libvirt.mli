@@ -861,6 +861,27 @@ sig
     val to_string: t -> string
   end
 
+  module PM_suspend : sig
+    type reason = [
+      | `Unknown of int
+    ]
+
+    type t = reason
+
+    val to_string: t -> string
+  end
+
+  module PM_suspend_disk : sig
+    type reason = [
+      | `Unknown of int
+    ]
+
+    type t = reason
+
+    val to_string: t -> string
+  end
+
+
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
@@ -874,9 +895,9 @@ sig
     | DiskChange    of ([`R] Domain.t -> Disk_change.t -> unit)
     | TrayChange    of ([`R] Domain.t -> Tray_change.t -> unit)
     | PMWakeUp      of ([`R] Domain.t -> PM_wakeup.t -> unit)
-    | PMSuspend     of ([`R] Domain.t -> int -> unit)
+    | PMSuspend     of ([`R] Domain.t -> PM_suspend.t -> unit)
     | BalloonChange of ([`R] Domain.t -> int64 -> unit)
-    | PMSuspendDisk of ([`R] Domain.t -> int -> unit)
+    | PMSuspendDisk of ([`R] Domain.t -> PM_suspend_disk.t -> unit)
 
     (** type of a registered call back function *)
 

@@ -978,6 +978,32 @@ struct
     let make x = `Unknown x
   end
 
+  module PM_suspend = struct
+    type reason = [
+      | `Unknown of int
+    ]
+
+    type t = reason
+
+    let to_string = function
+      | `Unknown x -> Printf.sprintf "Unknown PM_suspend.reason: %d" x
+
+    let make x = `Unknown x
+  end
+
+  module PM_suspend_disk = struct
+    type reason = [
+      | `Unknown of int
+    ]
+
+    type t = reason
+
+    let to_string = function
+      | `Unknown x -> Printf.sprintf "Unknown PM_suspend_disk.reason: %d" x
+
+    let make x = `Unknown x
+  end
+
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
@@ -991,9 +1017,9 @@ struct
     | DiskChange    of ([`R] Domain.t -> Disk_change.t -> unit)
     | TrayChange    of ([`R] Domain.t -> Tray_change.t -> unit)
     | PMWakeUp      of ([`R] Domain.t -> PM_wakeup.t -> unit)
-    | PMSuspend     of ([`R] Domain.t -> int -> unit)
+    | PMSuspend     of ([`R] Domain.t -> PM_suspend.t -> unit)
     | BalloonChange of ([`R] Domain.t -> int64 -> unit)
-    | PMSuspendDisk of ([`R] Domain.t -> int -> unit)
+    | PMSuspendDisk of ([`R] Domain.t -> PM_suspend_disk.t -> unit)
 
   type callback_id = int64
 
@@ -1075,11 +1101,15 @@ struct
             f dom (PM_wakeup.make x)
         )
     | PMSuspend f ->
-        Hashtbl.add i_table id f
+        Hashtbl.add i_table id (fun dom x ->
+            f dom (PM_suspend.make x)
+        )
     | BalloonChange f ->
         Hashtbl.add i64_table id f
     | PMSuspendDisk f ->
-        Hashtbl.add i_table id f
+        Hashtbl.add i_table id (fun dom x ->
+            f dom (PM_suspend_disk.make x)
+        )
     end;
     register_any' conn dom callback id
 
