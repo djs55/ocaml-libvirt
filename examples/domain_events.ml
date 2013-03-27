@@ -71,8 +71,7 @@ let () =
     E.register_any conn (E.Reboot (fun dom () -> printd dom "Reboot"));
     E.register_any conn (E.RtcChange (fun dom x -> printd dom "RtcChange = %Lx" x));
     E.register_any conn (E.Watchdog (fun dom e ->
-        printd dom "Watchdog %s"
-            (string_option (map_option E.string_of_watchdog_action e))
+        printd dom "Watchdog %s" (E.string_of_watchdog_action e)
     ));
     E.register_any conn (E.IOError (fun dom (src, dst, action) -> printd dom "IOError src=%s dst=%s action=%d" (string_option src) (string_option dst) action));
     E.register_any conn (E.IOErrorReason (fun dom (src, dst, action, reason) -> printd dom "IOErrorReason src=%s dst=%s action=%d reason=%s" (string_option src) (string_option dst) action (string_option reason)));

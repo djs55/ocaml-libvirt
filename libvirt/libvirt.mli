@@ -715,13 +715,15 @@ sig
 
   val string_of_event: event -> string
 
-  type watchdog_action =
-    | WatchdogNone     (** No action, watchdog ignored *)
-    | WatchdogPause    (** Guest CPUs are paused *)
-    | WatchdogReset    (** Guest CPUs are reset *)
-    | WatchdogPoweroff (** Guest is forcably powered off *)
-    | WatchdogShutdown (** Guest is requested to gracefully shutdown *)
-    | WatchdogDebug    (** No action, a debug message logged *)
+  type watchdog_action = [
+    | `None           (** No action, watchdog ignored *)
+    | `Pause          (** Guest CPUs are paused *)
+    | `Reset          (** Guest CPUs are reset *)
+    | `Poweroff       (** Guest is forcably powered off *)
+    | `Shutdown       (** Guest is requested to gracefully shutdown *)
+    | `Debug          (** No action, a debug message logged *)
+    | `Unknown of int (** newer libvirt *)
+  ]
 
   val string_of_watchdog_action: watchdog_action -> string
 
@@ -729,7 +731,7 @@ sig
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
-    | Watchdog      of ([`R] Domain.t -> watchdog_action option -> unit)
+    | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
     | IOError       of ([`R] Domain.t -> (string option * string option * int) -> unit)
     | Graphics      of ([`R] Domain.t -> (int * (int * string option * string option) * (int * string option * string option) * string * ((string option * string option) array)) -> unit)
     | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)

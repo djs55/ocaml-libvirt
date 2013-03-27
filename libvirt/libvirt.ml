@@ -649,36 +649,39 @@ struct
     | 6 -> Some Shutdown
     | 7 -> Some (PMSuspended (pm_suspended_detail_option_of_int detail))
 
-  type watchdog_action =
-    | WatchdogNone
-    | WatchdogPause
-    | WatchdogReset
-    | WatchdogPoweroff
-    | WatchdogShutdown
-    | WatchdogDebug
+  type watchdog_action = [
+    | `None
+    | `Pause
+    | `Reset
+    | `Poweroff
+    | `Shutdown
+    | `Debug
+    | `Unknown of int
+  ]
 
   let string_of_watchdog_action = function
-    | WatchdogNone -> "WatchdogNone"
-    | WatchdogPause -> "WatchdogPause"
-    | WatchdogReset -> "WatchdogReset"
-    | WatchdogPoweroff -> "WatchdogPoweroff"
-    | WatchdogShutdown -> "WatchdogShutdown"
-    | WatchdogDebug -> "WatchdogDebug"
+    | `None -> "None"
+    | `Pause -> "Pause"
+    | `Reset -> "Reset"
+    | `Poweroff -> "Poweroff"
+    | `Shutdown -> "Shutdown"
+    | `Debug -> "Debug"
+    | `Unknown x -> Printf.sprintf "Unknown watchdog_action: %d" x
 
-  let watchdog_action_option_of_int = function
-    | 0 -> Some WatchdogNone
-    | 1 -> Some WatchdogPause
-    | 2 -> Some WatchdogReset
-    | 3 -> Some WatchdogPoweroff
-    | 4 -> Some WatchdogShutdown
-    | 5 -> Some WatchdogDebug
-    | _ -> None (* newer libvirt *)
+  let watchdog_action_of_int = function
+    | 0 -> `None
+    | 1 -> `Pause
+    | 2 -> `Reset
+    | 3 -> `Poweroff
+    | 4 -> `Shutdown
+    | 5 -> `Debug
+    | x -> `Unknown x (* newer libvirt *)
 
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
-    | Watchdog      of ([`R] Domain.t -> watchdog_action option -> unit)
+    | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
     | IOError       of ([`R] Domain.t -> (string option * string option * int) -> unit)
     | Graphics      of ([`R] Domain.t -> (int * (int * string option * string option) * (int * string option * string option) * string * ((string option * string option) array)) -> unit)
     | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)
@@ -738,7 +741,7 @@ struct
         Hashtbl.add i64_table id f
     | Watchdog f ->
         Hashtbl.add i_table id (fun dom x ->
-            f dom (watchdog_action_option_of_int x)
+            f dom (watchdog_action_of_int x)
         ) 
     | IOError f ->
         Hashtbl.add s_s_i_table id f
