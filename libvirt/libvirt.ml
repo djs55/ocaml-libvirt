@@ -677,12 +677,51 @@ struct
     | 5 -> `Debug
     | x -> `Unknown x (* newer libvirt *)
 
+  module Io_error = struct
+    type action = [
+      | `None
+      | `Pause
+      | `Report
+      | `Unknown of int (* newer libvirt *)
+    ]
+
+    let string_of_action = function
+      | `None -> "None"
+      | `Pause -> "Pause"
+      | `Report -> "Report"
+      | `Unknown x -> Printf.sprintf "Unknown Io_error.action: %d" x
+
+    let action_of_int = function
+      | 0 -> `None
+      | 1 -> `Pause
+      | 2 -> `Report
+      | x -> `Unknown x
+
+    type t = {
+      src_path: string option;
+      dev_alias: string option;
+      action: action;
+    }
+
+    let to_string t = Printf.sprintf
+        "{ Io_error.src_path = %s; dev_alias = %s; action = %s }"
+        (string_option (fun x -> x) t.src_path)
+        (string_option (fun x -> x) t.dev_alias)
+        (string_of_action t.action)
+
+    let make (src_path, dev_alias, action) = {
+        src_path = src_path;
+        dev_alias = dev_alias;
+        action = action_of_int action;
+    }
+  end
+
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
-    | IOError       of ([`R] Domain.t -> (string option * string option * int) -> unit)
+    | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
     | Graphics      of ([`R] Domain.t -> (int * (int * string option * string option) * (int * string option * string option) * string * ((string option * string option) array)) -> unit)
     | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)
     | ControlError  of ([`R] Domain.t -> unit -> unit)
@@ -744,7 +783,9 @@ struct
             f dom (watchdog_action_of_int x)
         ) 
     | IOError f ->
-        Hashtbl.add s_s_i_table id f
+        Hashtbl.add s_s_i_table id (fun dom x ->
+            f dom (Io_error.make x)
+        )
     | Graphics f ->
         Hashtbl.add i_ga_ga_s_gs_table id f
     | IOErrorReason f ->

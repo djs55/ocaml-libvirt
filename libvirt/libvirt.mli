@@ -727,12 +727,32 @@ sig
 
   val string_of_watchdog_action: watchdog_action -> string
 
+
+  module Io_error : sig
+    type action = [
+      | `None           (** No action, IO error ignored *)
+      | `Pause          (** Guest CPUs are paused *)
+      | `Report         (** IO error reported to guest OS *)
+      | `Unknown of int (** newer libvirt *)
+    ]
+
+    val string_of_action: action -> string
+
+    type t = {
+      src_path: string option;  (** The host file on which the I/O error occurred *)
+      dev_alias: string option; (** The guest device alias associated with the path *)
+      action: action;    (** The action that is to be taken due to the IO error *)
+    }
+
+    val to_string: t -> string
+  end
+
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
-    | IOError       of ([`R] Domain.t -> (string option * string option * int) -> unit)
+    | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
     | Graphics      of ([`R] Domain.t -> (int * (int * string option * string option) * (int * string option * string option) * string * ((string option * string option) array)) -> unit)
     | IOErrorReason of ([`R] Domain.t -> (string option * string option * int * string option) -> unit)
     | ControlError  of ([`R] Domain.t -> unit -> unit)

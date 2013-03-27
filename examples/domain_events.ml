@@ -73,7 +73,9 @@ let () =
     E.register_any conn (E.Watchdog (fun dom e ->
         printd dom "Watchdog %s" (E.string_of_watchdog_action e)
     ));
-    E.register_any conn (E.IOError (fun dom (src, dst, action) -> printd dom "IOError src=%s dst=%s action=%d" (string_option src) (string_option dst) action));
+    E.register_any conn (E.IOError (fun dom e ->
+        printd dom "IOError %s" (E.Io_error.to_string e)
+    ));
     E.register_any conn (E.IOErrorReason (fun dom (src, dst, action, reason) -> printd dom "IOErrorReason src=%s dst=%s action=%d reason=%s" (string_option src) (string_option dst) action (string_option reason)));
     E.register_any conn (E.Graphics (fun dom (phase, local, remote, auth, subject) -> printd dom "Graphics phase=%d local=%s remote=%s auth=%s subject=[%s]" phase (string_of_graphics_address local) (string_of_graphics_address remote) auth (string_of_graphics_subject subject)));
     E.register_any conn (E.ControlError (fun dom () -> printd dom "ControlError"));
