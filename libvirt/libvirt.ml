@@ -485,169 +485,209 @@ end
 
 module Event =
 struct
-  type defined_detail =
-    | DefinedAdded
-    | DefinedUpdated
 
-  let string_of_defined_detail = function
-    | DefinedAdded -> "DefinedAdded"
-    | DefinedUpdated -> "DefinedUpdated"
+  module Defined = struct
+    type t = [
+      | `Added
+      | `Updated
+      | `Unknown of int
+    ]
 
-  let defined_detail_option_of_int = function
-    | 0 -> Some DefinedAdded
-    | 1 -> Some DefinedUpdated
-    | _ -> None (* newer libvirt *)
+    let to_string = function
+      | `Added -> "Added"
+      | `Updated -> "Updated"
+      | `Unknown x -> Printf.sprintf "Unknown Defined.detail: %d" x
 
-  type undefined_detail =
-    | UndefinedRemoved
+    let make = function
+      | 0 -> `Added
+      | 1 -> `Updated
+      | x -> `Unknown x (* newer libvirt *)
+  end
 
-  let string_of_undefined_detail = function
-    | UndefinedRemoved -> "UndefinedRemoved"
+  module Undefined = struct
+    type t = [
+      | `Removed
+      | `Unknown of int
+    ]
 
-  let undefined_detail_option_of_int = function
-    | 0 -> Some UndefinedRemoved
-    | _ -> None (* newer libvirt *)
+    let to_string = function
+      | `Removed -> "UndefinedRemoved"
+      | `Unknown x -> Printf.sprintf "Unknown Undefined.detail: %d" x
 
-  type started_detail =
-    | StartedBooted
-    | StartedMigrated
-    | StartedRestored
-    | StartedFromSnapshot
-    | StartedWakeup
+    let make = function
+      | 0 -> `Removed
+      | x -> `Unknown x (* newer libvirt *)
+  end
 
-  let string_of_started_detail = function
-    | StartedBooted -> "StartedBooted"
-    | StartedMigrated -> "StartedMigrated"
-    | StartedRestored -> "StartedRestored"
-    | StartedFromSnapshot -> "StartedFromSnapshot"
-    | StartedWakeup -> "StartedWakeup"
+  module Started = struct
+    type t = [
+      | `Booted
+      | `Migrated
+      | `Restored
+      | `FromSnapshot
+      | `Wakeup
+      | `Unknown of int
+    ]
 
-  let started_detail_option_of_int = function
-    | 0 -> Some StartedBooted
-    | 1 -> Some StartedMigrated
-    | 2 -> Some StartedRestored
-    | 3 -> Some StartedFromSnapshot
-    | 4 -> Some StartedWakeup
-    | _ -> None (* newer libvirt *)
+    let to_string = function
+      | `Booted -> "Booted"
+      | `Migrated -> "Migrated"
+      | `Restored -> "Restored"
+      | `FromSnapshot -> "FromSnapshot"
+      | `Wakeup -> "Wakeup"
+      | `Unknown x -> Printf.sprintf "Unknown Started.detail: %d" x
+ 
+    let make = function
+      | 0 -> `Booted
+      | 1 -> `Migrated
+      | 2 -> `Restored
+      | 3 -> `FromSnapshot
+      | 4 -> `Wakeup
+      | x -> `Unknown x (* newer libvirt *)
+  end
 
-  type suspended_detail =
-    | SuspendedPaused
-    | SuspendedMigrated
-    | SuspendedIOError
-    | SuspendedWatchdog
-    | SuspendedRestored
-    | SuspendedFromSnapshot
-    | SuspendedAPIError
+  module Suspended = struct
+    type t = [
+      | `Paused
+      | `Migrated
+      | `IOError
+      | `Watchdog
+      | `Restored
+      | `FromSnapshot
+      | `APIError
+      | `Unknown of int (* newer libvirt *)
+    ]
 
-  let string_of_suspended_detail = function
-    | SuspendedPaused -> "SuspendedPaused"
-    | SuspendedMigrated -> "SuspendedMigrated"
-    | SuspendedIOError -> "SuspendedIOError"
-    | SuspendedWatchdog -> "SuspendedWatchdog"
-    | SuspendedRestored -> "SuspendedRestored"
-    | SuspendedFromSnapshot -> "SuspendedFromSnapshot"
-    | SuspendedAPIError -> "SuspendedAPIError"
+    let to_string = function
+      | `Paused -> "Paused"
+      | `Migrated -> "Migrated"
+      | `IOError -> "IOError"
+      | `Watchdog -> "Watchdog"
+      | `Restored -> "Restored"
+      | `FromSnapshot -> "FromSnapshot"
+      | `APIError -> "APIError"
+      | `Unknown x -> Printf.sprintf "Unknown Suspended.detail: %d" x
 
-  let suspended_detail_option_of_int = function
-    | 0 -> Some SuspendedPaused
-    | 1 -> Some SuspendedMigrated
-    | 2 -> Some SuspendedIOError
-    | 3 -> Some SuspendedWatchdog
-    | 4 -> Some SuspendedRestored
-    | 5 -> Some SuspendedFromSnapshot
-    | 6 -> Some SuspendedAPIError
-    | _ -> None (* newer libvirt *)
+     let make = function
+      | 0 -> `Paused
+      | 1 -> `Migrated
+      | 2 -> `IOError
+      | 3 -> `Watchdog
+      | 4 -> `Restored
+      | 5 -> `FromSnapshot
+      | 6 -> `APIError
+      | x -> `Unknown x (* newer libvirt *)
+  end
 
-  type resumed_detail =
-    | ResumedUnpaused
-    | ResumedMigrated
-    | ResumedFromSnapshot
+  module Resumed = struct
+    type t = [
+      | `Unpaused
+      | `Migrated
+      | `FromSnapshot
+      | `Unknown of int (* newer libvirt *)
+    ]
 
-  let string_of_resumed_detail = function
-    | ResumedUnpaused -> "ResumedUnpaused"
-    | ResumedMigrated -> "ResumedMigrated"
-    | ResumedFromSnapshot -> "ResumedFromSnapshot"
+    let to_string = function
+      | `Unpaused -> "Unpaused"
+      | `Migrated -> "Migrated"
+      | `FromSnapshot -> "FromSnapshot"
+      | `Unknown x -> Printf.sprintf "Unknown Resumed.detail: %d" x
 
-  let resumed_detail_option_of_int = function
-    | 0 -> Some ResumedUnpaused
-    | 1 -> Some ResumedMigrated
-    | 2 -> Some ResumedFromSnapshot
-    | _ -> None (* newer libvirt *)
+    let make = function
+      | 0 -> `Unpaused
+      | 1 -> `Migrated
+      | 2 -> `FromSnapshot
+      | x -> `Unknown x (* newer libvirt *)
+  end
 
-  type stopped_detail =
-    | StoppedShutdown
-    | StoppedDestroyed
-    | StoppedCrashed
-    | StoppedMigrated
-    | StoppedSaved
-    | StoppedFailed
-    | StoppedFromSnapshot
+  module Stopped = struct
+    type t = [
+      | `Shutdown
+      | `Destroyed
+      | `Crashed
+      | `Migrated
+      | `Saved
+      | `Failed
+      | `FromSnapshot
+      | `Unknown of int
+    ]
+    let to_string = function
+      | `Shutdown -> "Shutdown"
+      | `Destroyed -> "Destroyed"
+      | `Crashed -> "Crashed"
+      | `Migrated -> "Migrated"
+      | `Saved -> "Saved"
+      | `Failed -> "Failed"
+      | `FromSnapshot -> "FromSnapshot"
+      | `Unknown x -> Printf.sprintf "Unknown Stopped.detail: %d" x
 
-  let string_of_stopped_detail = function
-    | StoppedShutdown -> "StoppedShutdown"
-    | StoppedDestroyed -> "StoppedDestroyed"
-    | StoppedCrashed -> "StoppedCrashed"
-    | StoppedMigrated -> "StoppedMigrated"
-    | StoppedSaved -> "StoppedSaved"
-    | StoppedFailed -> "StoppedFailed"
-    | StoppedFromSnapshot -> "StoppedFromSnapshot"
+    let make = function
+      | 0 -> `Shutdown
+      | 1 -> `Destroyed
+      | 2 -> `Crashed
+      | 3 -> `Migrated
+      | 4 -> `Saved
+      | 5 -> `Failed
+      | 6 -> `FromSnapshot
+      | x -> `Unknown x (* newer libvirt *)
+  end
 
-  let stopped_detail_option_of_int = function
-    | 0 -> Some StoppedShutdown
-    | 1 -> Some StoppedDestroyed
-    | 2 -> Some StoppedCrashed
-    | 3 -> Some StoppedMigrated
-    | 4 -> Some StoppedSaved
-    | 5 -> Some StoppedFailed
-    | 6 -> Some StoppedFromSnapshot
-    | _ -> None (* newer libvirt *)
+  module PM_suspended = struct
+    type t = [
+      | `Memory
+      | `Disk
+      | `Unknown of int (* newer libvirt *)
+    ]
 
-  type pm_suspended_detail =
-    | PMSuspendedMemory
-    | PMSuspendedDisk
+    let to_string = function
+      | `Memory -> "Memory"
+      | `Disk -> "Disk"
+      | `Unknown x -> Printf.sprintf "Unknown PM_suspended.detail: %d" x
 
-  let string_of_pm_suspended_detail = function
-    | PMSuspendedMemory -> "PMSuspendedMemory"
-    | PMSuspendedDisk -> "PMSuspendedDisk"
-
-  let pm_suspended_detail_option_of_int = function
-    | 0 -> Some PMSuspendedMemory
-    | 1 -> Some PMSuspendedDisk
-    | _ -> None (* newer libvirt *)
-
-  type event =
-    | Defined of defined_detail option
-    | Undefined of undefined_detail option
-    | Started of started_detail option
-    | Suspended of suspended_detail option
-    | Resumed of resumed_detail option
-    | Stopped of stopped_detail option
-    | Shutdown (* no detail defined yet *)
-    | PMSuspended of pm_suspended_detail option
+    let make = function
+      | 0 -> `Memory
+      | 1 -> `Disk
+      | x -> `Unknown x (* newer libvirt *)
+  end
 
   let string_option f x = match x with
     | None -> "None"
     | Some x' -> "Some " ^ (f x')
 
-  let string_of_event = function
-    | Defined x -> "Defined " ^ (string_option string_of_defined_detail x)
-    | Undefined x -> "Undefined " ^ (string_option string_of_undefined_detail x)
-    | Started x -> "Started " ^ (string_option string_of_started_detail x)
-    | Suspended x -> "Suspended " ^ (string_option string_of_suspended_detail x)
-    | Resumed x -> "Resumed " ^ (string_option string_of_resumed_detail x)
-    | Stopped x -> "Stopped " ^ (string_option string_of_stopped_detail x)
-    | Shutdown -> "Shutdown"
-    | PMSuspended x -> "PMSuspended " ^ (string_option string_of_pm_suspended_detail x)
+  module Lifecycle = struct
+    type t = [
+      | `Defined of Defined.t
+      | `Undefined of Undefined.t
+      | `Started of Started.t
+      | `Suspended of Suspended.t
+      | `Resumed of Resumed.t
+      | `Stopped of Stopped.t
+      | `Shutdown (* no detail defined yet *)
+      | `PMSuspended of PM_suspended.t
+      | `Unknown of int (* newer libvirt *)
+    ]
 
-  let event_option_of_ints ty detail = match ty with
-    | 0 -> Some (Defined (defined_detail_option_of_int detail))
-    | 1 -> Some (Undefined (undefined_detail_option_of_int detail))
-    | 2 -> Some (Started (started_detail_option_of_int detail))
-    | 3 -> Some (Suspended (suspended_detail_option_of_int detail))
-    | 4 -> Some (Resumed (resumed_detail_option_of_int detail))
-    | 5 -> Some (Stopped (stopped_detail_option_of_int detail))
-    | 6 -> Some Shutdown
-    | 7 -> Some (PMSuspended (pm_suspended_detail_option_of_int detail))
+    let to_string = function
+      | `Defined x -> "Defined " ^ (Defined.to_string x)
+      | `Undefined x -> "Undefined " ^ (Undefined.to_string x)
+      | `Started x -> "Started " ^ (Started.to_string x)
+      | `Suspended x -> "Suspended " ^ (Suspended.to_string x)
+      | `Resumed x -> "Resumed " ^ (Resumed.to_string x)
+      | `Stopped x -> "Stopped " ^ (Stopped.to_string x)
+      | `Shutdown -> "Shutdown"
+      | `PMSuspended x -> "PMSuspended " ^ (PM_suspended.to_string x)
+      | `Unknown x -> Printf.sprintf "Unknown Lifecycle event: %d" x
+
+    let make (ty, detail) = match ty with
+      | 0 -> `Defined (Defined.make detail)
+      | 1 -> `Undefined (Undefined.make detail)
+      | 2 -> `Started (Started.make detail)
+      | 3 -> `Suspended (Suspended.make detail)
+      | 4 -> `Resumed (Resumed.make detail)
+      | 5 -> `Stopped (Stopped.make detail)
+      | 6 -> `Shutdown
+      | 7 -> `PMSuspended (PM_suspended.make detail)
+  end
 
   type watchdog_action = [
     | `None
@@ -1012,7 +1052,7 @@ struct
   end
 
   type callback =
-    | Lifecycle     of ([`R] Domain.t -> event option -> unit)
+    | Lifecycle     of ([`R] Domain.t -> Lifecycle.t -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
@@ -1066,8 +1106,8 @@ struct
     let id = fresh_callback_id () in
     begin match callback with
     | Lifecycle f ->
-        Hashtbl.add i_i_table id (fun dom (ty, detail) ->
-            f dom (event_option_of_ints ty detail)
+        Hashtbl.add i_i_table id (fun dom x ->
+            f dom (Lifecycle.make x)
         )
     | Reboot f ->
         Hashtbl.add u_table id f

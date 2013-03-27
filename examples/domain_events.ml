@@ -65,8 +65,7 @@ let () =
     let conn = C.connect_readonly ?name () in
 
     E.register_any conn (E.Lifecycle (fun dom e ->
-        printd dom "Lifecycle %s"
-            (string_option (map_option E.string_of_event e))
+        printd dom "Lifecycle %s" (E.Lifecycle.to_string e)
     ));
     E.register_any conn (E.Reboot (fun dom () -> printd dom "Reboot"));
     E.register_any conn (E.RtcChange (fun dom x -> printd dom "RtcChange = %Lx" x));

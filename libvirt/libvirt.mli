@@ -648,72 +648,104 @@ end
 module Event :
 sig
 
-  type defined_detail =
-    | DefinedAdded          (** Newly created config file *)
-    | DefinedUpdated        (** Changed config file *)
+  module Defined : sig
+    type t = [
+      | `Added          (** Newly created config file *)
+      | `Updated        (** Changed config file *)
+      | `Unknown of int
+    ]
 
-  val string_of_defined_detail: defined_detail -> string
+    val to_string: t -> string
+  end
 
-  type undefined_detail =
-    | UndefinedRemoved      (** Deleted the config file *)
+  module Undefined : sig
+    type t = [
+      | `Removed        (** Deleted the config file *)
+      | `Unknown of int
+    ]
 
-  val string_of_undefined_detail: undefined_detail -> string
+    val to_string: t -> string
+  end
 
-  type started_detail =
-    | StartedBooted         (** Normal startup from boot *)
-    | StartedMigrated       (** Incoming migration from another host *)
-    | StartedRestored       (** Restored from a state file *)
-    | StartedFromSnapshot   (** Restored from snapshot *)
-    | StartedWakeup         (** Started due to wakeup event *)
+  module Started : sig
+    type t = [
+      | `Booted         (** Normal startup from boot *)
+      | `Migrated       (** Incoming migration from another host *)
+      | `Restored       (** Restored from a state file *)
+      | `FromSnapshot   (** Restored from snapshot *)
+      | `Wakeup         (** Started due to wakeup event *)
+      | `Unknown of int
+    ]
 
-  val string_of_started_detail: started_detail -> string
+    val to_string: t -> string
+  end
 
-  type suspended_detail =
-    | SuspendedPaused       (** Normal suspend due to admin pause *)
-    | SuspendedMigrated     (** Suspended for offline migration *)
-    | SuspendedIOError      (** Suspended due to a disk I/O error *)
-    | SuspendedWatchdog     (** Suspended due to a watchdog firing *)
-    | SuspendedRestored     (** Restored from paused state file *)
-    | SuspendedFromSnapshot (** Restored from paused snapshot *)
-    | SuspendedAPIError     (** suspended after failure during libvirt API call *)
+  module Suspended : sig
+    type t = [
+      | `Paused        (** Normal suspend due to admin pause *)
+      | `Migrated      (** Suspended for offline migration *)
+      | `IOError       (** Suspended due to a disk I/O error *)
+      | `Watchdog      (** Suspended due to a watchdog firing *)
+      | `Restored      (** Restored from paused state file *)
+      | `FromSnapshot  (** Restored from paused snapshot *)
+      | `APIError      (** suspended after failure during libvirt API call *)
+      | `Unknown of int
+    ]
 
-  val string_of_suspended_detail: suspended_detail -> string
+    val to_string: t -> string
+  end
 
-  type resumed_detail =
-    | ResumedUnpaused       (** Normal resume due to admin unpause *)
-    | ResumedMigrated       (** Resumed for completion of migration *)
-    | ResumedFromSnapshot   (** Resumed from snapshot *)
+  module Resumed : sig
+    type t = [
+      | `Unpaused      (** Normal resume due to admin unpause *)
+      | `Migrated      (** Resumed for completion of migration *)
+      | `FromSnapshot  (** Resumed from snapshot *)
+      | `Unknown of int
+    ]
 
-  val string_of_resumed_detail: resumed_detail -> string
+    val to_string: t -> string
+  end
 
-  type stopped_detail =
-    | StoppedShutdown       (** Normal shutdown *)
-    | StoppedDestroyed      (** Forced poweroff from host *)
-    | StoppedCrashed        (** Guest crashed *)
-    | StoppedMigrated       (** Migrated off to another host *)
-    | StoppedSaved          (** Saved to a state file *)
-    | StoppedFailed         (** Host emulator/mgmt failed *)
-    | StoppedFromSnapshot   (** offline snapshot loaded *)
+  module Stopped : sig
+    type t = [
+      | `Shutdown     (** Normal shutdown *)
+      | `Destroyed    (** Forced poweroff from host *)
+      | `Crashed      (** Guest crashed *)
+      | `Migrated     (** Migrated off to another host *)
+      | `Saved        (** Saved to a state file *)
+      | `Failed       (** Host emulator/mgmt failed *)
+      | `FromSnapshot (** offline snapshot loaded *)
+      | `Unknown of int
+    ]
 
-  val string_of_stopped_detail: stopped_detail -> string
+    val to_string: t -> string
+  end
 
-  type pm_suspended_detail =
-    | PMSuspendedMemory     (** Guest was PM suspended to memory *)
-    | PMSuspendedDisk       (** Guest was PM suspended to disk *)
+  module PM_suspended : sig
+    type t = [
+      | `Memory       (** Guest was PM suspended to memory *)
+      | `Disk         (** Guest was PM suspended to disk *)
+      | `Unknown of int
+    ]
 
-  val string_of_pm_suspended_detail: pm_suspended_detail -> string
+    val to_string: t -> string
+  end
 
-  type event =
-    | Defined of defined_detail option
-    | Undefined of undefined_detail option
-    | Started of started_detail option
-    | Suspended of suspended_detail option
-    | Resumed of resumed_detail option
-    | Stopped of stopped_detail option
-    | Shutdown (* no detail defined yet *)
-    | PMSuspended of pm_suspended_detail option
+  module Lifecycle : sig
+    type t = [
+      | `Defined of Defined.t
+      | `Undefined of Undefined.t
+      | `Started of Started.t
+      | `Suspended of Suspended.t
+      | `Resumed of Resumed.t
+      | `Stopped of Stopped.t
+      | `Shutdown (* no detail defined yet *)
+      | `PMSuspended of PM_suspended.t
+      | `Unknown of int
+    ]
 
-  val string_of_event: event -> string
+    val to_string: t -> string
+  end
 
   type watchdog_action = [
     | `None           (** No action, watchdog ignored *)
@@ -889,7 +921,7 @@ sig
 
 
   type callback =
-    | Lifecycle     of ([`R] Domain.t -> event option -> unit)
+    | Lifecycle     of ([`R] Domain.t -> Lifecycle.t -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
