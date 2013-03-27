@@ -33,6 +33,9 @@
 /* Define to 1 if you have the `virConnectDomainEventRegisterAny' function. */
 #undef HAVE_VIRCONNECTDOMAINEVENTREGISTERANY
 
+/* Define to 1 if you have the 'virConnectSetKeepAlive' function. */
+#undef HAVE_VIRCONNECTSETKEEPALIVE
+
 /* Define to 1 if you have the `virConnectGetHostname' function. */
 #undef HAVE_VIRCONNECTGETHOSTNAME
 
