@@ -650,9 +650,9 @@ struct
       | x -> `Unknown x (* newer libvirt *)
   end
 
-  let string_option f x = match x with
+  let string_option x = match x with
     | None -> "None"
-    | Some x' -> "Some " ^ (f x')
+    | Some x' -> "Some " ^ x'
 
   module Lifecycle = struct
     type t = [
@@ -687,6 +687,7 @@ struct
       | 5 -> `Stopped (Stopped.make detail)
       | 6 -> `Shutdown
       | 7 -> `PMSuspended (PM_suspended.make detail)
+      | x -> `Unknown x
   end
 
   module Reboot = struct
@@ -764,10 +765,10 @@ struct
 
     let to_string t = Printf.sprintf
         "{ Io_error.src_path = %s; dev_alias = %s; action = %s; reason = %s }"
-        (string_option (fun x -> x) t.src_path)
-        (string_option (fun x -> x) t.dev_alias)
+        (string_option t.src_path)
+        (string_option t.dev_alias)
         (string_of_action t.action)
-        (string_option (fun x -> x) t.reason)
+        (string_option t.reason)
 
     let make (src_path, dev_alias, action, reason) = {
         src_path = src_path;
@@ -810,8 +811,8 @@ struct
     let to_string t = Printf.sprintf
       "{ family = %s; node = %s; service = %s }"
         (string_of_family t.family)
-        (string_option (fun x -> x) t.node)
-        (string_option (fun x -> x) t.service)
+        (string_option t.node)
+        (string_option t.service)
 
     let make (family, node, service) = {
       family = family_of_int family;
@@ -828,8 +829,8 @@ struct
 
     let string_of_identity t = Printf.sprintf
       "{ ty = %s; name = %s }"
-      (string_option (fun x -> x) t.ty)
-      (string_option (fun x -> x) t.name)
+      (string_option t.ty)
+      (string_option t.name)
 
     type t = identity list
 
@@ -877,7 +878,7 @@ struct
       let remote = Printf.sprintf "remote = %s"
         (Graphics_address.to_string t.remote) in
       let auth_scheme = Printf.sprintf "auth_scheme = %s"
-        (string_option (fun x -> x) t.auth_scheme) in
+        (string_option t.auth_scheme) in
       let subject = Printf.sprintf "subject = %s"
         (Graphics_subject.to_string t.subject) in
       "{ " ^ (String.concat "; " [ phase; local; remote; auth_scheme; subject ]) ^ " }"
@@ -951,7 +952,7 @@ struct
     }
 
     let to_string t = Printf.sprintf "{ disk = %s; ty = %s; status = %s }"
-      (string_option (fun x -> x) t.disk)
+      (string_option t.disk)
       (string_of_ty t.ty)
       (string_of_status t.status)
 
@@ -984,9 +985,9 @@ struct
     }
 
     let to_string t =
-      let o = Printf.sprintf "old_src_path = %s" (string_option (fun x -> x) t.old_src_path) in
-      let n = Printf.sprintf "new_src_path = %s" (string_option (fun x -> x) t.new_src_path) in
-      let d = Printf.sprintf "dev_alias = %s" (string_option (fun x -> x) t.dev_alias) in
+      let o = Printf.sprintf "old_src_path = %s" (string_option t.old_src_path) in
+      let n = Printf.sprintf "new_src_path = %s" (string_option t.new_src_path) in
+      let d = Printf.sprintf "dev_alias = %s" (string_option t.dev_alias) in
       let r = string_of_reason t.reason in
       "{ " ^ (String.concat "; " [ o; n; d; r ]) ^ " }"
 
@@ -1022,7 +1023,7 @@ struct
 
     let to_string t = Printf.sprintf
       "{ dev_alias = %s; reason = %s }"
-        (string_option (fun x -> x) t.dev_alias)
+        (string_option t.dev_alias)
         (string_of_reason t.reason)
 
     let make (dev_alias, reason) = {
