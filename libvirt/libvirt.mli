@@ -384,6 +384,14 @@ sig
     (** [cpu_usable cpumaps maplen vcpu cpu] checks returns true iff the
 	[cpu] is usable by [vcpu]. *)
 
+  val set_keep_alive : [>`R] t -> int -> int -> unit
+    (** [set_keep_alive conn interval count] starts sending keepalive
+        messages after [interval] seconds of inactivity and consider the
+        connection to be broken when no response is received after [count]
+        keepalive messages.
+        Note: the client has to implement and run an event loop to
+        be able to use keep-alive messages. *)
+
   external const : [>`R] t -> ro t = "%identity"
     (** [const conn] turns a read/write connection into a read-only
 	connection.  Note that the opposite operation is impossible.

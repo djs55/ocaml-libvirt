@@ -169,6 +169,23 @@ ocaml_libvirt_connect_node_get_cells_free_memory (value connv,
 }
 
 CAMLprim value
+ocaml_libvirt_connect_set_keep_alive(value connv,
+				     value intervalv, value countv)
+{
+  CAMLparam3 (connv, intervalv, countv);
+  virConnectPtr conn = Connect_val(connv);
+  int interval = Int_val(intervalv);
+  unsigned int count = Int_val(countv);
+  int r;
+
+  NONBLOCKING(r = virConnectSetKeepAlive(conn, interval, count));
+  CHECK_ERROR (r == -1, conn, "virConnectSetKeepAlive");
+
+  CAMLreturn(Val_unit);
+}
+
+
+CAMLprim value
 ocaml_libvirt_domain_get_id (value domv)
 {
   CAMLparam1 (domv);
