@@ -871,6 +871,12 @@ sig
     val to_string: t -> string
   end
 
+  module Balloon_change : sig
+    type t = int64
+
+    val to_string: t -> string
+  end
+
   module PM_suspend_disk : sig
     type reason = [
       | `Unknown of int
@@ -896,7 +902,7 @@ sig
     | TrayChange    of ([`R] Domain.t -> Tray_change.t -> unit)
     | PMWakeUp      of ([`R] Domain.t -> PM_wakeup.t -> unit)
     | PMSuspend     of ([`R] Domain.t -> PM_suspend.t -> unit)
-    | BalloonChange of ([`R] Domain.t -> int64 -> unit)
+    | BalloonChange of ([`R] Domain.t -> Balloon_change.t -> unit)
     | PMSuspendDisk of ([`R] Domain.t -> PM_suspend_disk.t -> unit)
 
     (** type of a registered call back function *)

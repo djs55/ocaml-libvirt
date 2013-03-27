@@ -991,6 +991,13 @@ struct
     let make x = `Unknown x
   end
 
+  module Balloon_change = struct
+    type t = int64
+
+    let to_string = Int64.to_string
+    let make x = x
+  end
+
   module PM_suspend_disk = struct
     type reason = [
       | `Unknown of int
@@ -1018,7 +1025,7 @@ struct
     | TrayChange    of ([`R] Domain.t -> Tray_change.t -> unit)
     | PMWakeUp      of ([`R] Domain.t -> PM_wakeup.t -> unit)
     | PMSuspend     of ([`R] Domain.t -> PM_suspend.t -> unit)
-    | BalloonChange of ([`R] Domain.t -> int64 -> unit)
+    | BalloonChange of ([`R] Domain.t -> Balloon_change.t -> unit)
     | PMSuspendDisk of ([`R] Domain.t -> PM_suspend_disk.t -> unit)
 
   type callback_id = int64
@@ -1105,7 +1112,9 @@ struct
             f dom (PM_suspend.make x)
         )
     | BalloonChange f ->
-        Hashtbl.add i64_table id f
+        Hashtbl.add i64_table id (fun dom x ->
+            f dom (Balloon_change.make x)
+        )
     | PMSuspendDisk f ->
         Hashtbl.add i_table id (fun dom x ->
             f dom (PM_suspend_disk.make x)

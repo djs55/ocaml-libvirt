@@ -98,7 +98,9 @@ let () =
     E.register_any conn (E.PMSuspend (fun dom e ->
         printd dom "PMSuspend %s" (E.PM_suspend.to_string e)
     ));
-    E.register_any conn (E.BalloonChange (fun dom x -> printd dom "BalloonChange actual = %Ld" x));
+    E.register_any conn (E.BalloonChange (fun dom e ->
+        printd dom "BalloonChange %s" (E.Balloon_change.to_string e)
+    ));
     E.register_any conn (E.PMSuspendDisk (fun dom x ->
         printd dom "PMSuspendDisk %s" (E.PM_suspend_disk.to_string x)
     ));
