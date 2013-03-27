@@ -50,6 +50,10 @@ let string_of_graphics_subject_identity (ty, name) =
 
 let string_of_graphics_subject xs = String.concat "; " (List.map string_of_graphics_subject_identity (Array.to_list xs))
 
+let map_option f = function
+  | None -> None
+  | Some x -> Some (f x)
+
 let () =
   try
     E.register_default_impl ();
@@ -60,7 +64,10 @@ let () =
 	None in
     let conn = C.connect_readonly ?name () in
 
-    E.register_any conn (E.Lifecycle (fun dom (event, detail) -> printd dom "Lifecycle event = %d; detail = %d" event detail));
+    E.register_any conn (E.Lifecycle (fun dom e ->
+        printd dom "Lifecycle %s"
+            (string_option (map_option E.string_of_event e))
+    ));
     E.register_any conn (E.Reboot (fun dom () -> printd dom "Reboot"));
     E.register_any conn (E.RtcChange (fun dom x -> printd dom "RtcChange = %Lx" x));
     E.register_any conn (E.Watchdog (fun dom x -> printd dom "Watchdog = %d" x));

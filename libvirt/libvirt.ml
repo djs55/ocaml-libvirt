@@ -485,8 +485,172 @@ end
 
 module Event =
 struct
+  type defined_detail =
+    | DefinedAdded
+    | DefinedUpdated
+
+  let string_of_defined_detail = function
+    | DefinedAdded -> "DefinedAdded"
+    | DefinedUpdated -> "DefinedUpdated"
+
+  let defined_detail_option_of_int = function
+    | 0 -> Some DefinedAdded
+    | 1 -> Some DefinedUpdated
+    | _ -> None (* newer libvirt *)
+
+  type undefined_detail =
+    | UndefinedRemoved
+
+  let string_of_undefined_detail = function
+    | UndefinedRemoved -> "UndefinedRemoved"
+
+  let undefined_detail_option_of_int = function
+    | 0 -> Some UndefinedRemoved
+    | _ -> None (* newer libvirt *)
+
+  type started_detail =
+    | StartedBooted
+    | StartedMigrated
+    | StartedRestored
+    | StartedFromSnapshot
+    | StartedWakeup
+
+  let string_of_started_detail = function
+    | StartedBooted -> "StartedBooted"
+    | StartedMigrated -> "StartedMigrated"
+    | StartedRestored -> "StartedRestored"
+    | StartedFromSnapshot -> "StartedFromSnapshot"
+    | StartedWakeup -> "StartedWakeup"
+
+  let started_detail_option_of_int = function
+    | 0 -> Some StartedBooted
+    | 1 -> Some StartedMigrated
+    | 2 -> Some StartedRestored
+    | 3 -> Some StartedFromSnapshot
+    | 4 -> Some StartedWakeup
+    | _ -> None (* newer libvirt *)
+
+  type suspended_detail =
+    | SuspendedPaused
+    | SuspendedMigrated
+    | SuspendedIOError
+    | SuspendedWatchdog
+    | SuspendedRestored
+    | SuspendedFromSnapshot
+    | SuspendedAPIError
+
+  let string_of_suspended_detail = function
+    | SuspendedPaused -> "SuspendedPaused"
+    | SuspendedMigrated -> "SuspendedMigrated"
+    | SuspendedIOError -> "SuspendedIOError"
+    | SuspendedWatchdog -> "SuspendedWatchdog"
+    | SuspendedRestored -> "SuspendedRestored"
+    | SuspendedFromSnapshot -> "SuspendedFromSnapshot"
+    | SuspendedAPIError -> "SuspendedAPIError"
+
+  let suspended_detail_option_of_int = function
+    | 0 -> Some SuspendedPaused
+    | 1 -> Some SuspendedMigrated
+    | 2 -> Some SuspendedIOError
+    | 3 -> Some SuspendedWatchdog
+    | 4 -> Some SuspendedRestored
+    | 5 -> Some SuspendedFromSnapshot
+    | 6 -> Some SuspendedAPIError
+    | _ -> None (* newer libvirt *)
+
+  type resumed_detail =
+    | ResumedUnpaused
+    | ResumedMigrated
+    | ResumedFromSnapshot
+
+  let string_of_resumed_detail = function
+    | ResumedUnpaused -> "ResumedUnpaused"
+    | ResumedMigrated -> "ResumedMigrated"
+    | ResumedFromSnapshot -> "ResumedFromSnapshot"
+
+  let resumed_detail_option_of_int = function
+    | 0 -> Some ResumedUnpaused
+    | 1 -> Some ResumedMigrated
+    | 2 -> Some ResumedFromSnapshot
+    | _ -> None (* newer libvirt *)
+
+  type stopped_detail =
+    | StoppedShutdown
+    | StoppedDestroyed
+    | StoppedCrashed
+    | StoppedMigrated
+    | StoppedSaved
+    | StoppedFailed
+    | StoppedFromSnapshot
+
+  let string_of_stopped_detail = function
+    | StoppedShutdown -> "StoppedShutdown"
+    | StoppedDestroyed -> "StoppedDestroyed"
+    | StoppedCrashed -> "StoppedCrashed"
+    | StoppedMigrated -> "StoppedMigrated"
+    | StoppedSaved -> "StoppedSaved"
+    | StoppedFailed -> "StoppedFailed"
+    | StoppedFromSnapshot -> "StoppedFromSnapshot"
+
+  let stopped_detail_option_of_int = function
+    | 0 -> Some StoppedShutdown
+    | 1 -> Some StoppedDestroyed
+    | 2 -> Some StoppedCrashed
+    | 3 -> Some StoppedMigrated
+    | 4 -> Some StoppedSaved
+    | 5 -> Some StoppedFailed
+    | 6 -> Some StoppedFromSnapshot
+    | _ -> None (* newer libvirt *)
+
+  type pm_suspended_detail =
+    | PMSuspendedMemory
+    | PMSuspendedDisk
+
+  let string_of_pm_suspended_detail = function
+    | PMSuspendedMemory -> "PMSuspendedMemory"
+    | PMSuspendedDisk -> "PMSuspendedDisk"
+
+  let pm_suspended_detail_option_of_int = function
+    | 0 -> Some PMSuspendedMemory
+    | 1 -> Some PMSuspendedDisk
+    | _ -> None (* newer libvirt *)
+
+  type event =
+    | Defined of defined_detail option
+    | Undefined of undefined_detail option
+    | Started of started_detail option
+    | Suspended of suspended_detail option
+    | Resumed of resumed_detail option
+    | Stopped of stopped_detail option
+    | Shutdown (* no detail defined yet *)
+    | PMSuspended of pm_suspended_detail option
+
+  let string_option f x = match x with
+    | None -> "None"
+    | Some x' -> "Some " ^ (f x')
+
+  let string_of_event = function
+    | Defined x -> "Defined " ^ (string_option string_of_defined_detail x)
+    | Undefined x -> "Undefined " ^ (string_option string_of_undefined_detail x)
+    | Started x -> "Started " ^ (string_option string_of_started_detail x)
+    | Suspended x -> "Suspended " ^ (string_option string_of_suspended_detail x)
+    | Resumed x -> "Resumed " ^ (string_option string_of_resumed_detail x)
+    | Stopped x -> "Stopped " ^ (string_option string_of_stopped_detail x)
+    | Shutdown -> "Shutdown"
+    | PMSuspended x -> "PMSuspended " ^ (string_option string_of_pm_suspended_detail x)
+
+  let event_option_of_ints ty detail = match ty with
+    | 0 -> Some (Defined (defined_detail_option_of_int detail))
+    | 1 -> Some (Undefined (undefined_detail_option_of_int detail))
+    | 2 -> Some (Started (started_detail_option_of_int detail))
+    | 3 -> Some (Suspended (suspended_detail_option_of_int detail))
+    | 4 -> Some (Resumed (resumed_detail_option_of_int detail))
+    | 5 -> Some (Stopped (stopped_detail_option_of_int detail))
+    | 6 -> Some Shutdown
+    | 7 -> Some (PMSuspended (pm_suspended_detail_option_of_int detail))
+
   type callback =
-    | Lifecycle     of ([`R] Domain.t -> (int * int) -> unit)
+    | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> int -> unit)
@@ -540,7 +704,9 @@ struct
     let id = fresh_callback_id () in
     begin match callback with
     | Lifecycle f ->
-        Hashtbl.add i_i_table id f
+        Hashtbl.add i_i_table id (fun dom (ty, detail) ->
+            f dom (event_option_of_ints ty detail)
+        )
     | Reboot f ->
         Hashtbl.add u_table id f
     | RtcChange f ->

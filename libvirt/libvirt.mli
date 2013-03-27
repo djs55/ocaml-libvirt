@@ -647,8 +647,76 @@ end
 
 module Event :
 sig
+
+  type defined_detail =
+    | DefinedAdded          (** Newly created config file *)
+    | DefinedUpdated        (** Changed config file *)
+
+  val string_of_defined_detail: defined_detail -> string
+
+  type undefined_detail =
+    | UndefinedRemoved      (** Deleted the config file *)
+
+  val string_of_undefined_detail: undefined_detail -> string
+
+  type started_detail =
+    | StartedBooted         (** Normal startup from boot *)
+    | StartedMigrated       (** Incoming migration from another host *)
+    | StartedRestored       (** Restored from a state file *)
+    | StartedFromSnapshot   (** Restored from snapshot *)
+    | StartedWakeup         (** Started due to wakeup event *)
+
+  val string_of_started_detail: started_detail -> string
+
+  type suspended_detail =
+    | SuspendedPaused       (** Normal suspend due to admin pause *)
+    | SuspendedMigrated     (** Suspended for offline migration *)
+    | SuspendedIOError      (** Suspended due to a disk I/O error *)
+    | SuspendedWatchdog     (** Suspended due to a watchdog firing *)
+    | SuspendedRestored     (** Restored from paused state file *)
+    | SuspendedFromSnapshot (** Restored from paused snapshot *)
+    | SuspendedAPIError     (** suspended after failure during libvirt API call *)
+
+  val string_of_suspended_detail: suspended_detail -> string
+
+  type resumed_detail =
+    | ResumedUnpaused       (** Normal resume due to admin unpause *)
+    | ResumedMigrated       (** Resumed for completion of migration *)
+    | ResumedFromSnapshot   (** Resumed from snapshot *)
+
+  val string_of_resumed_detail: resumed_detail -> string
+
+  type stopped_detail =
+    | StoppedShutdown       (** Normal shutdown *)
+    | StoppedDestroyed      (** Forced poweroff from host *)
+    | StoppedCrashed        (** Guest crashed *)
+    | StoppedMigrated       (** Migrated off to another host *)
+    | StoppedSaved          (** Saved to a state file *)
+    | StoppedFailed         (** Host emulator/mgmt failed *)
+    | StoppedFromSnapshot   (** offline snapshot loaded *)
+
+  val string_of_stopped_detail: stopped_detail -> string
+
+  type pm_suspended_detail =
+    | PMSuspendedMemory     (** Guest was PM suspended to memory *)
+    | PMSuspendedDisk       (** Guest was PM suspended to disk *)
+
+  val string_of_pm_suspended_detail: pm_suspended_detail -> string
+
+  type event =
+    | Defined of defined_detail option
+    | Undefined of undefined_detail option
+    | Started of started_detail option
+    | Suspended of suspended_detail option
+    | Resumed of resumed_detail option
+    | Stopped of stopped_detail option
+    | Shutdown (* no detail defined yet *)
+    | PMSuspended of pm_suspended_detail option
+
+  val string_of_event: event -> string
+
   type callback =
-    | Lifecycle     of ([`R] Domain.t -> (int * int) -> unit)
+    | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
     | RtcChange     of ([`R] Domain.t -> int64 -> unit)
     | Watchdog      of ([`R] Domain.t -> int -> unit)
