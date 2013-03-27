@@ -965,6 +965,19 @@ struct
     }
   end
 
+  module PM_wakeup = struct
+    type reason = [
+      | `Unknown of int
+    ]
+
+    type t = reason
+
+    let to_string = function
+      | `Unknown x -> Printf.sprintf "Unknown PM_wakeup.reason: %d" x
+
+    let make x = `Unknown x
+  end
+
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
@@ -977,7 +990,7 @@ struct
     | BlockJob      of ([`R] Domain.t -> Block_job.t -> unit)
     | DiskChange    of ([`R] Domain.t -> Disk_change.t -> unit)
     | TrayChange    of ([`R] Domain.t -> Tray_change.t -> unit)
-    | PMWakeUp      of ([`R] Domain.t -> int -> unit)
+    | PMWakeUp      of ([`R] Domain.t -> PM_wakeup.t -> unit)
     | PMSuspend     of ([`R] Domain.t -> int -> unit)
     | BalloonChange of ([`R] Domain.t -> int64 -> unit)
     | PMSuspendDisk of ([`R] Domain.t -> int -> unit)
@@ -1058,7 +1071,9 @@ struct
             f dom (Tray_change.make x)
         )
     | PMWakeUp f ->
-        Hashtbl.add i_table id f
+        Hashtbl.add i_table id (fun dom x ->
+            f dom (PM_wakeup.make x)
+        )
     | PMSuspend f ->
         Hashtbl.add i_table id f
     | BalloonChange f ->

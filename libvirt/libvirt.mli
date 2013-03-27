@@ -851,6 +851,15 @@ sig
     val to_string: t -> string
   end
 
+  module PM_wakeup : sig
+    type reason = [
+      | `Unknown of int
+    ]
+
+    type t = reason
+
+    val to_string: t -> string
+  end
 
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
@@ -864,7 +873,7 @@ sig
     | BlockJob      of ([`R] Domain.t -> Block_job.t -> unit)
     | DiskChange    of ([`R] Domain.t -> Disk_change.t -> unit)
     | TrayChange    of ([`R] Domain.t -> Tray_change.t -> unit)
-    | PMWakeUp      of ([`R] Domain.t -> int -> unit)
+    | PMWakeUp      of ([`R] Domain.t -> PM_wakeup.t -> unit)
     | PMSuspend     of ([`R] Domain.t -> int -> unit)
     | BalloonChange of ([`R] Domain.t -> int64 -> unit)
     | PMSuspendDisk of ([`R] Domain.t -> int -> unit)

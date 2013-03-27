@@ -92,7 +92,9 @@ let () =
     E.register_any conn (E.TrayChange (fun dom e ->
         printd dom "TrayChange %s" (E.Tray_change.to_string e)
     ));
-    E.register_any conn (E.PMWakeUp (fun dom reason -> printd dom "PMWakeup reason=%d" reason));
+    E.register_any conn (E.PMWakeUp (fun dom e ->
+        printd dom "PMWakeup %s" (E.PM_wakeup.to_string e)
+    ));
     E.register_any conn (E.PMSuspend (fun dom reason -> printd dom "PMSuspend reason=%d" reason));
     E.register_any conn (E.BalloonChange (fun dom x -> printd dom "BalloonChange actual = %Ld" x));
     E.register_any conn (E.PMSuspendDisk (fun dom reason -> printd dom "PMSuspendDisk reason=%d" reason));
