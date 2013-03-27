@@ -896,6 +896,41 @@ struct
     }
   end
 
+  module Disk_change = struct
+    type reason = [
+      | `MissingOnStart
+      | `Unknown of int
+    ]
+
+    let string_of_reason = function
+      | `MissingOnStart -> "MissingOnStart"
+      | `Unknown x -> Printf.sprintf "Unknown Disk_change.reason: %d" x
+
+    let reason_of_int = function
+      | 0 -> `MissingOnStart
+      | x -> `Unknown x
+
+    type t = {
+      old_src_path: string option;
+      new_src_path: string option;
+      dev_alias: string option;
+      reason: reason;
+    }
+
+    let to_string t =
+      let o = Printf.sprintf "old_src_path = %s" (string_option (fun x -> x) t.old_src_path) in
+      let n = Printf.sprintf "new_src_path = %s" (string_option (fun x -> x) t.new_src_path) in
+      let d = Printf.sprintf "dev_alias = %s" (string_option (fun x -> x) t.dev_alias) in
+      let r = string_of_reason t.reason in
+      "{ " ^ (String.concat "; " [ o; n; d; r ]) ^ " }"
+
+    let make (o, n, d, r) = {
+      old_src_path = o;
+      new_src_path = n;
+      dev_alias = d;
+      reason = reason_of_int r;
+    }
+  end
 
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
@@ -907,7 +942,7 @@ struct
     | IOErrorReason of ([`R] Domain.t -> Io_error.t -> unit)
     | ControlError  of ([`R] Domain.t -> unit -> unit)
     | BlockJob      of ([`R] Domain.t -> Block_job.t -> unit)
-    | DiskChange    of ([`R] Domain.t -> (string option * string option * string option * int) -> unit)
+    | DiskChange    of ([`R] Domain.t -> Disk_change.t -> unit)
     | TrayChange    of ([`R] Domain.t -> (string option * int) -> unit)
     | PMWakeUp      of ([`R] Domain.t -> int -> unit)
     | PMSuspend     of ([`R] Domain.t -> int -> unit)
@@ -982,7 +1017,9 @@ struct
             f dom (Block_job.make x)
         )
     | DiskChange f ->
-        Hashtbl.add s_s_s_i_table id f 
+        Hashtbl.add s_s_s_i_table id (fun dom x ->
+            f dom (Disk_change.make x)
+        )
     | TrayChange f ->
         Hashtbl.add s_i_table id f
     | PMWakeUp f ->

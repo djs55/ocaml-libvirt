@@ -820,6 +820,22 @@ sig
     val to_string: t -> string
   end
 
+  module Disk_change : sig
+    type reason = [
+      | `MissingOnStart
+      | `Unknown of int
+    ]
+
+    type t = {
+      old_src_path: string option; (** old source path *)
+      new_src_path: string option; (** new source path *)
+      dev_alias: string option;    (** device alias name *)
+      reason: reason;              (** reason why this callback was called *)
+    }
+
+    val to_string: t -> string
+  end
+
   type callback =
     | Lifecycle     of ([`R] Domain.t -> event option -> unit)
     | Reboot        of ([`R] Domain.t -> unit -> unit)
@@ -830,7 +846,7 @@ sig
     | IOErrorReason of ([`R] Domain.t -> Io_error.t -> unit)
     | ControlError  of ([`R] Domain.t -> unit -> unit)
     | BlockJob      of ([`R] Domain.t -> Block_job.t -> unit)
-    | DiskChange    of ([`R] Domain.t -> (string option * string option * string option * int) -> unit)
+    | DiskChange    of ([`R] Domain.t -> Disk_change.t -> unit)
     | TrayChange    of ([`R] Domain.t -> (string option * int) -> unit)
     | PMWakeUp      of ([`R] Domain.t -> int -> unit)
     | PMSuspend     of ([`R] Domain.t -> int -> unit)

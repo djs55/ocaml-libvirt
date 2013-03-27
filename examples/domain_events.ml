@@ -86,7 +86,9 @@ let () =
     E.register_any conn (E.BlockJob (fun dom e ->
         printd dom "BlockJob %s" (E.Block_job.to_string e)
     ));
-    E.register_any conn (E.DiskChange (fun dom (oldpath, newpath, alias, reason) -> printd dom "DiskChange oldpath=%s newpath=%s alias=%s reason=%d" (string_option oldpath) (string_option newpath) (string_option alias) reason));
+    E.register_any conn (E.DiskChange (fun dom e ->
+        printd dom "DiskChange %s" (E.Disk_change.to_string e)
+    ));
     E.register_any conn (E.TrayChange (fun dom (alias, reason) -> printd dom "TrayChange alias=%s reason=%d" (string_option alias) reason));
     E.register_any conn (E.PMWakeUp (fun dom reason -> printd dom "PMWakeup reason=%d" reason));
     E.register_any conn (E.PMSuspend (fun dom reason -> printd dom "PMSuspend reason=%d" reason));
