@@ -1,6 +1,8 @@
-node_info.cmo : ../libvirt/libvirt.cmi
-node_info.cmx : ../libvirt/libvirt.cmx
-get_cpu_stats.cmo : ../libvirt/libvirt.cmi
-get_cpu_stats.cmx : ../libvirt/libvirt.cmx
-list_domains.cmo : ../libvirt/libvirt.cmi
-list_domains.cmx : ../libvirt/libvirt.cmx
+domain_events.cmo: ../libvirt/libvirt.cmi
+domain_events.cmx: ../libvirt/libvirt.cmx
+get_cpu_stats.cmo: ../libvirt/libvirt.cmi
+get_cpu_stats.cmx: ../libvirt/libvirt.cmx
+list_domains.cmo: ../libvirt/libvirt.cmi
+list_domains.cmx: ../libvirt/libvirt.cmx
+node_info.cmo: ../libvirt/libvirt.cmi
+node_info.cmx: ../libvirt/libvirt.cmx
