@@ -839,6 +839,12 @@ sig
     val to_string: t -> string
   end
 
+  module Control_error : sig
+    type t = unit
+
+    val to_string: t -> string
+  end
+
   module Block_job : sig
     type ty = [
       | `KnownUnknown (** explicitly named UNKNOWN in the spec *)
@@ -941,7 +947,7 @@ sig
     | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
     | Graphics      of ([`R] Domain.t -> Graphics.t -> unit)
     | IOErrorReason of ([`R] Domain.t -> Io_error.t -> unit)
-    | ControlError  of ([`R] Domain.t -> unit -> unit)
+    | ControlError  of ([`R] Domain.t -> Control_error.t -> unit)
     | BlockJob      of ([`R] Domain.t -> Block_job.t -> unit)
     | DiskChange    of ([`R] Domain.t -> Disk_change.t -> unit)
     | TrayChange    of ([`R] Domain.t -> Tray_change.t -> unit)

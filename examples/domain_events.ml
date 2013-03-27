@@ -85,7 +85,9 @@ let () =
     E.register_any conn (E.Graphics (fun dom e ->
         printd dom "Graphics %s" (E.Graphics.to_string e)
     ));
-    E.register_any conn (E.ControlError (fun dom () -> printd dom "ControlError"));
+    E.register_any conn (E.ControlError (fun dom e ->
+        printd dom "ControlError %s" (E.Control_error.to_string e)
+    ));
     E.register_any conn (E.BlockJob (fun dom e ->
         printd dom "BlockJob %s" (E.Block_job.to_string e)
     ));

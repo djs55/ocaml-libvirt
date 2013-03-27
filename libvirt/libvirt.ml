@@ -891,6 +891,14 @@ struct
     }
   end
 
+  module Control_error = struct
+    type t = unit
+
+    let to_string () = "()"
+
+    let make () = ()
+  end
+
   module Block_job = struct
     type ty = [
       | `KnownUnknown (* explicitly named UNKNOWN in the spec *)
@@ -1077,7 +1085,7 @@ struct
     | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
     | Graphics      of ([`R] Domain.t -> Graphics.t -> unit)
     | IOErrorReason of ([`R] Domain.t -> Io_error.t -> unit)
-    | ControlError  of ([`R] Domain.t -> unit -> unit)
+    | ControlError  of ([`R] Domain.t -> Control_error.t -> unit)
     | BlockJob      of ([`R] Domain.t -> Block_job.t -> unit)
     | DiskChange    of ([`R] Domain.t -> Disk_change.t -> unit)
     | TrayChange    of ([`R] Domain.t -> Tray_change.t -> unit)
@@ -1152,7 +1160,9 @@ struct
             f dom (Io_error.make x)
         )
     | ControlError f ->
-        Hashtbl.add u_table id f
+        Hashtbl.add u_table id (fun dom x ->
+            f dom (Control_error.make x)
+        )
     | BlockJob f ->
         Hashtbl.add s_i_i_table id (fun dom x ->
             f dom (Block_job.make x)
