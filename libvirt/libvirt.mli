@@ -759,18 +759,19 @@ sig
     val to_string: t -> string
   end
 
-  type watchdog_action = [
-    | `None           (** No action, watchdog ignored *)
-    | `Pause          (** Guest CPUs are paused *)
-    | `Reset          (** Guest CPUs are reset *)
-    | `Poweroff       (** Guest is forcably powered off *)
-    | `Shutdown       (** Guest is requested to gracefully shutdown *)
-    | `Debug          (** No action, a debug message logged *)
-    | `Unknown of int (** newer libvirt *)
-  ]
+  module Watchdog : sig
+    type t = [
+      | `None           (** No action, watchdog ignored *)
+      | `Pause          (** Guest CPUs are paused *)
+      | `Reset          (** Guest CPUs are reset *)
+      | `Poweroff       (** Guest is forcably powered off *)
+      | `Shutdown       (** Guest is requested to gracefully shutdown *)
+      | `Debug          (** No action, a debug message logged *)
+      | `Unknown of int (** newer libvirt *)
+    ]
 
-  val string_of_watchdog_action: watchdog_action -> string
-
+    val to_string: t -> string
+  end
 
   module Io_error : sig
     (** Represents both IOError and IOErrorReason *)
@@ -936,7 +937,7 @@ sig
     | Lifecycle     of ([`R] Domain.t -> Lifecycle.t -> unit)
     | Reboot        of ([`R] Domain.t -> Reboot.t -> unit)
     | RtcChange     of ([`R] Domain.t -> Rtc_change.t -> unit)
-    | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
+    | Watchdog      of ([`R] Domain.t -> Watchdog.t -> unit)
     | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
     | Graphics      of ([`R] Domain.t -> Graphics.t -> unit)
     | IOErrorReason of ([`R] Domain.t -> Io_error.t -> unit)

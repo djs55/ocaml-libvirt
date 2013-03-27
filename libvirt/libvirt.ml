@@ -705,33 +705,35 @@ struct
     let make x = x
   end
 
-  type watchdog_action = [
-    | `None
-    | `Pause
-    | `Reset
-    | `Poweroff
-    | `Shutdown
-    | `Debug
-    | `Unknown of int
-  ]
+  module Watchdog = struct
+    type t = [
+      | `None
+      | `Pause
+      | `Reset
+      | `Poweroff
+      | `Shutdown
+      | `Debug
+      | `Unknown of int
+    ]
 
-  let string_of_watchdog_action = function
-    | `None -> "None"
-    | `Pause -> "Pause"
-    | `Reset -> "Reset"
-    | `Poweroff -> "Poweroff"
-    | `Shutdown -> "Shutdown"
-    | `Debug -> "Debug"
-    | `Unknown x -> Printf.sprintf "Unknown watchdog_action: %d" x
+    let to_string = function
+      | `None -> "None"
+      | `Pause -> "Pause"
+      | `Reset -> "Reset"
+      | `Poweroff -> "Poweroff"
+      | `Shutdown -> "Shutdown"
+      | `Debug -> "Debug"
+      | `Unknown x -> Printf.sprintf "Unknown watchdog_action: %d" x
 
-  let watchdog_action_of_int = function
-    | 0 -> `None
-    | 1 -> `Pause
-    | 2 -> `Reset
-    | 3 -> `Poweroff
-    | 4 -> `Shutdown
-    | 5 -> `Debug
-    | x -> `Unknown x (* newer libvirt *)
+    let make = function
+      | 0 -> `None
+      | 1 -> `Pause
+      | 2 -> `Reset
+      | 3 -> `Poweroff
+      | 4 -> `Shutdown
+      | 5 -> `Debug
+      | x -> `Unknown x (* newer libvirt *)
+  end
 
   module Io_error = struct
     type action = [
@@ -1071,7 +1073,7 @@ struct
     | Lifecycle     of ([`R] Domain.t -> Lifecycle.t -> unit)
     | Reboot        of ([`R] Domain.t -> Reboot.t -> unit)
     | RtcChange     of ([`R] Domain.t -> Rtc_change.t -> unit)
-    | Watchdog      of ([`R] Domain.t -> watchdog_action -> unit)
+    | Watchdog      of ([`R] Domain.t -> Watchdog.t -> unit)
     | IOError       of ([`R] Domain.t -> Io_error.t -> unit)
     | Graphics      of ([`R] Domain.t -> Graphics.t -> unit)
     | IOErrorReason of ([`R] Domain.t -> Io_error.t -> unit)
@@ -1135,7 +1137,7 @@ struct
         )
     | Watchdog f ->
         Hashtbl.add i_table id (fun dom x ->
-            f dom (watchdog_action_of_int x)
+            f dom (Watchdog.make x)
         ) 
     | IOError f ->
         Hashtbl.add s_s_i_table id (fun dom x ->

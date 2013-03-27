@@ -74,7 +74,7 @@ let () =
         printd dom "RtcChange %s" (E.Rtc_change.to_string e)
     ));
     E.register_any conn (E.Watchdog (fun dom e ->
-        printd dom "Watchdog %s" (E.string_of_watchdog_action e)
+        printd dom "Watchdog %s" (E.Watchdog.to_string e)
     ));
     E.register_any conn (E.IOError (fun dom e ->
         printd dom "IOError %s" (E.Io_error.to_string e)
