@@ -1000,8 +1000,8 @@ ocaml_libvirt_event_run_default_impl (value unitv)
    where NAME is the string name of the OCaml callback registered
    in libvirt.ml. */
 #define CALLBACK_BEGIN(NAME)                                     \
-  CAMLparam0();                                                  \
-  CAMLlocal4(connv, domv, callback_id, result);                  \
+  value connv, domv, callback_id, result;                        \
+  connv = domv = callback_id = result = Val_int(0);              \
   static value *callback = NULL;                                 \
   caml_leave_blocking_section();                                 \
   if (callback == NULL)                                          \
@@ -1010,6 +1010,8 @@ ocaml_libvirt_event_run_default_impl (value unitv)
     abort(); /* C code out of sync with OCaml code */            \
   if ((virDomainRef(dom) == -1) || (virConnectRef(conn) == -1))  \
     abort(); /* should never happen in practice? */              \
+                                                                 \
+  Begin_roots4(connv, domv, callback_id, result);                \
   connv = Val_connect(conn);                                     \
   domv = Val_domain(dom, connv);                                 \
   callback_id = caml_copy_int64(*(long *)opaque);
@@ -1017,8 +1019,8 @@ ocaml_libvirt_event_run_default_impl (value unitv)
 /* Every one of the callbacks ends with a CALLBACK_END */
 #define CALLBACK_END                                             \
   (void) caml_callback3(*callback, callback_id, domv, result);   \
-  caml_enter_blocking_section();                                 \
-  CAMLreturn0;
+  End_roots();                                                   \
+  caml_enter_blocking_section();
 
 
 static void
