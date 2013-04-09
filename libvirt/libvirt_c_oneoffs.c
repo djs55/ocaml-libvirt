@@ -1008,15 +1008,15 @@ ocaml_libvirt_event_run_default_impl (value unitv)
     callback = caml_named_value(NAME);                           \
   if (callback == NULL)                                          \
     abort(); /* C code out of sync with OCaml code */            \
-  if (virDomainRef(dom) == 0) {                                  \
-    connv = Val_connect(conn);                                   \
-    domv = Val_domain(dom, connv);                               \
-    callback_id = caml_copy_int64(*(long *)opaque);
+  if ((virDomainRef(dom) == -1) || (virConnectRef(conn) == -1))  \
+    abort(); /* should never happen in practice? */              \
+  connv = Val_connect(conn);                                     \
+  domv = Val_domain(dom, connv);                                 \
+  callback_id = caml_copy_int64(*(long *)opaque);
 
 /* Every one of the callbacks ends with a CALLBACK_END */
 #define CALLBACK_END                                             \
-    (void) caml_callback3(*callback, callback_id, domv, result); \
-  }                                                              \
+  (void) caml_callback3(*callback, callback_id, domv, result);   \
   caml_enter_blocking_section();                                 \
   CAMLreturn0;
 
