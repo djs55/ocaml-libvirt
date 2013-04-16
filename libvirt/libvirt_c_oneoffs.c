@@ -996,10 +996,10 @@ ocaml_libvirt_event_run_default_impl (value unitv)
       dispatch to the specific OCaml closure and stored by libvirt
       as the "opaque" data. */
 
-/* Every one of the callbacks starts with a CALLBACK_BEGIN(NAME)
+/* Every one of the callbacks starts with a DOMAIN_CALLBACK_BEGIN(NAME)
    where NAME is the string name of the OCaml callback registered
    in libvirt.ml. */
-#define CALLBACK_BEGIN(NAME)                                     \
+#define DOMAIN_CALLBACK_BEGIN(NAME)                              \
   value connv, domv, callback_id, result;                        \
   connv = domv = callback_id = result = Val_int(0);              \
   static value *callback = NULL;                                 \
@@ -1017,7 +1017,7 @@ ocaml_libvirt_event_run_default_impl (value unitv)
   callback_id = caml_copy_int64(*(long *)opaque);
 
 /* Every one of the callbacks ends with a CALLBACK_END */
-#define CALLBACK_END                                             \
+#define DOMAIN_CALLBACK_END                                      \
   (void) caml_callback3(*callback, callback_id, domv, result);   \
   End_roots();                                                   \
   caml_enter_blocking_section();
@@ -1030,11 +1030,11 @@ i_i_callback(virConnectPtr conn,
 	     int y,
 	     void * opaque)
 {
-  CALLBACK_BEGIN("Libvirt.i_i_callback")
+  DOMAIN_CALLBACK_BEGIN("Libvirt.i_i_callback")
   result = caml_alloc_tuple(2);
   Store_field(result, 0, Val_int(x));
   Store_field(result, 1, Val_int(y));
-  CALLBACK_END
+  DOMAIN_CALLBACK_END
 }
 
 static void
@@ -1042,9 +1042,9 @@ u_callback(virConnectPtr conn,
 	   virDomainPtr dom,
 	   void *opaque)
 {
-  CALLBACK_BEGIN("Libvirt.u_callback")
+  DOMAIN_CALLBACK_BEGIN("Libvirt.u_callback")
   result = Val_int(0); /* () */
-  CALLBACK_END
+  DOMAIN_CALLBACK_END
 }
 
 static void
@@ -1053,9 +1053,9 @@ i64_callback(virConnectPtr conn,
 	     long long int64,
 	     void *opaque)
 {
-  CALLBACK_BEGIN("Libvirt.i64_callback")
+  DOMAIN_CALLBACK_BEGIN("Libvirt.i64_callback")
   result = caml_copy_int64(int64);
-  CALLBACK_END
+  DOMAIN_CALLBACK_END
 }
 
 static void
@@ -1064,9 +1064,9 @@ i_callback(virConnectPtr conn,
 	   int x,
 	   void *opaque)
 {
-  CALLBACK_BEGIN("Libvirt.i_callback")
+  DOMAIN_CALLBACK_BEGIN("Libvirt.i_callback")
   result = Val_int(x);
-  CALLBACK_END
+  DOMAIN_CALLBACK_END
 }
 
 static void
@@ -1076,12 +1076,12 @@ s_i_callback(virConnectPtr conn,
 	     int y,
 	     void * opaque)
 {
-  CALLBACK_BEGIN("Libvirt.s_i_callback")
+  DOMAIN_CALLBACK_BEGIN("Libvirt.s_i_callback")
   result = caml_alloc_tuple(2);
   Store_field(result, 0, 
 	      Val_opt(x, (Val_ptr_t) caml_copy_string));
   Store_field(result, 1, Val_int(y));
-  CALLBACK_END
+  DOMAIN_CALLBACK_END
 }
 
 static void
@@ -1092,13 +1092,13 @@ s_i_i_callback(virConnectPtr conn,
 	       int z,
 	       void * opaque)
 {
-  CALLBACK_BEGIN("Libvirt.s_i_i_callback")
+  DOMAIN_CALLBACK_BEGIN("Libvirt.s_i_i_callback")
   result = caml_alloc_tuple(3);
   Store_field(result, 0, 
 	      Val_opt(x, (Val_ptr_t) caml_copy_string));
   Store_field(result, 1, Val_int(y));
   Store_field(result, 2, Val_int(z));
-  CALLBACK_END
+  DOMAIN_CALLBACK_END
 }
 
 static void
@@ -1109,14 +1109,14 @@ s_s_i_callback(virConnectPtr conn,
 	       int z,
 	       void *opaque)
 {
-  CALLBACK_BEGIN("Libvirt.s_s_i_callback")
+  DOMAIN_CALLBACK_BEGIN("Libvirt.s_s_i_callback")
   result = caml_alloc_tuple(3);
   Store_field(result, 0, 
 	      Val_opt(x, (Val_ptr_t) caml_copy_string));
   Store_field(result, 1,
 	      Val_opt(y, (Val_ptr_t) caml_copy_string));
   Store_field(result, 2, Val_int(z));
-  CALLBACK_END
+  DOMAIN_CALLBACK_END
 }
 
 static void
@@ -1128,7 +1128,7 @@ s_s_i_s_callback(virConnectPtr conn,
 		 char *a,
 		 void *opaque)
 {
-  CALLBACK_BEGIN("Libvirt.s_s_i_s_callback")
+  DOMAIN_CALLBACK_BEGIN("Libvirt.s_s_i_s_callback")
   result = caml_alloc_tuple(4);
   Store_field(result, 0, 
 	      Val_opt(x, (Val_ptr_t) caml_copy_string));
@@ -1137,7 +1137,7 @@ s_s_i_s_callback(virConnectPtr conn,
   Store_field(result, 2, Val_int(z));
   Store_field(result, 3,
 	      Val_opt(a, (Val_ptr_t) caml_copy_string));
-  CALLBACK_END
+  DOMAIN_CALLBACK_END
 }
 
 static void
@@ -1149,7 +1149,7 @@ s_s_s_i_callback(virConnectPtr conn,
 		 int a,
 		 void * opaque)
 {
-  CALLBACK_BEGIN("Libvirt.s_s_s_i_callback")
+  DOMAIN_CALLBACK_BEGIN("Libvirt.s_s_s_i_callback")
   result = caml_alloc_tuple(4);
   Store_field(result, 0,
 	      Val_opt(x, (Val_ptr_t) caml_copy_string));
@@ -1158,7 +1158,7 @@ s_s_s_i_callback(virConnectPtr conn,
   Store_field(result, 2,
               Val_opt(z, (Val_ptr_t) caml_copy_string));
   Store_field(result, 3, Val_int(a));
-  CALLBACK_END
+  DOMAIN_CALLBACK_END
 }
 
 static value
@@ -1212,7 +1212,7 @@ i_ga_ga_s_gs_callback(virConnectPtr conn,
 		      virDomainEventGraphicsSubjectPtr gs1,
 		      void * opaque)
 {
-  CALLBACK_BEGIN("Libvirt.i_ga_ga_s_gs_callback")
+  DOMAIN_CALLBACK_BEGIN("Libvirt.i_ga_ga_s_gs_callback")
   result = caml_alloc_tuple(5);
   Store_field(result, 0, Val_int(i1));
   Store_field(result, 1, Val_event_graphics_address(ga1));
@@ -1220,7 +1220,96 @@ i_ga_ga_s_gs_callback(virConnectPtr conn,
   Store_field(result, 3,
 	      Val_opt(s1, (Val_ptr_t) caml_copy_string));
   Store_field(result, 4, Val_event_graphics_subject(gs1));
-  CALLBACK_END
+  DOMAIN_CALLBACK_END
+}
+
+static void
+timeout_callback(int timer, void *opaque)
+{
+  value callback_id, result;
+  callback_id = result = Val_int(0);
+  static value *callback = NULL;
+  caml_leave_blocking_section();
+  if (callback == NULL)
+    callback = caml_named_value("Libvirt.timeout_callback");
+  if (callback == NULL)
+    abort(); /* C code out of sync with OCaml code */
+
+  Begin_roots2(callback_id, result);
+  callback_id = caml_copy_int64(*(long *)opaque);
+
+  (void)caml_callback_exn(*callback, callback_id);
+  End_roots();
+  caml_enter_blocking_section();
+}
+
+#ifdef HAVE_WEAK_SYMBOLS
+#ifdef HAVE_VIREVENTADDTIMEOUT
+extern int virEventAddTimeout (int, virEventTimeoutCallback cb, void*, virFreeCallback) __attribute__((weak));
+#endif
+#endif
+
+CAMLprim value
+ocaml_libvirt_event_add_timeout (value connv, value ms, value callback_id)
+{
+  CAMLparam3 (connv, ms, callback_id);
+#ifndef HAVE_VIREVENTADDTIMEOUT
+  /* Symbol virEventAddTimeout not found at compile time. */
+  not_supported ("virEventAddTimeout");
+  CAMLnoreturn;
+#else
+  virConnectPtr conn = Connect_val (connv);
+  void *opaque;
+  virFreeCallback freecb = free;
+  virEventTimeoutCallback cb = timeout_callback;
+
+  /* Check that the symbol virEventAddTimeout
+   * is in runtime version of libvirt.
+   */
+  WEAK_SYMBOL_CHECK (virEventAddTimeout);
+
+  int r;
+
+  /* Store the int64 callback_id as the opaque data so the OCaml
+     callback can demultiplex to the correct OCaml handler. */
+  if ((opaque = malloc(sizeof(long))) == NULL)
+    caml_failwith ("virEventAddTimeout: malloc");
+  *((long*)opaque) = Int64_val(callback_id);
+  NONBLOCKING(r = virEventAddTimeout(Int_val(ms), cb, opaque, freecb));
+  CHECK_ERROR(r == -1, conn, "virEventAddTimeout");
+
+  CAMLreturn(Val_int(r));
+#endif
+}
+
+#ifdef HAVE_WEAK_SYMBOLS
+#ifdef HAVE_VIREVENTREMOVETIMEOUT
+extern int virEventRemoveTimeout (int)  __attribute__((weak));
+#endif
+#endif
+
+CAMLprim value
+ocaml_libvirt_event_remove_timeout (value connv, value timer_id)
+{
+  CAMLparam2 (connv, timer_id);
+#ifndef HAVE_VIREVENTREMOVETIMEOUT
+  /* Symbol virEventRemoveTimeout not found at compile time. */
+  not_supported ("virEventRemoveTimeout");
+  CAMLnoreturn;
+#else
+  virConnectPtr conn = Connect_val (connv);
+  int r;
+
+  /* Check that the symbol virEventRemoveTimeout
+   * is in runtime version of libvirt.
+   */
+  WEAK_SYMBOL_CHECK (virEventRemoveTimeout);
+
+  NONBLOCKING(r = virEventRemoveTimeout(Int_val(timer_id)));
+  CHECK_ERROR(r == -1, conn, "virEventRemoveTimeout");
+
+  CAMLreturn(Val_int(r));
+#endif
 }
 
 CAMLprim value

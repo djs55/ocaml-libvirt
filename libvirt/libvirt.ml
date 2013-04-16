@@ -1217,6 +1217,35 @@ struct
     Hashtbl.remove s_s_i_s_table id;
     Hashtbl.remove s_s_s_i_table id;
     Hashtbl.remove i_ga_ga_s_gs_table id
+
+  let timeout_table = Hashtbl.create 16
+  let _ =
+    let callback x =
+      if Hashtbl.mem timeout_table x
+      then Hashtbl.find timeout_table x () in
+  Callback.register "Libvirt.timeout_callback" callback
+
+  type timer_id = int64
+
+  external add_timeout' : 'a Connect.t -> int -> int64 -> int = "ocaml_libvirt_event_add_timeout"
+
+  external remove_timeout' : 'a Connect.t -> int -> unit = "ocaml_libvirt_event_remove_timeout"
+
+  let our_id_to_timer_id = Hashtbl.create 16
+  let add_timeout conn ms fn =
+    let id = fresh_callback_id () in
+    Hashtbl.add timeout_table id fn;
+    let timer_id = add_timeout' conn ms id in
+    Hashtbl.add our_id_to_timer_id id timer_id;
+    id
+
+  let remove_timeout conn id =
+    if Hashtbl.mem our_id_to_timer_id id then begin
+      let timer_id = Hashtbl.find our_id_to_timer_id id in
+      remove_timeout' conn timer_id
+    end;
+    Hashtbl.remove our_id_to_timer_id id;
+    Hashtbl.remove timeout_table id
 end
 
 module Network =

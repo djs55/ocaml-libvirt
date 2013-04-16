@@ -64,6 +64,17 @@ let () =
 	None in
     let conn = C.connect_readonly ?name () in
 
+    let spinner = [| '|'; '/'; '-'; '\\' |] in
+
+    let timeouts = ref 0 in
+    let (_: E.timer_id) = E.add_timeout conn 250 (* ms *)
+        (fun () ->
+            incr timeouts;
+            Printf.printf "\r%c  %d timeout callbacks%!" (spinner.(!timeouts mod (Array.length spinner))) !timeouts;
+            (* Check for GC errors: *)
+            Gc.compact ()
+        ) in
+
     let (_: E.callback_id) = E.register_any conn (E.Lifecycle (fun dom e ->
         printd dom "Lifecycle %s" (E.Lifecycle.to_string e)
     )) in
