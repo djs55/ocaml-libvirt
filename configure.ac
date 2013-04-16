@@ -130,6 +130,7 @@ AC_CHECK_FUNCS([virConnectGetHostname \
                 virEventRunDefaultImpl \
                 virConnectDomainEventRegisterAny \
                 virConnectSetKeepAlive \
+                virConnectDomainEventDeregisterAny \
 ])
 
 dnl Check for optional types added since 0.2.1.

@@ -1127,7 +1127,11 @@ struct
 
   external run_default_impl : unit -> unit = "ocaml_libvirt_event_run_default_impl"
 
-  external register_any' : 'a Connect.t -> 'a Domain.t option -> callback -> callback_id -> unit = "ocaml_libvirt_event_register_any"
+  external register_any' : 'a Connect.t -> 'a Domain.t option -> callback -> callback_id -> int = "ocaml_libvirt_connect_domain_event_register_any"
+
+  external deregister_any' : 'a Connect.t -> int -> unit = "ocaml_libvirt_connect_domain_event_deregister_any"
+
+  let our_id_to_libvirt_id = Hashtbl.create 16
 
   let register_any conn ?dom callback =
     let id = fresh_callback_id () in
@@ -1193,8 +1197,26 @@ struct
             f dom (PM_suspend_disk.make x)
         )
     end;
-    register_any' conn dom callback id
+    let libvirt_id = register_any' conn dom callback id in
+    Hashtbl.replace our_id_to_libvirt_id id libvirt_id;
+    id
 
+  let deregister_any conn id =
+    if Hashtbl.mem our_id_to_libvirt_id id then begin
+      let libvirt_id = Hashtbl.find our_id_to_libvirt_id id in
+      deregister_any' conn libvirt_id
+    end;
+    Hashtbl.remove our_id_to_libvirt_id id;
+    Hashtbl.remove u_table id;
+    Hashtbl.remove i_table id;
+    Hashtbl.remove i64_table id;
+    Hashtbl.remove i_i_table id;
+    Hashtbl.remove s_i_table id;
+    Hashtbl.remove s_i_i_table id;
+    Hashtbl.remove s_s_i_table id;
+    Hashtbl.remove s_s_i_s_table id;
+    Hashtbl.remove s_s_s_i_table id;
+    Hashtbl.remove i_ga_ga_s_gs_table id
 end
 
 module Network =

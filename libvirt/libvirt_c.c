@@ -580,6 +580,41 @@ ocaml_libvirt_connect_get_capabilities (value connv)
   CAMLreturn (rv);
 }
 
+/* Automatically generated binding for virConnectDomainEventDeregisterAny.
+ * In generator.pl this function has signature "conn, int : unit".
+ */
+
+#ifdef HAVE_WEAK_SYMBOLS
+#ifdef HAVE_VIRCONNECTDOMAINEVENTDEREGISTERANY
+extern int virConnectDomainEventDeregisterAny (virConnectPtr conn, int i) __attribute__((weak));
+#endif
+#endif
+
+CAMLprim value
+ocaml_libvirt_connect_domain_event_deregister_any (value connv, value iv)
+{
+  CAMLparam2 (connv, iv);
+#ifndef HAVE_VIRCONNECTDOMAINEVENTDEREGISTERANY
+  /* Symbol virConnectDomainEventDeregisterAny not found at compile time. */
+  not_supported ("virConnectDomainEventDeregisterAny");
+  CAMLnoreturn;
+#else
+  /* Check that the symbol virConnectDomainEventDeregisterAny
+   * is in runtime version of libvirt.
+   */
+  WEAK_SYMBOL_CHECK (virConnectDomainEventDeregisterAny);
+
+  virConnectPtr conn = Connect_val (connv);
+  int i = Int_val (iv);
+  int r;
+
+  NONBLOCKING (r = virConnectDomainEventDeregisterAny (conn, i));
+  CHECK_ERROR (r == -1, conn, "virConnectDomainEventDeregisterAny");
+
+  CAMLreturn (Val_unit);
+#endif
+}
+
 /* Automatically generated binding for virDomainCreateLinux.
  * In generator.pl this function has signature "conn, string, 0U : dom".
  */

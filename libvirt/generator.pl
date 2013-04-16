@@ -61,6 +61,8 @@ my @functions = (
     { name => "virConnectListDefinedStoragePools",
       sig => "conn, int : string array", weak => 1 },
     { name => "virConnectGetCapabilities", sig => "conn : string" },
+    { name => "virConnectDomainEventDeregisterAny",
+      sig => "conn, int : unit", weak => 1 },
 
     { name => "virDomainCreateLinux", sig => "conn, string, 0U : dom" },
     { name => "virDomainFree", sig => "dom : free" },

@@ -64,51 +64,51 @@ let () =
 	None in
     let conn = C.connect_readonly ?name () in
 
-    E.register_any conn (E.Lifecycle (fun dom e ->
+    let (_: E.callback_id) = E.register_any conn (E.Lifecycle (fun dom e ->
         printd dom "Lifecycle %s" (E.Lifecycle.to_string e)
-    ));
-    E.register_any conn (E.Reboot (fun dom e ->
+    )) in
+    let (_: E.callback_id) = E.register_any conn (E.Reboot (fun dom e ->
         printd dom "Reboot %s" (E.Reboot.to_string e)
-    ));
-    E.register_any conn (E.RtcChange (fun dom e ->
+    )) in
+    let (_: E.callback_id) = E.register_any conn (E.RtcChange (fun dom e ->
         printd dom "RtcChange %s" (E.Rtc_change.to_string e)
-    ));
-    E.register_any conn (E.Watchdog (fun dom e ->
+    )) in
+    let (_: E.callback_id) = E.register_any conn (E.Watchdog (fun dom e ->
         printd dom "Watchdog %s" (E.Watchdog.to_string e)
-    ));
-    E.register_any conn (E.IOError (fun dom e ->
+    )) in
+    let (_: E.callback_id) = E.register_any conn (E.IOError (fun dom e ->
         printd dom "IOError %s" (E.Io_error.to_string e)
-    ));
-    E.register_any conn (E.IOErrorReason (fun dom e ->
+    )) in
+    let (_: E.callback_id) = E.register_any conn (E.IOErrorReason (fun dom e ->
         printd dom "IOErrorReason %s" (E.Io_error.to_string e)
-    ));
-    E.register_any conn (E.Graphics (fun dom e ->
+    )) in
+    let (_: E.callback_id) = E.register_any conn (E.Graphics (fun dom e ->
         printd dom "Graphics %s" (E.Graphics.to_string e)
-    ));
-    E.register_any conn (E.ControlError (fun dom e ->
+    )) in
+    let (_: E.callback_id) = E.register_any conn (E.ControlError (fun dom e ->
         printd dom "ControlError %s" (E.Control_error.to_string e)
-    ));
-    E.register_any conn (E.BlockJob (fun dom e ->
+    )) in
+    let (_: E.callback_id) = E.register_any conn (E.BlockJob (fun dom e ->
         printd dom "BlockJob %s" (E.Block_job.to_string e)
-    ));
-    E.register_any conn (E.DiskChange (fun dom e ->
+    )) in
+    let (_: E.callback_id) = E.register_any conn (E.DiskChange (fun dom e ->
         printd dom "DiskChange %s" (E.Disk_change.to_string e)
-    ));
-    E.register_any conn (E.TrayChange (fun dom e ->
+    )) in
+    let (_: E.callback_id) = E.register_any conn (E.TrayChange (fun dom e ->
         printd dom "TrayChange %s" (E.Tray_change.to_string e)
-    ));
-    E.register_any conn (E.PMWakeUp (fun dom e ->
+    )) in
+    let (_: E.callback_id) = E.register_any conn (E.PMWakeUp (fun dom e ->
         printd dom "PMWakeup %s" (E.PM_wakeup.to_string e)
-    ));
-    E.register_any conn (E.PMSuspend (fun dom e ->
+    )) in
+    let (_: E.callback_id) = E.register_any conn (E.PMSuspend (fun dom e ->
         printd dom "PMSuspend %s" (E.PM_suspend.to_string e)
-    ));
-    E.register_any conn (E.BalloonChange (fun dom e ->
+    )) in
+    let (_: E.callback_id) = E.register_any conn (E.BalloonChange (fun dom e ->
         printd dom "BalloonChange %s" (E.Balloon_change.to_string e)
-    ));
-    E.register_any conn (E.PMSuspendDisk (fun dom x ->
+    )) in
+    let (_: E.callback_id) = E.register_any conn (E.PMSuspendDisk (fun dom x ->
         printd dom "PMSuspendDisk %s" (E.PM_suspend_disk.to_string x)
-    ));
+    )) in
     C.set_keep_alive conn 5 3;
     while true do
 	E.run_default_impl ()

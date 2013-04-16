@@ -1224,7 +1224,7 @@ i_ga_ga_s_gs_callback(virConnectPtr conn,
 }
 
 CAMLprim value
-ocaml_libvirt_event_register_any(value connv, value domv, value callback, value callback_id)
+ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value callback, value callback_id)
 {
   CAMLparam4(connv, domv, callback, callback_id);
 
@@ -1298,7 +1298,7 @@ ocaml_libvirt_event_register_any(value connv, value domv, value callback, value 
   NONBLOCKING(r = virConnectDomainEventRegisterAny(conn, dom, eventID, cb, opaque, freecb));
   CHECK_ERROR(r == -1, conn, "virConnectDomainEventRegisterAny");
 
-  CAMLreturn(Val_unit);
+  CAMLreturn(Val_int(r));
 }
 
 #ifdef HAVE_WEAK_SYMBOLS
