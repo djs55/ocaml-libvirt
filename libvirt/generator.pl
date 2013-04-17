@@ -62,7 +62,7 @@ my @functions = (
       sig => "conn, int : string array", weak => 1 },
     { name => "virConnectGetCapabilities", sig => "conn : string" },
     { name => "virConnectDomainEventDeregisterAny",
-      sig => "conn, int : unit", weak => 1 },
+      sig => "conn, int : unit" },
 
     { name => "virDomainCreateLinux", sig => "conn, string, 0U : dom" },
     { name => "virDomainFree", sig => "dom : free" },

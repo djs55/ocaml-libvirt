@@ -917,25 +917,10 @@ ocaml_libvirt_domain_memory_peek_bytecode (value *argv, int argn)
 
 /* Domain events */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIREVENTREGISTERDEFAULTIMPL
-extern int virEventRegisterDefaultImpl () __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_event_register_default_impl (value unitv)
 {
   CAMLparam1 (unitv);
-#ifndef HAVE_VIREVENTREGISTERDEFAULTIMPL
-  /* Symbol virEventRegisterDefaultImpl not found at compile time. */
-  not_supported ("virEventRegisterDefaultImpl");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virEventRegisterDefaultImpl
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virEventRegisterDefaultImpl);
 
   /* arg is of type unit = void */
   int r;
@@ -945,28 +930,12 @@ ocaml_libvirt_event_register_default_impl (value unitv)
   if (r == -1) caml_failwith("virEventRegisterDefaultImpl");
 
   CAMLreturn (Val_unit);
-#endif
 }
-
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIREVENTRUNDEFAULTIMPL
-extern int virEventRunDefaultImpl () __attribute__((weak));
-#endif
-#endif
 
 CAMLprim value
 ocaml_libvirt_event_run_default_impl (value unitv)
 {
   CAMLparam1 (unitv);
-#ifndef HAVE_VIREVENTRUNDEFAULTIMPL
-  /* Symbol virEventRunDefaultImpl not found at compile time. */
-  not_supported ("virEventRunDefaultImpl");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virEventRunDefaultImpl
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virEventRunDefaultImpl);
 
   /* arg is of type unit = void */
   int r;
@@ -975,7 +944,6 @@ ocaml_libvirt_event_run_default_impl (value unitv)
   if (r == -1) caml_failwith("virEventRunDefaultImpl");
 
   CAMLreturn (Val_unit);
-#endif
 }
 
 /* We register a single C callback function for every distinct

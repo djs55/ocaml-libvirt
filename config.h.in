@@ -30,12 +30,6 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define to 1 if you have the `virConnectDomainEventRegisterAny' function. */
-#undef HAVE_VIRCONNECTDOMAINEVENTREGISTERANY
-
-/* Define to 1 if you have the `virConnectDomainEventDeregisterAny' function. */
-#undef HAVE_VIRCONNECTDOMAINEVENTDEREGISTERANY
-
 /* Define to 1 if you have the 'virConnectSetKeepAlive' function. */
 #undef HAVE_VIRCONNECTSETKEEPALIVE
 
@@ -89,14 +83,8 @@
 /* Define to 1 if you have the `virEventAddTimeout' function. */
 #undef HAVE_VIREVENTADDTIMEOUT
 
-/* Define to 1 if you have the `virEventRegisterDefaultImpl' function. */
-#undef HAVE_VIREVENTREGISTERDEFAULTIMPL
-
 /* Define to 1 if you have the `virEventRemoveTimeout' function. */
 #undef HAVE_VIREVENTREMOVETIMEOUT
-
-/* Define to 1 if you have the `virEventRunDefaultImpl' function. */
-#undef HAVE_VIREVENTRUNDEFAULTIMPL
 
 /* Define to 1 if you have the `virNodeGetCellsFreeMemory' function. */
 #undef HAVE_VIRNODEGETCELLSFREEMEMORY
