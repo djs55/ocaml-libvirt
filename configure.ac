@@ -127,6 +127,8 @@ AC_CHECK_FUNCS([virConnectGetHostname \
 		virDomainMemoryPeek \
                 virDomainGetCPUStats \
                 virConnectSetKeepAlive \
+                virEventAddTimeout \
+                virEventRemoveTimeout \
 ])
 
 dnl Check for optional types added since 0.2.1.

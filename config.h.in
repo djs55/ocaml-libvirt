@@ -80,6 +80,12 @@
 /* Define to 1 if you have the `virDomainSetSchedulerParameters' function. */
 #undef HAVE_VIRDOMAINSETSCHEDULERPARAMETERS
 
+/* Define to 1 if you have the `virEventAddTimeout' function. */
+#undef HAVE_VIREVENTADDTIMEOUT
+
+/* Define to 1 if you have the `virEventRemoveTimeout' function. */
+#undef HAVE_VIREVENTREMOVETIMEOUT
+
 /* Define to 1 if you have the `virNodeGetCellsFreeMemory' function. */
 #undef HAVE_VIRNODEGETCELLSFREEMEMORY
 
