@@ -1341,9 +1341,11 @@ ocaml_libvirt_connect_domain_event_register_any(value connv, value domv, value c
   case VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE:
     cb = VIR_DOMAIN_EVENT_CALLBACK(i64_callback);
     break;
+#if 0
   case VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK:
     cb = VIR_DOMAIN_EVENT_CALLBACK(i_callback);
     break;
+#endif
   default:
     caml_failwith("vifConnectDomainEventRegisterAny: unimplemented eventID");
   }
