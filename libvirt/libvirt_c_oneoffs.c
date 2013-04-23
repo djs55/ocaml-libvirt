@@ -945,7 +945,7 @@ ocaml_libvirt_storage_vol_get_info (value volv)
   rv = caml_alloc (3, 0);
   Store_field (rv, 0, Val_int (info.type));
   v = caml_copy_int64 (info.capacity); Store_field (rv, 1, v);
-  v = caml_copy_int64 (info.allocation); Store_field (rv, 1, v);
+  v = caml_copy_int64 (info.allocation); Store_field (rv, 2, v);
 
   CAMLreturn (rv);
 #else
