@@ -73,25 +73,10 @@ ocaml_libvirt_connect_close (value connv)
  * In generator.pl this function has signature "conn : string".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRCONNECTGETHOSTNAME
-extern char *virConnectGetHostname (virConnectPtr conn) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_connect_get_hostname (value connv)
 {
   CAMLparam1 (connv);
-#ifndef HAVE_VIRCONNECTGETHOSTNAME
-  /* Symbol virConnectGetHostname not found at compile time. */
-  not_supported ("virConnectGetHostname");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virConnectGetHostname
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virConnectGetHostname);
 
   CAMLlocal1 (rv);
   virConnectPtr conn = Connect_val (connv);
@@ -103,32 +88,16 @@ ocaml_libvirt_connect_get_hostname (value connv)
   rv = caml_copy_string (r);
   free (r);
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virConnectGetURI.
  * In generator.pl this function has signature "conn : string".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRCONNECTGETURI
-extern char *virConnectGetURI (virConnectPtr conn) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_connect_get_uri (value connv)
 {
   CAMLparam1 (connv);
-#ifndef HAVE_VIRCONNECTGETURI
-  /* Symbol virConnectGetURI not found at compile time. */
-  not_supported ("virConnectGetURI");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virConnectGetURI
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virConnectGetURI);
 
   CAMLlocal1 (rv);
   virConnectPtr conn = Connect_val (connv);
@@ -140,7 +109,6 @@ ocaml_libvirt_connect_get_uri (value connv)
   rv = caml_copy_string (r);
   free (r);
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virConnectGetType.
@@ -387,25 +355,10 @@ ocaml_libvirt_connect_list_defined_networks (value connv, value iv)
  * In generator.pl this function has signature "conn : int".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRCONNECTNUMOFSTORAGEPOOLS
-extern int virConnectNumOfStoragePools (virConnectPtr conn) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_connect_num_of_storage_pools (value connv)
 {
   CAMLparam1 (connv);
-#ifndef HAVE_VIRCONNECTNUMOFSTORAGEPOOLS
-  /* Symbol virConnectNumOfStoragePools not found at compile time. */
-  not_supported ("virConnectNumOfStoragePools");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virConnectNumOfStoragePools
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virConnectNumOfStoragePools);
 
   virConnectPtr conn = Connect_val (connv);
   int r;
@@ -414,32 +367,16 @@ ocaml_libvirt_connect_num_of_storage_pools (value connv)
   CHECK_ERROR (r == -1, conn, "virConnectNumOfStoragePools");
 
   CAMLreturn (Val_int (r));
-#endif
 }
 
 /* Automatically generated binding for virConnectListStoragePools.
  * In generator.pl this function has signature "conn, int : string array".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRCONNECTLISTSTORAGEPOOLS
-extern int virConnectListStoragePools (virConnectPtr conn, char **const names, int maxnames) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_connect_list_storage_pools (value connv, value iv)
 {
   CAMLparam2 (connv, iv);
-#ifndef HAVE_VIRCONNECTLISTSTORAGEPOOLS
-  /* Symbol virConnectListStoragePools not found at compile time. */
-  not_supported ("virConnectListStoragePools");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virConnectListStoragePools
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virConnectListStoragePools);
 
   CAMLlocal2 (rv, strv);
   virConnectPtr conn = Connect_val (connv);
@@ -468,32 +405,16 @@ ocaml_libvirt_connect_list_storage_pools (value connv, value iv)
   }
 
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virConnectNumOfDefinedStoragePools.
  * In generator.pl this function has signature "conn : int".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRCONNECTNUMOFDEFINEDSTORAGEPOOLS
-extern int virConnectNumOfDefinedStoragePools (virConnectPtr conn) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_connect_num_of_defined_storage_pools (value connv)
 {
   CAMLparam1 (connv);
-#ifndef HAVE_VIRCONNECTNUMOFDEFINEDSTORAGEPOOLS
-  /* Symbol virConnectNumOfDefinedStoragePools not found at compile time. */
-  not_supported ("virConnectNumOfDefinedStoragePools");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virConnectNumOfDefinedStoragePools
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virConnectNumOfDefinedStoragePools);
 
   virConnectPtr conn = Connect_val (connv);
   int r;
@@ -502,32 +423,16 @@ ocaml_libvirt_connect_num_of_defined_storage_pools (value connv)
   CHECK_ERROR (r == -1, conn, "virConnectNumOfDefinedStoragePools");
 
   CAMLreturn (Val_int (r));
-#endif
 }
 
 /* Automatically generated binding for virConnectListDefinedStoragePools.
  * In generator.pl this function has signature "conn, int : string array".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRCONNECTLISTDEFINEDSTORAGEPOOLS
-extern int virConnectListDefinedStoragePools (virConnectPtr conn, char **const names, int maxnames) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_connect_list_defined_storage_pools (value connv, value iv)
 {
   CAMLparam2 (connv, iv);
-#ifndef HAVE_VIRCONNECTLISTDEFINEDSTORAGEPOOLS
-  /* Symbol virConnectListDefinedStoragePools not found at compile time. */
-  not_supported ("virConnectListDefinedStoragePools");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virConnectListDefinedStoragePools
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virConnectListDefinedStoragePools);
 
   CAMLlocal2 (rv, strv);
   virConnectPtr conn = Connect_val (connv);
@@ -556,7 +461,6 @@ ocaml_libvirt_connect_list_defined_storage_pools (value connv, value iv)
   }
 
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virConnectGetCapabilities.
@@ -1487,25 +1391,10 @@ ocaml_libvirt_network_set_autostart (value netv, value bv)
  * In generator.pl this function has signature "pool : free".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLFREE
-extern int virStoragePoolFree (virStoragePoolPtr pool) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_free (value poolv)
 {
   CAMLparam1 (poolv);
-#ifndef HAVE_VIRSTORAGEPOOLFREE
-  /* Symbol virStoragePoolFree not found at compile time. */
-  not_supported ("virStoragePoolFree");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolFree
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolFree);
 
   virStoragePoolPtr pool = Pool_val (poolv);
   virConnectPtr conn = Connect_polv (poolv);
@@ -1518,32 +1407,16 @@ ocaml_libvirt_storage_pool_free (value poolv)
   Pool_val (poolv) = NULL;
 
   CAMLreturn (Val_unit);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolDestroy.
  * In generator.pl this function has signature "pool : free".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLDESTROY
-extern int virStoragePoolDestroy (virStoragePoolPtr pool) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_destroy (value poolv)
 {
   CAMLparam1 (poolv);
-#ifndef HAVE_VIRSTORAGEPOOLDESTROY
-  /* Symbol virStoragePoolDestroy not found at compile time. */
-  not_supported ("virStoragePoolDestroy");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolDestroy
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolDestroy);
 
   virStoragePoolPtr pool = Pool_val (poolv);
   virConnectPtr conn = Connect_polv (poolv);
@@ -1556,32 +1429,16 @@ ocaml_libvirt_storage_pool_destroy (value poolv)
   Pool_val (poolv) = NULL;
 
   CAMLreturn (Val_unit);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolLookupByName.
  * In generator.pl this function has signature "conn, string : pool".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLLOOKUPBYNAME
-extern virStoragePoolPtr virStoragePoolLookupByName (virConnectPtr conn, const char *str) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_lookup_by_name (value connv, value strv)
 {
   CAMLparam2 (connv, strv);
-#ifndef HAVE_VIRSTORAGEPOOLLOOKUPBYNAME
-  /* Symbol virStoragePoolLookupByName not found at compile time. */
-  not_supported ("virStoragePoolLookupByName");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolLookupByName
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolLookupByName);
 
   CAMLlocal1 (rv);
   virConnectPtr conn = Connect_val (connv);
@@ -1594,32 +1451,16 @@ ocaml_libvirt_storage_pool_lookup_by_name (value connv, value strv)
   rv = Val_pool (r, connv);
 
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolLookupByUUID.
  * In generator.pl this function has signature "conn, uuid : pool".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLLOOKUPBYUUID
-extern virStoragePoolPtr virStoragePoolLookupByUUID (virConnectPtr conn, const unsigned char *str) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_lookup_by_uuid (value connv, value uuidv)
 {
   CAMLparam2 (connv, uuidv);
-#ifndef HAVE_VIRSTORAGEPOOLLOOKUPBYUUID
-  /* Symbol virStoragePoolLookupByUUID not found at compile time. */
-  not_supported ("virStoragePoolLookupByUUID");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolLookupByUUID
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolLookupByUUID);
 
   CAMLlocal1 (rv);
   virConnectPtr conn = Connect_val (connv);
@@ -1632,32 +1473,16 @@ ocaml_libvirt_storage_pool_lookup_by_uuid (value connv, value uuidv)
   rv = Val_pool (r, connv);
 
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolLookupByUUIDString.
  * In generator.pl this function has signature "conn, string : pool".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLLOOKUPBYUUIDSTRING
-extern virStoragePoolPtr virStoragePoolLookupByUUIDString (virConnectPtr conn, const char *str) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_lookup_by_uuid_string (value connv, value strv)
 {
   CAMLparam2 (connv, strv);
-#ifndef HAVE_VIRSTORAGEPOOLLOOKUPBYUUIDSTRING
-  /* Symbol virStoragePoolLookupByUUIDString not found at compile time. */
-  not_supported ("virStoragePoolLookupByUUIDString");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolLookupByUUIDString
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolLookupByUUIDString);
 
   CAMLlocal1 (rv);
   virConnectPtr conn = Connect_val (connv);
@@ -1670,32 +1495,16 @@ ocaml_libvirt_storage_pool_lookup_by_uuid_string (value connv, value strv)
   rv = Val_pool (r, connv);
 
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolGetName.
  * In generator.pl this function has signature "pool : static string".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLGETNAME
-extern const char *virStoragePoolGetName (virStoragePoolPtr pool) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_get_name (value poolv)
 {
   CAMLparam1 (poolv);
-#ifndef HAVE_VIRSTORAGEPOOLGETNAME
-  /* Symbol virStoragePoolGetName not found at compile time. */
-  not_supported ("virStoragePoolGetName");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolGetName
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolGetName);
 
   CAMLlocal1 (rv);
   virStoragePoolPtr pool = Pool_val (poolv);
@@ -1707,32 +1516,16 @@ ocaml_libvirt_storage_pool_get_name (value poolv)
 
   rv = caml_copy_string (r);
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolGetXMLDesc.
  * In generator.pl this function has signature "pool, 0U : string".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLGETXMLDESC
-extern char *virStoragePoolGetXMLDesc (virStoragePoolPtr pool, unsigned  int flags) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_get_xml_desc (value poolv)
 {
   CAMLparam1 (poolv);
-#ifndef HAVE_VIRSTORAGEPOOLGETXMLDESC
-  /* Symbol virStoragePoolGetXMLDesc not found at compile time. */
-  not_supported ("virStoragePoolGetXMLDesc");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolGetXMLDesc
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolGetXMLDesc);
 
   CAMLlocal1 (rv);
   virStoragePoolPtr pool = Pool_val (poolv);
@@ -1745,32 +1538,16 @@ ocaml_libvirt_storage_pool_get_xml_desc (value poolv)
   rv = caml_copy_string (r);
   free (r);
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolGetUUID.
  * In generator.pl this function has signature "pool : uuid".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLGETUUID
-extern int virStoragePoolGetUUID (virStoragePoolPtr pool, unsigned char *) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_get_uuid (value poolv)
 {
   CAMLparam1 (poolv);
-#ifndef HAVE_VIRSTORAGEPOOLGETUUID
-  /* Symbol virStoragePoolGetUUID not found at compile time. */
-  not_supported ("virStoragePoolGetUUID");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolGetUUID
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolGetUUID);
 
   CAMLlocal1 (rv);
   virStoragePoolPtr pool = Pool_val (poolv);
@@ -1785,32 +1562,16 @@ ocaml_libvirt_storage_pool_get_uuid (value poolv)
   rv = caml_alloc_string (VIR_UUID_BUFLEN);
   memcpy (String_val (rv), uuid, VIR_UUID_BUFLEN);
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolGetUUIDString.
  * In generator.pl this function has signature "pool : uuid string".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLGETUUIDSTRING
-extern int virStoragePoolGetUUIDString (virStoragePoolPtr pool, char *) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_get_uuid_string (value poolv)
 {
   CAMLparam1 (poolv);
-#ifndef HAVE_VIRSTORAGEPOOLGETUUIDSTRING
-  /* Symbol virStoragePoolGetUUIDString not found at compile time. */
-  not_supported ("virStoragePoolGetUUIDString");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolGetUUIDString
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolGetUUIDString);
 
   CAMLlocal1 (rv);
   virStoragePoolPtr pool = Pool_val (poolv);
@@ -1823,32 +1584,16 @@ ocaml_libvirt_storage_pool_get_uuid_string (value poolv)
 
   rv = caml_copy_string (uuid);
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolCreateXML.
  * In generator.pl this function has signature "conn, string, 0U : pool".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLCREATEXML
-extern virStoragePoolPtr virStoragePoolCreateXML (virConnectPtr conn, const char *str, unsigned int flags) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_create_xml (value connv, value strv)
 {
   CAMLparam2 (connv, strv);
-#ifndef HAVE_VIRSTORAGEPOOLCREATEXML
-  /* Symbol virStoragePoolCreateXML not found at compile time. */
-  not_supported ("virStoragePoolCreateXML");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolCreateXML
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolCreateXML);
 
   CAMLlocal1 (rv);
   virConnectPtr conn = Connect_val (connv);
@@ -1861,32 +1606,16 @@ ocaml_libvirt_storage_pool_create_xml (value connv, value strv)
   rv = Val_pool (r, connv);
 
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolDefineXML.
  * In generator.pl this function has signature "conn, string, 0U : pool".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLDEFINEXML
-extern virStoragePoolPtr virStoragePoolDefineXML (virConnectPtr conn, const char *str, unsigned int flags) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_define_xml (value connv, value strv)
 {
   CAMLparam2 (connv, strv);
-#ifndef HAVE_VIRSTORAGEPOOLDEFINEXML
-  /* Symbol virStoragePoolDefineXML not found at compile time. */
-  not_supported ("virStoragePoolDefineXML");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolDefineXML
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolDefineXML);
 
   CAMLlocal1 (rv);
   virConnectPtr conn = Connect_val (connv);
@@ -1899,32 +1628,16 @@ ocaml_libvirt_storage_pool_define_xml (value connv, value strv)
   rv = Val_pool (r, connv);
 
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolBuild.
  * In generator.pl this function has signature "pool, uint : unit".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLBUILD
-extern int virStoragePoolBuild (virStoragePoolPtr pool, unsigned int i) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_build (value poolv, value iv)
 {
   CAMLparam2 (poolv, iv);
-#ifndef HAVE_VIRSTORAGEPOOLBUILD
-  /* Symbol virStoragePoolBuild not found at compile time. */
-  not_supported ("virStoragePoolBuild");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolBuild
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolBuild);
 
   virStoragePoolPtr pool = Pool_val (poolv);
   virConnectPtr conn = Connect_polv (poolv);
@@ -1935,32 +1648,16 @@ ocaml_libvirt_storage_pool_build (value poolv, value iv)
   CHECK_ERROR (r == -1, conn, "virStoragePoolBuild");
 
   CAMLreturn (Val_unit);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolUndefine.
  * In generator.pl this function has signature "pool : unit".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLUNDEFINE
-extern int virStoragePoolUndefine (virStoragePoolPtr pool) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_undefine (value poolv)
 {
   CAMLparam1 (poolv);
-#ifndef HAVE_VIRSTORAGEPOOLUNDEFINE
-  /* Symbol virStoragePoolUndefine not found at compile time. */
-  not_supported ("virStoragePoolUndefine");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolUndefine
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolUndefine);
 
   virStoragePoolPtr pool = Pool_val (poolv);
   virConnectPtr conn = Connect_polv (poolv);
@@ -1970,32 +1667,16 @@ ocaml_libvirt_storage_pool_undefine (value poolv)
   CHECK_ERROR (r == -1, conn, "virStoragePoolUndefine");
 
   CAMLreturn (Val_unit);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolCreate.
  * In generator.pl this function has signature "pool, 0U : unit".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLCREATE
-extern int virStoragePoolCreate (virStoragePoolPtr pool, unsigned  int flags) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_create (value poolv)
 {
   CAMLparam1 (poolv);
-#ifndef HAVE_VIRSTORAGEPOOLCREATE
-  /* Symbol virStoragePoolCreate not found at compile time. */
-  not_supported ("virStoragePoolCreate");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolCreate
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolCreate);
 
   virStoragePoolPtr pool = Pool_val (poolv);
   virConnectPtr conn = Connect_polv (poolv);
@@ -2005,32 +1686,16 @@ ocaml_libvirt_storage_pool_create (value poolv)
   CHECK_ERROR (r == -1, conn, "virStoragePoolCreate");
 
   CAMLreturn (Val_unit);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolDelete.
  * In generator.pl this function has signature "pool, uint : unit".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLDELETE
-extern int virStoragePoolDelete (virStoragePoolPtr pool, unsigned int i) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_delete (value poolv, value iv)
 {
   CAMLparam2 (poolv, iv);
-#ifndef HAVE_VIRSTORAGEPOOLDELETE
-  /* Symbol virStoragePoolDelete not found at compile time. */
-  not_supported ("virStoragePoolDelete");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolDelete
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolDelete);
 
   virStoragePoolPtr pool = Pool_val (poolv);
   virConnectPtr conn = Connect_polv (poolv);
@@ -2041,32 +1706,16 @@ ocaml_libvirt_storage_pool_delete (value poolv, value iv)
   CHECK_ERROR (r == -1, conn, "virStoragePoolDelete");
 
   CAMLreturn (Val_unit);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolRefresh.
  * In generator.pl this function has signature "pool, 0U : unit".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLREFRESH
-extern int virStoragePoolRefresh (virStoragePoolPtr pool, unsigned  int flags) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_refresh (value poolv)
 {
   CAMLparam1 (poolv);
-#ifndef HAVE_VIRSTORAGEPOOLREFRESH
-  /* Symbol virStoragePoolRefresh not found at compile time. */
-  not_supported ("virStoragePoolRefresh");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolRefresh
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolRefresh);
 
   virStoragePoolPtr pool = Pool_val (poolv);
   virConnectPtr conn = Connect_polv (poolv);
@@ -2076,32 +1725,16 @@ ocaml_libvirt_storage_pool_refresh (value poolv)
   CHECK_ERROR (r == -1, conn, "virStoragePoolRefresh");
 
   CAMLreturn (Val_unit);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolGetAutostart.
  * In generator.pl this function has signature "pool : bool".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLGETAUTOSTART
-extern int virStoragePoolGetAutostart (virStoragePoolPtr pool, int *r) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_get_autostart (value poolv)
 {
   CAMLparam1 (poolv);
-#ifndef HAVE_VIRSTORAGEPOOLGETAUTOSTART
-  /* Symbol virStoragePoolGetAutostart not found at compile time. */
-  not_supported ("virStoragePoolGetAutostart");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolGetAutostart
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolGetAutostart);
 
   virStoragePoolPtr pool = Pool_val (poolv);
   virConnectPtr conn = Connect_polv (poolv);
@@ -2111,32 +1744,16 @@ ocaml_libvirt_storage_pool_get_autostart (value poolv)
   CHECK_ERROR (r == -1, conn, "virStoragePoolGetAutostart");
 
   CAMLreturn (b ? Val_true : Val_false);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolSetAutostart.
  * In generator.pl this function has signature "pool, bool : unit".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLSETAUTOSTART
-extern int virStoragePoolSetAutostart (virStoragePoolPtr pool, int b) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_set_autostart (value poolv, value bv)
 {
   CAMLparam2 (poolv, bv);
-#ifndef HAVE_VIRSTORAGEPOOLSETAUTOSTART
-  /* Symbol virStoragePoolSetAutostart not found at compile time. */
-  not_supported ("virStoragePoolSetAutostart");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolSetAutostart
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolSetAutostart);
 
   virStoragePoolPtr pool = Pool_val (poolv);
   virConnectPtr conn = Connect_polv (poolv);
@@ -2148,32 +1765,16 @@ ocaml_libvirt_storage_pool_set_autostart (value poolv, value bv)
   CHECK_ERROR (r == -1, conn, "virStoragePoolSetAutostart");
 
   CAMLreturn (Val_unit);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolNumOfVolumes.
  * In generator.pl this function has signature "pool : int".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLNUMOFVOLUMES
-extern int virStoragePoolNumOfVolumes (virStoragePoolPtr pool) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_num_of_volumes (value poolv)
 {
   CAMLparam1 (poolv);
-#ifndef HAVE_VIRSTORAGEPOOLNUMOFVOLUMES
-  /* Symbol virStoragePoolNumOfVolumes not found at compile time. */
-  not_supported ("virStoragePoolNumOfVolumes");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolNumOfVolumes
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolNumOfVolumes);
 
   virStoragePoolPtr pool = Pool_val (poolv);
   virConnectPtr conn = Connect_polv (poolv);
@@ -2183,32 +1784,16 @@ ocaml_libvirt_storage_pool_num_of_volumes (value poolv)
   CHECK_ERROR (r == -1, conn, "virStoragePoolNumOfVolumes");
 
   CAMLreturn (Val_int (r));
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolListVolumes.
  * In generator.pl this function has signature "pool, int : string array".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLLISTVOLUMES
-extern int virStoragePoolListVolumes (virStoragePoolPtr pool, char **const names, int maxnames) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_list_volumes (value poolv, value iv)
 {
   CAMLparam2 (poolv, iv);
-#ifndef HAVE_VIRSTORAGEPOOLLISTVOLUMES
-  /* Symbol virStoragePoolListVolumes not found at compile time. */
-  not_supported ("virStoragePoolListVolumes");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolListVolumes
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolListVolumes);
 
   CAMLlocal2 (rv, strv);
   virStoragePoolPtr pool = Pool_val (poolv);
@@ -2238,32 +1823,16 @@ ocaml_libvirt_storage_pool_list_volumes (value poolv, value iv)
   }
 
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStorageVolFree.
  * In generator.pl this function has signature "vol : free".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEVOLFREE
-extern int virStorageVolFree (virStorageVolPtr vol) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_vol_free (value volv)
 {
   CAMLparam1 (volv);
-#ifndef HAVE_VIRSTORAGEVOLFREE
-  /* Symbol virStorageVolFree not found at compile time. */
-  not_supported ("virStorageVolFree");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStorageVolFree
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStorageVolFree);
 
   virStorageVolPtr vol = Volume_val (volv);
   virConnectPtr conn = Connect_volv (volv);
@@ -2276,32 +1845,16 @@ ocaml_libvirt_storage_vol_free (value volv)
   Volume_val (volv) = NULL;
 
   CAMLreturn (Val_unit);
-#endif
 }
 
 /* Automatically generated binding for virStorageVolDelete.
  * In generator.pl this function has signature "vol, uint : unit".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEVOLDELETE
-extern int virStorageVolDelete (virStorageVolPtr vol, unsigned int i) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_vol_delete (value volv, value iv)
 {
   CAMLparam2 (volv, iv);
-#ifndef HAVE_VIRSTORAGEVOLDELETE
-  /* Symbol virStorageVolDelete not found at compile time. */
-  not_supported ("virStorageVolDelete");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStorageVolDelete
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStorageVolDelete);
 
   virStorageVolPtr vol = Volume_val (volv);
   virConnectPtr conn = Connect_volv (volv);
@@ -2312,32 +1865,16 @@ ocaml_libvirt_storage_vol_delete (value volv, value iv)
   CHECK_ERROR (r == -1, conn, "virStorageVolDelete");
 
   CAMLreturn (Val_unit);
-#endif
 }
 
 /* Automatically generated binding for virStorageVolLookupByName.
  * In generator.pl this function has signature "pool, string : vol from pool".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEVOLLOOKUPBYNAME
-extern virStorageVolPtr virStorageVolLookupByName (virStoragePoolPtr pool, const char *str) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_vol_lookup_by_name (value poolv, value strv)
 {
   CAMLparam2 (poolv, strv);
-#ifndef HAVE_VIRSTORAGEVOLLOOKUPBYNAME
-  /* Symbol virStorageVolLookupByName not found at compile time. */
-  not_supported ("virStorageVolLookupByName");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStorageVolLookupByName
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStorageVolLookupByName);
 
   CAMLlocal2 (rv, connv);
   virStoragePoolPtr pool = Pool_val (poolv);
@@ -2352,32 +1889,16 @@ ocaml_libvirt_storage_vol_lookup_by_name (value poolv, value strv)
   rv = Val_volume (r, connv);
 
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStorageVolLookupByKey.
  * In generator.pl this function has signature "conn, string : vol".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEVOLLOOKUPBYKEY
-extern virStorageVolPtr virStorageVolLookupByKey (virConnectPtr conn, const char *str) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_vol_lookup_by_key (value connv, value strv)
 {
   CAMLparam2 (connv, strv);
-#ifndef HAVE_VIRSTORAGEVOLLOOKUPBYKEY
-  /* Symbol virStorageVolLookupByKey not found at compile time. */
-  not_supported ("virStorageVolLookupByKey");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStorageVolLookupByKey
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStorageVolLookupByKey);
 
   CAMLlocal1 (rv);
   virConnectPtr conn = Connect_val (connv);
@@ -2390,32 +1911,16 @@ ocaml_libvirt_storage_vol_lookup_by_key (value connv, value strv)
   rv = Val_volume (r, connv);
 
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStorageVolLookupByPath.
  * In generator.pl this function has signature "conn, string : vol".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEVOLLOOKUPBYPATH
-extern virStorageVolPtr virStorageVolLookupByPath (virConnectPtr conn, const char *str) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_vol_lookup_by_path (value connv, value strv)
 {
   CAMLparam2 (connv, strv);
-#ifndef HAVE_VIRSTORAGEVOLLOOKUPBYPATH
-  /* Symbol virStorageVolLookupByPath not found at compile time. */
-  not_supported ("virStorageVolLookupByPath");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStorageVolLookupByPath
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStorageVolLookupByPath);
 
   CAMLlocal1 (rv);
   virConnectPtr conn = Connect_val (connv);
@@ -2428,32 +1933,16 @@ ocaml_libvirt_storage_vol_lookup_by_path (value connv, value strv)
   rv = Val_volume (r, connv);
 
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStorageVolCreateXML.
  * In generator.pl this function has signature "pool, string, 0U : vol from pool".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEVOLCREATEXML
-extern virStorageVolPtr virStorageVolCreateXML (virStoragePoolPtr pool, const char *str, unsigned  int flags) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_vol_create_xml (value poolv, value strv)
 {
   CAMLparam2 (poolv, strv);
-#ifndef HAVE_VIRSTORAGEVOLCREATEXML
-  /* Symbol virStorageVolCreateXML not found at compile time. */
-  not_supported ("virStorageVolCreateXML");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStorageVolCreateXML
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStorageVolCreateXML);
 
   CAMLlocal2 (rv, connv);
   virStoragePoolPtr pool = Pool_val (poolv);
@@ -2468,32 +1957,16 @@ ocaml_libvirt_storage_vol_create_xml (value poolv, value strv)
   rv = Val_volume (r, connv);
 
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStorageVolGetXMLDesc.
  * In generator.pl this function has signature "vol, 0U : string".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEVOLGETXMLDESC
-extern char *virStorageVolGetXMLDesc (virStorageVolPtr vol, unsigned  int flags) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_vol_get_xml_desc (value volv)
 {
   CAMLparam1 (volv);
-#ifndef HAVE_VIRSTORAGEVOLGETXMLDESC
-  /* Symbol virStorageVolGetXMLDesc not found at compile time. */
-  not_supported ("virStorageVolGetXMLDesc");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStorageVolGetXMLDesc
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStorageVolGetXMLDesc);
 
   CAMLlocal1 (rv);
   virStorageVolPtr vol = Volume_val (volv);
@@ -2506,32 +1979,16 @@ ocaml_libvirt_storage_vol_get_xml_desc (value volv)
   rv = caml_copy_string (r);
   free (r);
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStorageVolGetPath.
  * In generator.pl this function has signature "vol : string".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEVOLGETPATH
-extern char *virStorageVolGetPath (virStorageVolPtr vol) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_vol_get_path (value volv)
 {
   CAMLparam1 (volv);
-#ifndef HAVE_VIRSTORAGEVOLGETPATH
-  /* Symbol virStorageVolGetPath not found at compile time. */
-  not_supported ("virStorageVolGetPath");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStorageVolGetPath
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStorageVolGetPath);
 
   CAMLlocal1 (rv);
   virStorageVolPtr vol = Volume_val (volv);
@@ -2544,32 +2001,16 @@ ocaml_libvirt_storage_vol_get_path (value volv)
   rv = caml_copy_string (r);
   free (r);
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStorageVolGetKey.
  * In generator.pl this function has signature "vol : static string".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEVOLGETKEY
-extern const char *virStorageVolGetKey (virStorageVolPtr vol) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_vol_get_key (value volv)
 {
   CAMLparam1 (volv);
-#ifndef HAVE_VIRSTORAGEVOLGETKEY
-  /* Symbol virStorageVolGetKey not found at compile time. */
-  not_supported ("virStorageVolGetKey");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStorageVolGetKey
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStorageVolGetKey);
 
   CAMLlocal1 (rv);
   virStorageVolPtr vol = Volume_val (volv);
@@ -2581,32 +2022,16 @@ ocaml_libvirt_storage_vol_get_key (value volv)
 
   rv = caml_copy_string (r);
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStorageVolGetName.
  * In generator.pl this function has signature "vol : static string".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEVOLGETNAME
-extern const char *virStorageVolGetName (virStorageVolPtr vol) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_vol_get_name (value volv)
 {
   CAMLparam1 (volv);
-#ifndef HAVE_VIRSTORAGEVOLGETNAME
-  /* Symbol virStorageVolGetName not found at compile time. */
-  not_supported ("virStorageVolGetName");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStorageVolGetName
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStorageVolGetName);
 
   CAMLlocal1 (rv);
   virStorageVolPtr vol = Volume_val (volv);
@@ -2618,32 +2043,16 @@ ocaml_libvirt_storage_vol_get_name (value volv)
 
   rv = caml_copy_string (r);
   CAMLreturn (rv);
-#endif
 }
 
 /* Automatically generated binding for virStoragePoolLookupByVolume.
  * In generator.pl this function has signature "vol : pool from vol".
  */
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLLOOKUPBYVOLUME
-extern virStoragePoolPtr virStoragePoolLookupByVolume (virStorageVolPtr vol) __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_lookup_by_volume (value volv)
 {
   CAMLparam1 (volv);
-#ifndef HAVE_VIRSTORAGEPOOLLOOKUPBYVOLUME
-  /* Symbol virStoragePoolLookupByVolume not found at compile time. */
-  not_supported ("virStoragePoolLookupByVolume");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol virStoragePoolLookupByVolume
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK (virStoragePoolLookupByVolume);
 
   CAMLlocal2 (rv, connv);
   virStorageVolPtr vol = Volume_val (volv);
@@ -2657,7 +2066,6 @@ ocaml_libvirt_storage_pool_lookup_by_volume (value volv)
   rv = Val_pool (r, connv);
 
   CAMLreturn (rv);
-#endif
 }
 
 #include "libvirt_c_epilogue.c"

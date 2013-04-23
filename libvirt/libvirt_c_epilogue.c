@@ -193,12 +193,8 @@ Val_virterror (virErrorPtr err)
 static void conn_finalize (value);
 static void dom_finalize (value);
 static void net_finalize (value);
-#ifdef HAVE_VIRSTORAGEPOOLPTR
 static void pol_finalize (value);
-#endif
-#ifdef HAVE_VIRSTORAGEVOLPTR
 static void vol_finalize (value);
-#endif
 
 static struct custom_operations conn_custom_operations = {
   "conn_custom_operations",
@@ -228,7 +224,6 @@ static struct custom_operations net_custom_operations = {
   custom_deserialize_default
 };
 
-#ifdef HAVE_VIRSTORAGEPOOLPTR
 static struct custom_operations pol_custom_operations = {
   "pol_custom_operations",
   pol_finalize,
@@ -237,9 +232,7 @@ static struct custom_operations pol_custom_operations = {
   custom_serialize_default,
   custom_deserialize_default
 };
-#endif
 
-#ifdef HAVE_VIRSTORAGEVOLPTR
 static struct custom_operations vol_custom_operations = {
   "vol_custom_operations",
   vol_finalize,
@@ -248,7 +241,6 @@ static struct custom_operations vol_custom_operations = {
   custom_serialize_default,
   custom_deserialize_default
 };
-#endif
 
 static value
 Val_connect (virConnectPtr conn)
@@ -283,7 +275,6 @@ Val_net (virNetworkPtr net)
   CAMLreturn (rv);
 }
 
-#ifdef HAVE_VIRSTORAGEPOOLPTR
 static value
 Val_pol (virStoragePoolPtr pol)
 {
@@ -294,9 +285,7 @@ Val_pol (virStoragePoolPtr pol)
   Pol_val (rv) = pol;
   CAMLreturn (rv);
 }
-#endif
 
-#ifdef HAVE_VIRSTORAGEVOLPTR
 static value
 Val_vol (virStorageVolPtr vol)
 {
@@ -307,7 +296,6 @@ Val_vol (virStorageVolPtr vol)
   Vol_val (rv) = vol;
   CAMLreturn (rv);
 }
-#endif
 
 /* This wraps up the (dom, conn) pair (Domain.t). */
 static value
@@ -337,7 +325,6 @@ Val_network (virNetworkPtr net, value connv)
   CAMLreturn (rv);
 }
 
-#ifdef HAVE_VIRSTORAGEPOOLPTR
 /* This wraps up the (pol, conn) pair (Pool.t). */
 static value
 Val_pool (virStoragePoolPtr pol, value connv)
@@ -351,9 +338,7 @@ Val_pool (virStoragePoolPtr pol, value connv)
   Store_field (rv, 1, connv);
   CAMLreturn (rv);
 }
-#endif
 
-#ifdef HAVE_VIRSTORAGEVOLPTR
 /* This wraps up the (vol, conn) pair (Volume.t). */
 static value
 Val_volume (virStorageVolPtr vol, value connv)
@@ -367,7 +352,6 @@ Val_volume (virStorageVolPtr vol, value connv)
   Store_field (rv, 1, connv);
   CAMLreturn (rv);
 }
-#endif
 
 static void
 conn_finalize (value connv)
@@ -390,20 +374,16 @@ net_finalize (value netv)
   if (net) (void) virNetworkFree (net);
 }
 
-#ifdef HAVE_VIRSTORAGEPOOLPTR
 static void
 pol_finalize (value polv)
 {
   virStoragePoolPtr pol = Pol_val (polv);
   if (pol) (void) virStoragePoolFree (pol);
 }
-#endif
 
-#ifdef HAVE_VIRSTORAGEVOLPTR
 static void
 vol_finalize (value volv)
 {
   virStorageVolPtr vol = Vol_val (volv);
   if (vol) (void) virStorageVolFree (vol);
 }
-#endif

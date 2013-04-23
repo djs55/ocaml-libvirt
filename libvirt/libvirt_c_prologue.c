@@ -46,28 +46,6 @@ static value Val_virterror (virErrorPtr err);
 #define CHECK_ERROR(cond, conn, fn) \
   do { if (cond) _raise_virterror (conn, fn); } while (0)
 
-/* For more about weak symbols, see:
- * http://kolpackov.net/pipermail/notes/2004-March/000006.html
- * We are using this to do runtime detection of library functions
- * so that if we dynamically link with an older version of
- * libvirt than we were compiled against, it won't fail (provided
- * libvirt >= 0.2.1 - we don't support anything older).
- */
-#ifdef __GNUC__
-#ifdef linux
-#if (__GNUC__ == 3 && __GNUC_MINOR__ >= 3) || (__GNUC__ > 3)
-#define HAVE_WEAK_SYMBOLS 1
-#endif
-#endif
-#endif
-
-#ifdef HAVE_WEAK_SYMBOLS
-#define WEAK_SYMBOL_CHECK(sym)				\
-  do { if (!sym) not_supported(#sym); } while (0)
-#else
-#define WEAK_SYMBOL_CHECK(sym)
-#endif /* HAVE_WEAK_SYMBOLS */
-
 /*----------------------------------------------------------------------*/
 
 /* Some notes about the use of custom blocks to store virConnectPtr,
@@ -113,49 +91,29 @@ static value Val_virterror (virErrorPtr err);
 #define Connect_val(rv) (*((virConnectPtr *)Data_custom_val(rv)))
 #define Dom_val(rv) (*((virDomainPtr *)Data_custom_val(rv)))
 #define Net_val(rv) (*((virNetworkPtr *)Data_custom_val(rv)))
-#ifdef HAVE_VIRSTORAGEPOOLPTR
 #define Pol_val(rv) (*((virStoragePoolPtr *)Data_custom_val(rv)))
-#endif
-#ifdef HAVE_VIRSTORAGEVOLPTR
 #define Vol_val(rv) (*((virStorageVolPtr *)Data_custom_val(rv)))
-#endif
 
 /* Wrap up a pointer to something in a custom block. */
 static value Val_connect (virConnectPtr conn);
 static value Val_dom (virDomainPtr dom);
 static value Val_net (virNetworkPtr net);
-#ifdef HAVE_VIRSTORAGEPOOLPTR
 static value Val_pol (virStoragePoolPtr pool);
-#endif
-#ifdef HAVE_VIRSTORAGEVOLPTR
 static value Val_vol (virStorageVolPtr vol);
-#endif
 
 /* Domains and networks are stored as pairs (dom/net, conn), so have
  * some convenience functions for unwrapping and wrapping them.
  */
 #define Domain_val(rv) (Dom_val(Field((rv),0)))
 #define Network_val(rv) (Net_val(Field((rv),0)))
-#ifdef HAVE_VIRSTORAGEPOOLPTR
 #define Pool_val(rv) (Pol_val(Field((rv),0)))
-#endif
-#ifdef HAVE_VIRSTORAGEVOLPTR
 #define Volume_val(rv) (Vol_val(Field((rv),0)))
-#endif
 #define Connect_domv(rv) (Connect_val(Field((rv),1)))
 #define Connect_netv(rv) (Connect_val(Field((rv),1)))
-#ifdef HAVE_VIRSTORAGEPOOLPTR
 #define Connect_polv(rv) (Connect_val(Field((rv),1)))
-#endif
-#ifdef HAVE_VIRSTORAGEVOLPTR
 #define Connect_volv(rv) (Connect_val(Field((rv),1)))
-#endif
 
 static value Val_domain (virDomainPtr dom, value connv);
 static value Val_network (virNetworkPtr net, value connv);
-#ifdef HAVE_VIRSTORAGEPOOLPTR
 static value Val_pool (virStoragePoolPtr pol, value connv);
-#endif
-#ifdef HAVE_VIRSTORAGEVOLPTR
 static value Val_volume (virStorageVolPtr vol, value connv);
-#endif

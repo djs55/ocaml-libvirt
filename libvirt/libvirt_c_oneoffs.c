@@ -129,47 +129,25 @@ ocaml_libvirt_connect_get_node_info (value connv)
   CAMLreturn (rv);
 }
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRNODEGETFREEMEMORY
-extern unsigned long long virNodeGetFreeMemory (virConnectPtr conn)
-  __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_connect_node_get_free_memory (value connv)
 {
-#ifdef HAVE_VIRNODEGETFREEMEMORY
   CAMLparam1 (connv);
   CAMLlocal1 (rv);
   virConnectPtr conn = Connect_val (connv);
   unsigned long long r;
 
-  WEAK_SYMBOL_CHECK (virNodeGetFreeMemory);
   NONBLOCKING (r = virNodeGetFreeMemory (conn));
   CHECK_ERROR (r == 0, conn, "virNodeGetFreeMemory");
 
   rv = caml_copy_int64 ((int64) r);
   CAMLreturn (rv);
-#else
-  not_supported ("virNodeGetFreeMemory");
-#endif
 }
-
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRNODEGETCELLSFREEMEMORY
-extern int virNodeGetCellsFreeMemory (virConnectPtr conn,
-				      unsigned long long *freeMems,
-				      int startCell, int maxCells)
-  __attribute__((weak));
-#endif
-#endif
 
 CAMLprim value
 ocaml_libvirt_connect_node_get_cells_free_memory (value connv,
 						  value startv, value maxv)
 {
-#ifdef HAVE_VIRNODEGETCELLSFREEMEMORY
   CAMLparam3 (connv, startv, maxv);
   CAMLlocal2 (rv, iv);
   virConnectPtr conn = Connect_val (connv);
@@ -178,7 +156,6 @@ ocaml_libvirt_connect_node_get_cells_free_memory (value connv,
   int r, i;
   unsigned long long freemems[max];
 
-  WEAK_SYMBOL_CHECK (virNodeGetCellsFreeMemory);
   NONBLOCKING (r = virNodeGetCellsFreeMemory (conn, freemems, start, max));
   CHECK_ERROR (r == -1, conn, "virNodeGetCellsFreeMemory");
 
@@ -189,9 +166,6 @@ ocaml_libvirt_connect_node_get_cells_free_memory (value connv,
   }
 
   CAMLreturn (rv);
-#else
-  not_supported ("virNodeGetCellsFreeMemory");
-#endif
 }
 
 CAMLprim value
@@ -280,18 +254,9 @@ ocaml_libvirt_domain_get_info (value domv)
   CAMLreturn (rv);
 }
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRDOMAINGETSCHEDULERTYPE
-extern char *virDomainGetSchedulerType(virDomainPtr domain,
-				       int *nparams)
-  __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_domain_get_scheduler_type (value domv)
 {
-#ifdef HAVE_VIRDOMAINGETSCHEDULERTYPE
   CAMLparam1 (domv);
   CAMLlocal2 (rv, strv);
   virDomainPtr dom = Domain_val (domv);
@@ -299,7 +264,6 @@ ocaml_libvirt_domain_get_scheduler_type (value domv)
   char *r;
   int nparams;
 
-  WEAK_SYMBOL_CHECK (virDomainGetSchedulerType);
   NONBLOCKING (r = virDomainGetSchedulerType (dom, &nparams));
   CHECK_ERROR (!r, conn, "virDomainGetSchedulerType");
 
@@ -308,24 +272,11 @@ ocaml_libvirt_domain_get_scheduler_type (value domv)
   free (r);
   Store_field (rv, 1, nparams);
   CAMLreturn (rv);
-#else
-  not_supported ("virDomainGetSchedulerType");
-#endif
 }
-
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRDOMAINGETSCHEDULERPARAMETERS
-extern int virDomainGetSchedulerParameters (virDomainPtr domain,
-					    virSchedParameterPtr params,
-					    int *nparams)
-  __attribute__((weak));
-#endif
-#endif
 
 CAMLprim value
 ocaml_libvirt_domain_get_scheduler_parameters (value domv, value nparamsv)
 {
-#ifdef HAVE_VIRDOMAINGETSCHEDULERPARAMETERS
   CAMLparam2 (domv, nparamsv);
   CAMLlocal4 (rv, v, v2, v3);
   virDomainPtr dom = Domain_val (domv);
@@ -334,7 +285,6 @@ ocaml_libvirt_domain_get_scheduler_parameters (value domv, value nparamsv)
   virSchedParameter params[nparams];
   int r, i;
 
-  WEAK_SYMBOL_CHECK (virDomainGetSchedulerParameters);
   NONBLOCKING (r = virDomainGetSchedulerParameters (dom, params, &nparams));
   CHECK_ERROR (r == -1, conn, "virDomainGetSchedulerParameters");
 
@@ -373,24 +323,11 @@ ocaml_libvirt_domain_get_scheduler_parameters (value domv, value nparamsv)
     Store_field (v, 1, v2);
   }
   CAMLreturn (rv);
-#else
-  not_supported ("virDomainGetSchedulerParameters");
-#endif
 }
-
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRDOMAINSETSCHEDULERPARAMETERS
-extern int virDomainSetSchedulerParameters (virDomainPtr domain,
-					    virSchedParameterPtr params,
-					    int nparams)
-  __attribute__((weak));
-#endif
-#endif
 
 CAMLprim value
 ocaml_libvirt_domain_set_scheduler_parameters (value domv, value paramsv)
 {
-#ifdef HAVE_VIRDOMAINSETSCHEDULERPARAMETERS
   CAMLparam2 (domv, paramsv);
   CAMLlocal1 (v);
   virDomainPtr dom = Domain_val (domv);
@@ -436,14 +373,10 @@ ocaml_libvirt_domain_set_scheduler_parameters (value domv, value paramsv)
     }
   }
 
-  WEAK_SYMBOL_CHECK (virDomainSetSchedulerParameters);
   NONBLOCKING (r = virDomainSetSchedulerParameters (dom, params, nparams));
   CHECK_ERROR (r == -1, conn, "virDomainSetSchedulerParameters");
 
   CAMLreturn (Val_unit);
-#else
-  not_supported ("virDomainSetSchedulerParameters");
-#endif
 }
 
 CAMLprim value
@@ -519,22 +452,9 @@ ocaml_libvirt_domain_get_vcpus (value domv, value maxinfov, value maplenv)
   CAMLreturn (rv);
 }
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRDOMAINGETCPUSTATS
-extern int virDomainGetCPUStats (virDomainPtr domain,
-                         virTypedParameterPtr params,
-                         unsigned int nparams,
-                         int start_cpu,
-                         unsigned int ncpus,
-                         unsigned int flags)
-  __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_domain_get_cpu_stats (value domv)
 {
-#ifdef HAVE_VIRDOMAINGETCPUSTATS
   CAMLparam1 (domv);
   CAMLlocal5 (cpustats, param_head, param_node, typed_param, typed_param_value);
   CAMLlocal1 (v);
@@ -633,24 +553,11 @@ ocaml_libvirt_domain_get_cpu_stats (value domv)
   }
   free(params);
   CAMLreturn (cpustats);
-#else
-  not_supported ("virDomainGetCPUStats");
-#endif
 }
-
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRDOMAINMIGRATE
-extern virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
-				      unsigned long flags, const char *dname,
-				      const char *uri, unsigned long bandwidth)
-  __attribute__((weak));
-#endif
-#endif
 
 CAMLprim value
 ocaml_libvirt_domain_migrate_native (value domv, value dconnv, value flagsv, value optdnamev, value opturiv, value optbandwidthv, value unitv)
 {
-#ifdef HAVE_VIRDOMAINMIGRATE
   CAMLparam5 (domv, dconnv, flagsv, optdnamev, opturiv);
   CAMLxparam2 (optbandwidthv, unitv);
   CAMLlocal2 (flagv, rv);
@@ -676,17 +583,12 @@ ocaml_libvirt_domain_migrate_native (value domv, value dconnv, value flagsv, val
   else				/* Some bandwidth */
     bandwidth = Int_val (Field (optbandwidthv, 0));
 
-  WEAK_SYMBOL_CHECK (virDomainMigrate);
   NONBLOCKING (r = virDomainMigrate (dom, dconn, flags, dname, uri, bandwidth));
   CHECK_ERROR (!r, conn, "virDomainMigrate");
 
   rv = Val_domain (r, dconnv);
 
   CAMLreturn (rv);
-
-#else /* virDomainMigrate not supported */
-  not_supported ("virDomainMigrate");
-#endif
 }
 
 CAMLprim value
@@ -697,20 +599,9 @@ ocaml_libvirt_domain_migrate_bytecode (value *argv, int argn)
 					      argv[6]);
 }
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRDOMAINBLOCKSTATS
-extern int virDomainBlockStats (virDomainPtr dom,
-				const char *path,
-				virDomainBlockStatsPtr stats,
-				size_t size)
-  __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_domain_block_stats (value domv, value pathv)
 {
-#if HAVE_VIRDOMAINBLOCKSTATS
   CAMLparam2 (domv, pathv);
   CAMLlocal2 (rv,v);
   virDomainPtr dom = Domain_val (domv);
@@ -719,7 +610,6 @@ ocaml_libvirt_domain_block_stats (value domv, value pathv)
   struct _virDomainBlockStats stats;
   int r;
 
-  WEAK_SYMBOL_CHECK (virDomainBlockStats);
   NONBLOCKING (r = virDomainBlockStats (dom, path, &stats, sizeof stats));
   CHECK_ERROR (r == -1, conn, "virDomainBlockStats");
 
@@ -731,25 +621,11 @@ ocaml_libvirt_domain_block_stats (value domv, value pathv)
   v = caml_copy_int64 (stats.errs); Store_field (rv, 4, v);
 
   CAMLreturn (rv);
-#else
-  not_supported ("virDomainBlockStats");
-#endif
 }
-
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRDOMAININTERFACESTATS
-extern int virDomainInterfaceStats (virDomainPtr dom,
-				    const char *path,
-				    virDomainInterfaceStatsPtr stats,
-				    size_t size)
-  __attribute__((weak));
-#endif
-#endif
 
 CAMLprim value
 ocaml_libvirt_domain_interface_stats (value domv, value pathv)
 {
-#if HAVE_VIRDOMAININTERFACESTATS
   CAMLparam2 (domv, pathv);
   CAMLlocal2 (rv,v);
   virDomainPtr dom = Domain_val (domv);
@@ -758,7 +634,6 @@ ocaml_libvirt_domain_interface_stats (value domv, value pathv)
   struct _virDomainInterfaceStats stats;
   int r;
 
-  WEAK_SYMBOL_CHECK (virDomainInterfaceStats);
   NONBLOCKING (r = virDomainInterfaceStats (dom, path, &stats, sizeof stats));
   CHECK_ERROR (r == -1, conn, "virDomainInterfaceStats");
 
@@ -773,27 +648,11 @@ ocaml_libvirt_domain_interface_stats (value domv, value pathv)
   v = caml_copy_int64 (stats.tx_drop); Store_field (rv, 7, v);
 
   CAMLreturn (rv);
-#else
-  not_supported ("virDomainInterfaceStats");
-#endif
 }
-
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRDOMAINBLOCKPEEK
-extern int virDomainBlockPeek (virDomainPtr domain,
-                               const char *path,
-                               unsigned long long offset,
-                               size_t size,
-                               void *buffer,
-                               unsigned int flags)
-  __attribute__((weak));
-#endif
-#endif
 
 CAMLprim value
 ocaml_libvirt_domain_block_peek_native (value domv, value pathv, value offsetv, value sizev, value bufferv, value boffv)
 {
-#ifdef HAVE_VIRDOMAINBLOCKPEEK
   CAMLparam5 (domv, pathv, offsetv, sizev, bufferv);
   CAMLxparam1 (boffv);
   virDomainPtr dom = Domain_val (domv);
@@ -809,16 +668,11 @@ ocaml_libvirt_domain_block_peek_native (value domv, value pathv, value offsetv, 
   if (caml_string_length (bufferv) < boff + size)
     caml_failwith ("virDomainBlockPeek: return buffer too short");
 
-  WEAK_SYMBOL_CHECK (virDomainBlockPeek);
   /* NB. not NONBLOCKING because buffer might move (XXX) */
   r = virDomainBlockPeek (dom, path, offset, size, buffer+boff, 0);
   CHECK_ERROR (r == -1, conn, "virDomainBlockPeek");
 
   CAMLreturn (Val_unit);
-
-#else /* virDomainBlockPeek not supported */
-  not_supported ("virDomainBlockPeek");
-#endif
 }
 
 CAMLprim value
@@ -828,21 +682,9 @@ ocaml_libvirt_domain_block_peek_bytecode (value *argv, int argn)
                                                  argv[3], argv[4], argv[5]);
 }
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRDOMAINMEMORYPEEK
-extern int virDomainMemoryPeek (virDomainPtr domain,
-                                unsigned long long start,
-                                size_t size,
-                                void *buffer,
-                                unsigned int flags)
-  __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_domain_memory_peek_native (value domv, value flagsv, value offsetv, value sizev, value bufferv, value boffv)
 {
-#ifdef HAVE_VIRDOMAINMEMORYPEEK
   CAMLparam5 (domv, flagsv, offsetv, sizev, bufferv);
   CAMLxparam1 (boffv);
   CAMLlocal1 (flagv);
@@ -867,16 +709,11 @@ ocaml_libvirt_domain_memory_peek_native (value domv, value flagsv, value offsetv
         flags |= VIR_MEMORY_VIRTUAL;
     }
 
-  WEAK_SYMBOL_CHECK (virDomainMemoryPeek);
   /* NB. not NONBLOCKING because buffer might move (XXX) */
   r = virDomainMemoryPeek (dom, offset, size, buffer+boff, flags);
   CHECK_ERROR (r == -1, conn, "virDomainMemoryPeek");
 
   CAMLreturn (Val_unit);
-
-#else /* virDomainMemoryPeek not supported */
-  not_supported ("virDomainMemoryPeek");
-#endif
 }
 
 CAMLprim value
@@ -886,17 +723,9 @@ ocaml_libvirt_domain_memory_peek_bytecode (value *argv, int argn)
                                                   argv[3], argv[4], argv[5]);
 }
 
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEPOOLGETINFO
-extern int virStoragePoolGetInfo(virStoragePoolPtr pool, virStoragePoolInfoPtr info)
-  __attribute__((weak));
-#endif
-#endif
-
 CAMLprim value
 ocaml_libvirt_storage_pool_get_info (value poolv)
 {
-#if HAVE_VIRSTORAGEPOOLGETINFO
   CAMLparam1 (poolv);
   CAMLlocal2 (rv, v);
   virStoragePoolPtr pool = Pool_val (poolv);
@@ -904,7 +733,6 @@ ocaml_libvirt_storage_pool_get_info (value poolv)
   virStoragePoolInfo info;
   int r;
 
-  WEAK_SYMBOL_CHECK (virStoragePoolGetInfo);
   NONBLOCKING (r = virStoragePoolGetInfo (pool, &info));
   CHECK_ERROR (r == -1, conn, "virStoragePoolGetInfo");
 
@@ -915,22 +743,11 @@ ocaml_libvirt_storage_pool_get_info (value poolv)
   v = caml_copy_int64 (info.available); Store_field (rv, 3, v);
 
   CAMLreturn (rv);
-#else
-  not_supported ("virStoragePoolGetInfo");
-#endif
 }
-
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef HAVE_VIRSTORAGEVOLGETINFO
-extern int virStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info)
-  __attribute__((weak));
-#endif
-#endif
 
 CAMLprim value
 ocaml_libvirt_storage_vol_get_info (value volv)
 {
-#if HAVE_VIRSTORAGEVOLGETINFO
   CAMLparam1 (volv);
   CAMLlocal2 (rv, v);
   virStorageVolPtr vol = Volume_val (volv);
@@ -938,7 +755,6 @@ ocaml_libvirt_storage_vol_get_info (value volv)
   virStorageVolInfo info;
   int r;
 
-  WEAK_SYMBOL_CHECK (virStorageVolGetInfo);
   NONBLOCKING (r = virStorageVolGetInfo (vol, &info));
   CHECK_ERROR (r == -1, conn, "virStorageVolGetInfo");
 
@@ -948,9 +764,6 @@ ocaml_libvirt_storage_vol_get_info (value volv)
   v = caml_copy_int64 (info.allocation); Store_field (rv, 2, v);
 
   CAMLreturn (rv);
-#else
-  not_supported ("virStorageVolGetInfo");
-#endif
 }
 
 /*----------------------------------------------------------------------*/

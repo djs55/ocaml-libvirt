@@ -142,18 +142,11 @@ printf "uri = %s\n%!" uri
 
     {3 Backwards and forwards compatibility}
 
-    OCaml-libvirt is backwards and forwards compatible with
-    any libvirt >= 0.2.1.  One consequence of this is that
-    your program can dynamically link to a {i newer} version of
-    libvirt than it was compiled with, and it should still
-    work.
-
-    When we link to an older version of libvirt.so, there may
-    be missing functions.  If ocaml-libvirt was compiled with
-    gcc, then these are turned into OCaml {!Libvirt.Not_supported}
-    exceptions.
-
-    We don't support libvirt < 0.2.1, and never will so don't ask us.
+    OCaml-libvirt requires libvirt version 1.0.2 or later. Future
+    releases of OCaml-libvirt will use newer features of libvirt
+    and therefore will require later versions of libvirt. It is always
+    possible to dynamically link your application against a newer
+    libvirt than OCaml-libvirt was originally compiled against.
 
     {3 Get list of domains and domain infos}
 

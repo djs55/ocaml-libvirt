@@ -35,13 +35,11 @@ use strict;
 # It is interpreted by the generation functions below to indicate what
 # "class" the function falls into, and to generate the right class of
 # binding.
-#
-# Any function added since libvirt 0.2.1 must be marked weak.
 
 my @functions = (
     { name => "virConnectClose", sig => "conn : free" },
-    { name => "virConnectGetHostname", sig => "conn : string", weak => 1 },
-    { name => "virConnectGetURI", sig => "conn : string", weak => 1 },
+    { name => "virConnectGetHostname", sig => "conn : string" },
+    { name => "virConnectGetURI", sig => "conn : string" },
     { name => "virConnectGetType", sig => "conn : static string" },
     { name => "virConnectNumOfDomains", sig => "conn : int" },
     { name => "virConnectListDomains", sig => "conn, int : int array" },
@@ -53,13 +51,13 @@ my @functions = (
     { name => "virConnectNumOfDefinedNetworks", sig => "conn : int" },
     { name => "virConnectListDefinedNetworks",
       sig => "conn, int : string array" },
-    { name => "virConnectNumOfStoragePools", sig => "conn : int", weak => 1 },
+    { name => "virConnectNumOfStoragePools", sig => "conn : int" },
     { name => "virConnectListStoragePools",
-      sig => "conn, int : string array", weak => 1 },
+      sig => "conn, int : string array" },
     { name => "virConnectNumOfDefinedStoragePools",
-      sig => "conn : int", weak => 1 },
+      sig => "conn : int" },
     { name => "virConnectListDefinedStoragePools",
-      sig => "conn, int : string array", weak => 1 },
+      sig => "conn, int : string array" },
     { name => "virConnectGetCapabilities", sig => "conn : string" },
 
     { name => "virDomainCreateLinux", sig => "conn, string, 0U : dom" },
@@ -107,66 +105,66 @@ my @functions = (
     { name => "virNetworkGetAutostart", sig => "net : bool" },
     { name => "virNetworkSetAutostart", sig => "net, bool : unit" },
 
-    { name => "virStoragePoolFree", sig => "pool : free", weak => 1 },
-    { name => "virStoragePoolDestroy", sig => "pool : free", weak => 1 },
+    { name => "virStoragePoolFree", sig => "pool : free" },
+    { name => "virStoragePoolDestroy", sig => "pool : free" },
     { name => "virStoragePoolLookupByName",
-      sig => "conn, string : pool", weak => 1 },
+      sig => "conn, string : pool" },
     { name => "virStoragePoolLookupByUUID",
-      sig => "conn, uuid : pool", weak => 1 },
+      sig => "conn, uuid : pool" },
     { name => "virStoragePoolLookupByUUIDString",
-      sig => "conn, string : pool", weak => 1 },
+      sig => "conn, string : pool" },
     { name => "virStoragePoolGetName",
-      sig => "pool : static string", weak => 1 },
+      sig => "pool : static string" },
     { name => "virStoragePoolGetXMLDesc",
-      sig => "pool, 0U : string", weak => 1 },
+      sig => "pool, 0U : string" },
     { name => "virStoragePoolGetUUID",
-      sig => "pool : uuid", weak => 1 },
+      sig => "pool : uuid" },
     { name => "virStoragePoolGetUUIDString",
-      sig => "pool : uuid string", weak => 1 },
+      sig => "pool : uuid string" },
     { name => "virStoragePoolCreateXML",
-      sig => "conn, string, 0U : pool", weak => 1 },
+      sig => "conn, string, 0U : pool" },
     { name => "virStoragePoolDefineXML",
-      sig => "conn, string, 0U : pool", weak => 1 },
+      sig => "conn, string, 0U : pool" },
     { name => "virStoragePoolBuild",
-      sig => "pool, uint : unit", weak => 1 },
+      sig => "pool, uint : unit" },
     { name => "virStoragePoolUndefine",
-      sig => "pool : unit", weak => 1 },
+      sig => "pool : unit" },
     { name => "virStoragePoolCreate",
-      sig => "pool, 0U : unit", weak => 1 },
+      sig => "pool, 0U : unit" },
     { name => "virStoragePoolDelete",
-      sig => "pool, uint : unit", weak => 1 },
+      sig => "pool, uint : unit" },
     { name => "virStoragePoolRefresh",
-      sig => "pool, 0U : unit", weak => 1 },
+      sig => "pool, 0U : unit" },
     { name => "virStoragePoolGetAutostart",
-      sig => "pool : bool", weak => 1 },
+      sig => "pool : bool" },
     { name => "virStoragePoolSetAutostart",
-      sig => "pool, bool : unit", weak => 1 },
+      sig => "pool, bool : unit" },
     { name => "virStoragePoolNumOfVolumes",
-      sig => "pool : int", weak => 1 },
+      sig => "pool : int" },
     { name => "virStoragePoolListVolumes",
-      sig => "pool, int : string array", weak => 1 },
+      sig => "pool, int : string array" },
 
-    { name => "virStorageVolFree", sig => "vol : free", weak => 1 },
+    { name => "virStorageVolFree", sig => "vol : free" },
     { name => "virStorageVolDelete",
-      sig => "vol, uint : unit", weak => 1 },
+      sig => "vol, uint : unit" },
     { name => "virStorageVolLookupByName",
-      sig => "pool, string : vol from pool", weak => 1 },
+      sig => "pool, string : vol from pool" },
     { name => "virStorageVolLookupByKey",
-      sig => "conn, string : vol", weak => 1 },
+      sig => "conn, string : vol" },
     { name => "virStorageVolLookupByPath",
-      sig => "conn, string : vol", weak => 1 },
+      sig => "conn, string : vol" },
     { name => "virStorageVolCreateXML",
-      sig => "pool, string, 0U : vol from pool", weak => 1 },
+      sig => "pool, string, 0U : vol from pool" },
     { name => "virStorageVolGetXMLDesc",
-      sig => "vol, 0U : string", weak => 1 },
+      sig => "vol, 0U : string" },
     { name => "virStorageVolGetPath",
-      sig => "vol : string", weak => 1 },
+      sig => "vol : string" },
     { name => "virStorageVolGetKey",
-      sig => "vol : static string", weak => 1 },
+      sig => "vol : static string" },
     { name => "virStorageVolGetName",
-      sig => "vol : static string", weak => 1 },
+      sig => "vol : static string" },
     { name => "virStoragePoolLookupByVolume",
-      sig => "vol : pool from vol", weak => 1 },
+      sig => "vol : pool from vol" },
 
     );
 
@@ -267,115 +265,6 @@ sub short_name_to_c_type
     elsif ($_ eq "vol") { "virStorageVolPtr" }
     else {
 	die "unknown short name $_"
-    }
-}
-
-# Generate a C signature for the original function.  Used when building
-# weak bindings.
-
-sub gen_c_signature
-{
-    my $sig = shift;
-    my $c_name = shift;
-
-    if ($sig =~ /^(\w+) : string$/) {
-	my $c_type = short_name_to_c_type ($1);
-	"char *$c_name ($c_type $1)"
-    } elsif ($sig =~ /^(\w+) : static string$/) {
-	my $c_type = short_name_to_c_type ($1);
-	"const char *$c_name ($c_type $1)"
-    } elsif ($sig =~ /^(\w+) : int$/) {
-	my $c_type = short_name_to_c_type ($1);
-	"int $c_name ($c_type $1)"
-    } elsif ($sig =~ /^(\w+) : uuid$/) {
-	my $c_type = short_name_to_c_type ($1);
-	"int $c_name ($c_type $1, unsigned char *)"
-    } elsif ($sig =~ /^(\w+) : uuid string$/) {
-	my $c_type = short_name_to_c_type ($1);
-	"int $c_name ($c_type $1, char *)"
-    } elsif ($sig =~ /^(\w+) : bool$/) {
-	my $c_type = short_name_to_c_type ($1);
-	"int $c_name ($c_type $1, int *r)"
-    } elsif ($sig =~ /^(\w+), bool : unit$/) {
-	my $c_type = short_name_to_c_type ($1);
-	"int $c_name ($c_type $1, int b)"
-    } elsif ($sig eq "conn, int : int array") {
-	"int $c_name (virConnectPtr conn, int *ids, int maxids)"
-    } elsif ($sig =~ /^(\w+), int : string array$/) {
-	my $c_type = short_name_to_c_type ($1);
-	"int $c_name ($c_type $1, char **const names, int maxnames)"
-    } elsif ($sig =~ /^(\w+), 0(U?) : string$/) {
-	my $c_type = short_name_to_c_type ($1);
-	my $unsigned = $2 eq "U" ? "unsigned " : "";
-	"char *$c_name ($c_type $1, $unsigned int flags)"
-    } elsif ($sig =~ /^(\w+), 0(U?) : unit$/) {
-	my $c_type = short_name_to_c_type ($1);
-	my $unsigned = $2 eq "U" ? "unsigned " : "";
-	"int $c_name ($c_type $1, $unsigned int flags)"
-    } elsif ($sig =~ /^(\w+) : unit$/) {
-	my $c_type = short_name_to_c_type ($1);
-	"int $c_name ($c_type $1)"
-    } elsif ($sig =~ /^(\w+) : free$/) {
-	my $c_type = short_name_to_c_type ($1);
-	"int $c_name ($c_type $1)"
-    } elsif ($sig =~ /^(\w+), string : unit$/) {
-	my $c_type = short_name_to_c_type ($1);
-	"int $c_name ($c_type $1, const char *str)"
-    } elsif ($sig =~ /^(\w+), string, 0(U?) : unit$/) {
-	my $c_type = short_name_to_c_type ($1);
-	my $unsigned = $2 eq "U" ? "unsigned " : "";
-	"int $c_name ($c_type $1, const char *str, ${unsigned}int flags)"
-    } elsif ($sig =~ /^(\w+), string : (\w+)$/) {
-	my $c_type = short_name_to_c_type ($1);
-	my $c_ret_type = short_name_to_c_type ($2);
-	"$c_ret_type $c_name ($c_type $1, const char *str)"
-    } elsif ($sig =~ /^(\w+), string, 0(U?) : (\w+)$/) {
-	my $c_type = short_name_to_c_type ($1);
-	my $unsigned = $2 eq "U" ? "unsigned " : "";
-	my $c_ret_type = short_name_to_c_type ($3);
-	"$c_ret_type $c_name ($c_type $1, const char *str, ${unsigned}int flags)"
-    } elsif ($sig =~ /^(\w+), (u?)int : unit$/) {
-	my $c_type = short_name_to_c_type ($1);
-	my $unsigned = $2 eq "u" ? "unsigned " : "";
-	"int $c_name ($c_type $1, ${unsigned}int i)"
-    } elsif ($sig =~ /^(\w+), (u?)int : (\w+)$/) {
-	my $c_type = short_name_to_c_type ($1);
-	my $unsigned = $2 eq "u" ? "unsigned " : "";
-	my $c_ret_type = short_name_to_c_type ($3);
-	"$c_ret_type $c_name ($c_type $1, ${unsigned}int i)"
-    } elsif ($sig =~ /^(\w+), uuid : (\w+)$/) {
-	my $c_type = short_name_to_c_type ($1);
-	my $c_ret_type = short_name_to_c_type ($2);
-	"$c_ret_type $c_name ($c_type $1, const unsigned char *str)"
-    } elsif ($sig =~ /^(\w+), 0(U?) : (\w+)$/) {
-	my $c_type = short_name_to_c_type ($1);
-	my $unsigned = $2 eq "U" ? "unsigned " : "";
-	my $c_ret_type = short_name_to_c_type ($3);
-	"$c_ret_type $c_name ($c_type $1, $unsigned int flags)"
-    } elsif ($sig =~ /^(\w+) : (\w+)$/) {
-	my $c_type = short_name_to_c_type ($1);
-	my $c_ret_type = short_name_to_c_type ($2);
-	"$c_ret_type $c_name ($c_type $1)"
-    } elsif ($sig =~ /^(\w+), string : (\w+) from \w+$/) {
-	my $c_type = short_name_to_c_type ($1);
-	my $c_ret_type = short_name_to_c_type ($2);
-	"$c_ret_type $c_name ($c_type $1, const char *str)"
-    } elsif ($sig =~ /^(\w+), string, 0(U?) : (\w+) from \w+$/) {
-	my $c_type = short_name_to_c_type ($1);
-	my $unsigned = $2 eq "U" ? "unsigned " : "";
-	my $c_ret_type = short_name_to_c_type ($3);
-	"$c_ret_type $c_name ($c_type $1, const char *str, $unsigned int flags)"
-    } elsif ($sig =~ /^(\w+), 0(U?) : (\w+) from \w+$/) {
-	my $c_type = short_name_to_c_type ($1);
-	my $unsigned = $2 eq "U" ? "unsigned " : "";
-	my $c_ret_type = short_name_to_c_type ($3);
-	"$c_ret_type $c_name ($c_type $1, $unsigned int flags)"
-    } elsif ($sig =~ /^(\w+) : (\w+) from \w+$/) {
-	my $c_type = short_name_to_c_type ($1);
-	my $c_ret_type = short_name_to_c_type ($2);
-	"$c_ret_type $c_name ($c_type $1)"
-    } else {
-	die "unknown signature $sig"
     }
 }
 
@@ -883,7 +772,6 @@ sub gen_c_code
 
 foreach my $function (@functions) {
     my $c_name = $function->{name};
-    my $is_weak = $function->{weak};
     my $sig = $function->{sig};
 
     #print "generating $c_name with sig \"$sig\" ...\n";
@@ -911,20 +799,6 @@ foreach my $function (@functions) {
 
 END
 
-    # Generate a full function prototype if the function is weak.
-    my $have_name = "HAVE_" . uc ($c_name);
-    if ($is_weak) {
-	my $c_sig = gen_c_signature ($sig, $c_name);
-	print F <<END;
-#ifdef HAVE_WEAK_SYMBOLS
-#ifdef $have_name
-extern $c_sig __attribute__((weak));
-#endif
-#endif
-
-END
-    }
-
     my @arg_names = gen_arg_names ($sig);
     my $nr_arg_names = scalar @arg_names;
     my $arg_names = join ", ", @arg_names;
@@ -938,30 +812,8 @@ $c_external_name ($arg_names_as_values)
   CAMLparam$nr_arg_names ($arg_names);
 END
 
-    # If weak, check the function exists at compile time or runtime.
-    if ($is_weak) {
-	print F <<END;
-#ifndef $have_name
-  /* Symbol $c_name not found at compile time. */
-  not_supported ("$c_name");
-  CAMLnoreturn;
-#else
-  /* Check that the symbol $c_name
-   * is in runtime version of libvirt.
-   */
-  WEAK_SYMBOL_CHECK ($c_name);
-END
-    }
-
     # Generate the internals of the function.
     print F (gen_c_code ($sig, $c_name));
-
-    # Finish off weak #ifdef.
-    if ($is_weak) {
-	print F <<END;
-#endif
-END
-    }
 
     # Finish off the function.
     print F <<END;
